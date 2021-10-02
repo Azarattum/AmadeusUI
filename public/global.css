@@ -9,6 +9,7 @@
   --color-accent-100: #ec2c50;
 
   --color-text-normal: #000000;
+  --color-text-selected: #7e7e7e;
   --color-text-caption: #a5a4a4;
   --color-text-contrast: #f8f8f8;
 
@@ -40,4 +41,7 @@ button {
 button {
   border: none;
   cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
 }

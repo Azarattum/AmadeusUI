@@ -39,7 +39,9 @@
     justify-content: left;
     align-items: baseline;
     overflow-x: scroll;
+    overflow-y: hidden;
     scroll-snap-type: x mandatory;
+    outline: none;
 
     width: 100vw;
     cursor: pointer;
@@ -50,10 +52,13 @@
   button {
     scroll-snap-align: start;
     font-size: var(--font-large);
-    margin: 24px 0 0 0;
-    padding: 0 8px 0 16px;
+    padding: 24px 8px 0 16px;
     color: var(--color-text-caption);
     transition: color 0.2s;
+    height: 61px;
+  }
+  button:hover {
+    color: var(--color-text-selected);
   }
   button::after {
     display: block;
@@ -72,7 +77,7 @@
   }
   @media (max-width: 600px) {
     button:last-child {
-      margin-right: calc(100vw - 150px);
+      padding-right: calc(100vw - 130px);
     }
   }
 </style>

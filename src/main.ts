@@ -1,10 +1,6 @@
-import App from './App.svelte';
+import App from "./App.svelte";
+import smoothscroll from "smoothscroll-polyfill";
 
-const app = new App({
-	target: document.body,
-	props: {
-		name: 'world'
-	}
-});
-
-export default app;
+smoothscroll.polyfill();
+document.addEventListener("touchstart", function () {}, false);
+export default new App({ target: document.body });
