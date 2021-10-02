@@ -1,0 +1,43 @@
+:root {
+  --color-background: rgba(248, 248, 248, 0.88);
+  --color-highlight: rgba(128, 128, 128, 0.2);
+  --color-element: #808080;
+
+  --color-accent-0: #901518;
+  --color-accent-50: #bd2020;
+  --color-accent-75: #dd1d30;
+  --color-accent-100: #ec2c50;
+
+  --color-text-normal: #000000;
+  --color-text-caption: #a5a4a4;
+  --color-text-contrast: #f8f8f8;
+
+  --font-large: 32px;
+}
+
+* {
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow-x: hidden;
+
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+span,
+h1,
+button {
+  color: var(--color-text);
+}
+
+button {
+  border: none;
+  cursor: pointer;
+}
