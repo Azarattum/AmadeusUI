@@ -45,6 +45,16 @@
   function calcScrolled() {
     return Math.round(tabs.scrollLeft / tabs.clientWidth);
   }
+
+  function navigate(index: number) {
+    if (active === index) {
+      scrollIntoView(tabs.children[active].firstElementChild as HTMLElement, {
+        time: 200,
+      });
+    } else {
+      active = index;
+    }
+  }
 </script>
 
 <header bind:this={header}>
@@ -52,12 +62,15 @@
     <button
       tabIndex={i + 1}
       class:active={active === i}
-      on:click={() => (active = i)}
+      on:click={() => navigate(i)}
+      alt={section}
     >
       {section}
     </button>
   {/each}
 </header>
+
+<slot name="search" />
 
 <nav bind:this={tabs} on:scroll={update}>
   <slot />
@@ -73,14 +86,14 @@
     transform: translateX(0);
     background: linear-gradient(
       180deg,
-      var(--color-background) 88px,
+      var(--color-background) calc(100% - 8px),
       var(--color-transparent)
     );
   }
   button {
     scroll-snap-align: start;
     font-size: var(--font-large);
-    padding: 16px 8px 0 14px;
+    padding: 16px 8px 16px 14px;
     color: var(--color-text-caption);
     transition: color 0.2s;
     height: 64px;
@@ -110,7 +123,7 @@
     scroll-snap-type: x mandatory;
 
     margin-top: -10px;
-    height: calc(100% - 86px);
+    height: 100%;
   }
   nav > :global(*) {
     scroll-snap-align: start;
@@ -121,6 +134,11 @@
     display: block;
     content: "";
     height: 10px;
+  }
+  nav > :global(*)::after {
+    display: block;
+    content: "";
+    height: 128px;
   }
   *::-webkit-scrollbar {
     display: none;
