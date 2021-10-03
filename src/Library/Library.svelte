@@ -1,83 +1,30 @@
 <script lang="ts">
-  import { tick } from "svelte";
+  import { onMount } from "svelte";
+  import Tabbed from "../Shared/Tabbed.svelte";
 
-  let sections = ["Recent", "Playlists", "Artists", "Albums"];
-  let active = 0;
-  let header: HTMLElement;
+  let container: HTMLElement;
+  const isStandalone =
+    matchMedia("(display-mode: standalone)").matches ||
+    (navigator as any).standalone === true;
 
-  async function navigate(index: number) {
-    active = index;
-    await tick();
-    focus();
-  }
-
-  function focus() {
-    header.children[active].scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-      inline: "start",
-    });
-  }
+  onMount(() => {
+    if (isStandalone) {
+      container.style.marginTop = "33px";
+    }
+  });
 </script>
 
-<header bind:this={header} tabIndex="-1" on:focusout={focus}>
-  {#each sections as section, i}
-    <button
-      tabIndex={i + 1}
-      class:active={active === i}
-      on:click={() => navigate(i)}
-      alt={section}
-    >
-      {section}
-    </button>
-  {/each}
-</header>
+<div class="container" bind:this={container}>
+  <Tabbed sections={["Recent", "Playlists", "Artists", "Albums"]}>
+    <section>1</section>
+    <section>2</section>
+    <section>3</section>
+    <section>4</section>
+  </Tabbed>
+</div>
 
 <style>
-  header {
-    display: flex;
-    justify-content: left;
-    align-items: baseline;
-    overflow-x: scroll;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-    outline: none;
-
-    width: 100vw;
-    cursor: pointer;
-  }
-  header::-webkit-scrollbar {
-    display: none;
-  }
-  button {
-    scroll-snap-align: start;
-    font-size: var(--font-large);
-    padding: 24px 8px 0 16px;
-    color: var(--color-text-caption);
-    transition: color 0.2s;
-    height: 61px;
-  }
-  button:hover {
-    color: var(--color-text-selected);
-  }
-  button::after {
-    display: block;
-    content: attr(alt);
-    font-weight: bold;
-    visibility: hidden;
-    height: 24px;
-  }
-  button.active {
-    font-weight: bold;
-    color: var(--color-text-normal);
-  }
-  button:focus-visible {
-    outline: none;
-    text-decoration: underline;
-  }
-  @media (max-width: 600px) {
-    button:last-child {
-      padding-right: calc(100vw - 130px);
-    }
+  .container {
+    height: 100vh;
   }
 </style>
