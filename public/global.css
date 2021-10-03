@@ -1,6 +1,7 @@
 :root {
-  --color-background: rgba(248, 248, 248, 0.88);
-  --color-highlight: rgba(128, 128, 128, 0.2);
+  --color-transparent: #ffffff00;
+  --color-background: #ffffff;
+  --color-highlight: #d4d4d4;
   --color-element: #808080;
 
   --color-accent-0: #901518;
@@ -10,15 +11,36 @@
 
   --color-text-normal: #000000;
   --color-text-selected: #7e7e7e;
-  --color-text-caption: #a5a4a4;
+  --color-text-caption: #929292;
   --color-text-contrast: #f8f8f8;
 
-  --font-large: 32px;
+  --font-large: 33px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-transparent: #00000000;
+    --color-background: #000000;
+    --color-highlight: #222222;
+    --color-element: #808080;
+
+    --color-accent-0: #901518;
+    --color-accent-50: #bd2020;
+    --color-accent-75: #dd1d30;
+    --color-accent-100: #ec2c50;
+
+    --color-text-normal: #fdfdfd;
+    --color-text-selected: #b6b6b6;
+    --color-text-caption: #858585;
+    --color-text-contrast: #131313;
+  }
 }
 
 * {
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
+  color: var(--color-text-normal);
+  background: transparent;
 }
 
 html,
@@ -30,18 +52,16 @@ body {
   overflow-x: hidden;
 
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--color-background);
 }
 
-span,
-h1,
-button {
-  color: var(--color-text);
-}
-
-button {
+button,
+a {
+  text-decoration: none;
   border: none;
   cursor: pointer;
   touch-action: manipulation;
   user-select: none;
+  outline: none;
   -webkit-user-select: none;
 }
