@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Library from "./Library/Library.svelte";
+  import Library from "./Components/Library.svelte";
 </script>
 
 <Library />
