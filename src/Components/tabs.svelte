@@ -123,7 +123,7 @@
     scroll-snap-type: x mandatory;
 
     margin-top: -10px;
-    height: 100%;
+    height: var(--view-height);
   }
   nav > :global(*) {
     scroll-snap-align: start;
@@ -138,7 +138,10 @@
   nav > :global(*)::after {
     display: block;
     content: "";
-    height: 128px;
+    height: 96px;
+  }
+  :global(.standalone) nav > :global(*)::after {
+    height: 132px;
   }
   *::-webkit-scrollbar {
     display: none;

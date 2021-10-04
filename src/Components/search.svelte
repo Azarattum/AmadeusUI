@@ -37,7 +37,7 @@
   {/if}
 </div>
 
-<style>
+<style lang="postcss">
   div {
     position: absolute;
     display: flex;
@@ -64,18 +64,14 @@
   .search {
     left: 0;
 
-    -webkit-mask: url("/icons/search.svg") no-repeat 50% 50%;
     mask: url("/icons/search.svg") no-repeat 50% 50%;
-    -webkit-mask-size: 18px 18px;
     mask-size: 18px 18px;
     pointer-events: none;
   }
   .cancel {
     right: 0;
 
-    -webkit-mask: url("/icons/cancel.svg") no-repeat 50% 50%;
     mask: url("/icons/cancel.svg") no-repeat 50% 50%;
-    -webkit-mask-size: 16px 16px;
     mask-size: 16px 16px;
     cursor: pointer;
   }

@@ -3,7 +3,6 @@
   import Tabs from "./tabs.svelte";
 
   let sections = ["Recent", "Playlists", "Artists", "Albums"];
-  let container: HTMLElement;
   let drag = 0;
 
   function onScroll({ target }) {

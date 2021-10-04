@@ -1,8 +1,9 @@
 :root {
   --color-transparent: #ffffff00;
   --color-shadow: #0000005d;
+  --color-overlay: #f8f8f8e0;
   --color-background: #ffffff;
-  --color-highlight: #c8c8c8;
+  --color-highlight: #c8c8c877;
   --color-element: #e4e4e4;
 
   --color-accent-0: #901518;
@@ -17,14 +18,18 @@
 
   --font-large: 33px;
   --font-normal: 18px;
+  --font-caption: 10px;
+
+  --view-height: 100vh;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --color-transparent: #00000000;
     --color-shadow: #242424c0;
+    --color-overlay: #181818c4;
     --color-background: #000000;
-    --color-highlight: #393939;
+    --color-highlight: #31313131;
     --color-element: #1c1c1c;
 
     --color-text-normal: #fdfdfd;
@@ -57,6 +62,10 @@ body {
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+body.standalone {
+  margin-top: 33px;
 }
 
 button,

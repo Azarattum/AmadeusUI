@@ -8,6 +8,14 @@
   </body>
   <script>
     document.addEventListener("touchstart", function () {}, false);
-    if (navigator.standalone) document.body.style.marginTop = "33px";
+    if (navigator.standalone) document.body.classList.add("standalone");
+    const updateHeight = () => {
+      document.documentElement.style.setProperty(
+        "--view-height",
+        `${innerHeight}px`
+      );
+    };
+    addEventListener("resize", updateHeight);
+    updateHeight();
   </script>
 </html>
