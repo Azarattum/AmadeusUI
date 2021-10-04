@@ -20,6 +20,7 @@
   <input
     type="text"
     placeholder="Search"
+    tabindex={visible ? 0 : -1}
     bind:value={query}
     bind:this={input}
     on:focusout={() => {

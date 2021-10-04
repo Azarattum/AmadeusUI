@@ -6,6 +6,7 @@
 <nav>
   {#each tabs as tab, i}
     <button
+      tabindex="0"
       class={tab.toLowerCase()}
       class:active={selected === i}
       on:click={() => (selected = i)}
@@ -58,6 +59,9 @@
       &::before {
         background-color: var(--color-text-selected);
       }
+    }
+    &:focus-visible {
+      background-color: var(--color-highlight);
     }
 
     &.library::before {
