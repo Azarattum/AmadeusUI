@@ -10,7 +10,7 @@
   $: focus(active);
   async function focus(section = active) {
     if (!header) return;
-    const props: __ScrollIntoView.Settings = {
+    const props = {
       time: 200,
       align: { left: 0 },
       cancellable: true,
@@ -60,7 +60,7 @@
 <header bind:this={header}>
   {#each sections as section, i}
     <button
-      tabIndex={i + 1}
+      tabIndex="0"
       class:active={active === i}
       on:click={() => navigate(i)}
       alt={section}

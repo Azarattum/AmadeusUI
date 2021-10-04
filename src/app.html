@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    %svelte.head%
+  </head>
+  <body>
+    %svelte.body%
+  </body>
+  <script>
+    document.addEventListener("touchstart", function () {}, false);
+    if (navigator.standalone) document.body.style.marginTop = "33px";
+  </script>
+</html>
