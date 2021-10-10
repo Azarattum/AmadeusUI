@@ -138,10 +138,10 @@
   nav > :global(*)::after {
     display: block;
     content: "";
-    height: 96px;
+    height: 144px;
   }
   :global(.standalone) nav > :global(*)::after {
-    height: 132px;
+    height: 196px;
   }
   *::-webkit-scrollbar {
     display: none;

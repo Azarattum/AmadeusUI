@@ -1,6 +1,7 @@
 <script lang="ts">
   import Library from "components/library.svelte";
   import Navbar from "components/navbar.svelte";
+  import Player from "components/player.svelte";
 
   const tabs = [Library];
   let selected = 0;
@@ -11,4 +12,5 @@
     <svelte:component this={tab} />
   {/if}
 {/each}
+<Player />
 <Navbar bind:selected />

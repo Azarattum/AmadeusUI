@@ -17,6 +17,14 @@
 </nav>
 
 <style lang="postcss">
+  :global(.standalone) nav {
+    height: 49px;
+
+    button {
+      padding: 2px 0 2px 0;
+      font-size: var(--font-caption);
+    }
+  }
   nav {
     position: fixed;
     display: flex;
@@ -29,14 +37,6 @@
     backdrop-filter: blur(16px);
     background: var(--color-overlay);
     border-top: solid 1px var(--color-highlight);
-  }
-  :global(.standalone) nav {
-    height: 49px;
-
-    button {
-      padding: 2px 0 2px 0;
-      font-size: var(--font-caption);
-    }
   }
   button {
     display: flex;
