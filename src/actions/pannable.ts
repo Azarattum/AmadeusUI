@@ -27,7 +27,9 @@ export function pannable(
     }
   });
 
-  function handleStart({ changedTouches: touches }: TouchEvent) {
+  function handleStart(event: TouchEvent) {
+    event.stopPropagation();
+    const { changedTouches: touches } = event;
     offset.stiffness = offset.damping = 1;
     previous = touches[0].clientY;
 

@@ -18,6 +18,7 @@
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-svelte3": "^3.2.1",
+    "postcss-aspect-ratio-polyfill": "^2.0.0",
     "postcss-nested": "^5.0.6",
     "prettier": "^2.4.1",
     "prettier-plugin-svelte": "^2.4.0",

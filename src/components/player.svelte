@@ -1,9 +1,11 @@
 <script lang="ts">
+  import "actions/pannable.d";
   import type { ITrack } from "utils/track.interface";
   import { pannable } from "actions/pannable";
   import { spring } from "svelte/motion";
   import Miniplayer from "./miniplayer.svelte";
 
+  let cover: HTMLDivElement;
   let open = false;
   let paused = false;
   let time = 0;
@@ -15,21 +17,68 @@
     length: Infinity,
   };
 
-  const offset = spring(0, {
-    stiffness: 0.1,
-    damping: 0.45,
-  });
+  const playerOffset = spring(0, { stiffness: 0.2 });
+  const moreOffset = spring(0, { stiffness: 0.2 });
+
+  function formatTime(x: number) {
+    const minutes = ~~(x / 60);
+    const seconds = (x - minutes * 60).toLocaleString("en-US", {
+      minimumIntegerDigits: 2,
+      useGrouping: false,
+    });
+    if (!Number.isFinite(x)) return seconds;
+    return `${minutes}:${seconds}`;
+  }
+
+  $: if (track.cover && cover) {
+    cover.style.backgroundImage = `url(${track.cover})`;
+  }
 </script>
 
 <div
   class="player"
   class:open
-  use:pannable={{ offset }}
+  use:pannable={{ offset: playerOffset }}
   on:open={() => (open = true)}
   on:close={() => (open = false)}
-  style="transform: translateY({-$offset}px);"
+  style="transform: translateY({-$playerOffset}px);"
 >
   <Miniplayer bind:track bind:paused bind:time bind:hidden={open} />
+  <div class="container">
+    <div class="info">
+      <div class="topbar">
+        <div class="title">{track.title}</div>
+        <div class="options" on:touchstart|stopPropagation><button /></div>
+      </div>
+      <div class="artists">
+        {#each track.artists as artist, i}
+          <button class="artist" on:touchstart|stopPropagation>
+            {artist + (i + 1 != track.artists.length ? "," : "")}
+          </button>
+        {/each}
+      </div>
+    </div>
+    <div class="coversel">
+      <div class="cover-prev" />
+      <div bind:this={cover} class="cover" />
+      <div class="cover-next" />
+    </div>
+    <div class="playback">
+      <div class="progress" style="width:{(time / track.length) * 100}%">
+        <div class="thumb" />
+      </div>
+      <div class="time">
+        <div class="elapsed">{formatTime(time)}</div>
+        <div class="left">{formatTime(track.length - time)}</div>
+      </div>
+    </div>
+
+    <div
+      class="more"
+      use:pannable={{ offset: moreOffset, gap: 109 }}
+      style="transform: translateY({-$moreOffset}px);"
+    />
+  </div>
 </div>
 
 <style lang="postcss">
@@ -47,12 +96,180 @@
     background-color: var(--color-transparent);
 
     overflow: hidden;
+    user-select: none;
     pointer-events: none;
     z-index: 1;
   }
   .player.open {
     background-color: var(--color-element);
     border-radius: 16px;
+    pointer-events: all;
+    box-shadow: 0px 0px 8px var(--color-shadow);
+
+    .container {
+      opacity: 1;
+    }
+  }
+  .container {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: calc(var(--view-height) - 8px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    transition: 0.3s opacity ease;
+    opacity: 0;
+  }
+  .topbar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+  .title {
+    width: 100%;
+    font-size: var(--font-normal);
+    margin: 16px;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .options {
+    height: var(--size);
+    padding: 16px;
+    background: var(--color-transparent);
+    border-radius: 100%;
+
+    cursor: pointer;
+    transform: scale(1);
+    transition: 0.2s all ease-in-out;
+
+    &:active {
+      transition: 0.05s;
+      transform: scale(0.8);
+      background: var(--color-highlight);
+    }
+
+    button {
+      width: 32px;
+      height: 32px;
+      mask: url(icons/options.svg) no-repeat 50% 50%;
+      background-color: currentColor;
+      mask-size: 32px 32px;
+    }
+  }
+  .artists {
+    margin: -16px 0 0 12px;
+
+    button {
+      padding: 0;
+      font-size: var(--font-normal);
+      color: var(--color-text-caption);
+      padding: 8px 4px 8px 4px;
+      border-radius: 8px;
+      background-color: var(--color-transparent);
+      transition: 0.3s ease;
+
+      &:active {
+        transition-duration: 0.05s;
+        transform: scale(0.9);
+        background-color: var(--color-highlight);
+      }
+    }
+  }
+  .coversel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cover {
+    background-size: cover;
+    width: calc(100% - 64px);
+    aspect-ratio: 1/1;
+    background-color: var(--color-element);
+    border-radius: 16px;
+    box-shadow: 0 8px 8px rgba(0, 0, 0, 0.2);
+  }
+  .playback {
+    width: calc(100% - 32px);
+    margin: 16px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--color-text-caption);
+
+    .progress {
+      position: relative;
+      top: -1px;
+      height: 4px;
+      background: var(--color-accent-75);
+      border-radius: 4px;
+
+      .thumb {
+        position: absolute;
+        right: 0;
+        top: -12px;
+        background: inherit;
+        width: 8px;
+        height: 16px;
+        border-radius: 8px 8px 0 0;
+
+        transition-property: transform;
+        transition: 0.2s ease;
+        transform: scale(1);
+        &:active {
+          transform-origin: bottom;
+          transform: scale(1.3);
+        }
+      }
+    }
+  }
+  .time {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+
+    * {
+      position: relative;
+      padding: 4px 16px 4px 16px;
+      margin: 2px -8px 0px -8px;
+      border-radius: 8px;
+      transition: 0.2s all ease-in-out;
+
+      &:active {
+        transition-duration: 0.05s;
+        background-color: var(--color-highlight);
+      }
+    }
+
+    *:after {
+      display: block;
+      content: "";
+      width: 32px;
+      height: 11px;
+      background-color: var(--color-text-caption);
+      mask: url(icons/arrow.svg) no-repeat 50% 50%;
+      background-size: cover;
+    }
+
+    .elapsed:after {
+      transform: translateX(-2px);
+    }
+    .left:after {
+      position: absolute;
+      right: 16px;
+      transform: rotateZ(180deg) translateX(-2px);
+    }
+  }
+  .more {
+    width: 100%;
+    margin-bottom: calc(-1 * var(--view-height) + 45px);
+    height: var(--view-height);
+    bottom: calc(-1 * var(--view-height));
+
+    background-color: var(--color-element);
+    border-radius: 16px 16px 0 0;
     pointer-events: all;
     box-shadow: 0px 0px 8px var(--color-shadow);
   }

@@ -4,14 +4,13 @@
   let active = false;
   export let hidden = false;
   export let paused = false;
+  export let track: ITrack;
   export let time = 0;
 
-  export let track: ITrack = {
-    title: "Not Playing",
-    artists: [],
-    album: "",
-    length: Infinity,
-  };
+  let cover: HTMLDivElement;
+  $: if (track.cover && cover) {
+    cover.style.backgroundImage = `url(${track.cover})`;
+  }
 </script>
 
 <div
@@ -21,10 +20,7 @@
   on:touchstart={() => (active = true)}
   on:touchend={() => (active = false)}
 >
-  <div
-    class="cover"
-    style={track.cover ? `background-image: url(${track.cover})` : ""}
-  />
+  <div bind:this={cover} class="cover" />
   <span class="title">{track.title}</span>
   <div
     class="button"
@@ -66,6 +62,9 @@
     &.active {
       background-color: var(--color-element);
     }
+    * {
+      transition: transform 0.3s ease;
+    }
   }
   .cover {
     background-size: cover;
@@ -79,6 +78,10 @@
   span {
     width: 100%;
     pointer-events: none;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
   .button {
     --size: 35px;
@@ -126,5 +129,10 @@
     border-radius: 2px;
     pointer-events: none;
     background-color: var(--color-text-caption);
+  }
+  .hidden {
+    * {
+      transform: translateY(64px);
+    }
   }
 </style>
