@@ -54,10 +54,8 @@
     user-select: none;
     overflow: hidden;
 
-    transition: background-color 0.2s;
-
+    transition: background-color 0.2s ease;
     &.hidden {
-      backdrop-filter: none;
       background-color: var(--color-element);
     }
   }

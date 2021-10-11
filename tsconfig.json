@@ -16,6 +16,7 @@
     "checkJs": true,
     "paths": {
       "components/*": ["src/components/*"],
+      "actions/*": ["src/actions/*"],
       "utils/*": ["src/utils/*"]
     }
   },

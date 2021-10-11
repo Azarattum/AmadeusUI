@@ -23,6 +23,7 @@ const config = {
       resolve: {
         alias: {
           utils: resolve(__dirname, "./src/utils"),
+          actions: resolve(__dirname, "./src/actions"),
           components: resolve(__dirname, "./src/components"),
         },
       },
