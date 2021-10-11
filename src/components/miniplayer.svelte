@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { ITrack } from "utils/track.interface";
 
+  let active = false;
   export let hidden = false;
   export let paused = false;
   export let time = 0;
@@ -13,7 +14,13 @@
   };
 </script>
 
-<div class="miniplayer" class:hidden>
+<div
+  class="miniplayer"
+  class:hidden
+  class:active
+  on:touchstart={() => (active = true)}
+  on:touchend={() => (active = false)}
+>
   <div
     class="cover"
     style={track.cover ? `background-image: url(${track.cover})` : ""}
@@ -54,8 +61,9 @@
     user-select: none;
     overflow: hidden;
 
-    transition: background-color 0.2s ease;
-    &.hidden {
+    transition: background-color 0.1s ease-out;
+    &.hidden,
+    &.active {
       background-color: var(--color-element);
     }
   }

@@ -54,6 +54,6 @@
     background-color: var(--color-element);
     border-radius: 16px;
     pointer-events: all;
-    box-shadow: 0px 0px 12px var(--color-shadow);
+    box-shadow: 0px 0px 8px var(--color-shadow);
   }
 </style>
