@@ -21,8 +21,13 @@
     height: 49px;
 
     button {
-      padding: 2px 0 2px 0;
+      padding: 1px 0 1px 0;
       font-size: var(--font-caption);
+
+      &:before {
+        position: relative;
+        top: 1px;
+      }
     }
   }
   nav {
@@ -43,7 +48,6 @@
     flex-direction: column;
     align-items: center;
     color: var(--color-text-caption);
-    font-weight: bold;
     padding: 6px 0 6px 0;
     width: 128px;
     font-size: 0;
@@ -74,7 +78,7 @@
       mask-image: url("/icons/explore.svg");
     }
   }
-  button::before {
+  button:before {
     display: block;
     content: "";
     height: 32px;
@@ -82,7 +86,7 @@
     background-color: var(--color-text-caption);
 
     mask: no-repeat 50% 50%;
-    mask-size: 26px 26px;
+    mask-size: 27px 27px;
     pointer-events: none;
 
     transition: inherit;

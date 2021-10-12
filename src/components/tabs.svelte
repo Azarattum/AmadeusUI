@@ -91,6 +91,8 @@
     );
   }
   button {
+    font-family: "SF Pro Display", "SF Pro Icons", "Helvetica Neue", "Helvetica",
+      "Arial", sans-serif;
     scroll-snap-align: start;
     font-size: var(--font-large);
     padding: 16px 8px 16px 14px;
@@ -129,11 +131,6 @@
     scroll-snap-align: start;
     scroll-snap-stop: always;
     overflow-y: auto;
-  }
-  nav > :global(*)::before {
-    display: block;
-    content: "";
-    height: 10px;
   }
   nav > :global(*)::after {
     display: block;
