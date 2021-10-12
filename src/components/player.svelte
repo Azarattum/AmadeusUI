@@ -46,12 +46,7 @@
   <Miniplayer bind:track bind:paused bind:time bind:hidden={open} />
   <div class="container">
     <div class="info">
-      <div class="topbar">
-        <div class="title">{track.title}</div>
-        <div class="options" on:touchstart|stopPropagation|preventDefault>
-          <button />
-        </div>
-      </div>
+      <div class="title">{track.title}</div>
       <div class="artists">
         {#each track.artists as artist, i}
           <button class="artist" on:touchstart|stopPropagation|preventDefault>
@@ -85,7 +80,7 @@
 
     <div
       class="more"
-      use:pannable={{ offset: moreOffset, gap: 109 }}
+      use:pannable={{ offset: moreOffset, gap: 107 }}
       style="transform: translateY({-$moreOffset}px);"
     />
   </div>
@@ -132,52 +127,28 @@
     transition: 0.3s opacity ease;
     opacity: 0;
   }
-  .topbar {
-    width: 100%;
-    display: flex;
-    align-items: center;
+  .info {
+    font-family: "SF Pro Display", "SF Pro Icons", "Helvetica Neue", "Helvetica",
+      "Arial", sans-serif;
+    padding: 16px;
   }
   .title {
     width: 100%;
     font-size: var(--font-normal);
-    margin: 16px;
+    font-weight: bold;
+    padding: 4px 2px;
 
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
-  .options {
-    height: var(--size);
-    padding: 16px;
-    background: var(--color-transparent);
-    border-radius: 100%;
-
-    cursor: pointer;
-    transform: scale(1);
-    transition: 0.2s all ease-in-out;
-
-    &:active {
-      transition: 0.05s;
-      transform: scale(0.8);
-      background: var(--color-highlight);
-    }
-
-    button {
-      width: 32px;
-      height: 32px;
-      mask: url(icons/options.svg) no-repeat 50% 50%;
-      background-color: currentColor;
-      mask-size: 32px 32px;
-    }
-  }
   .artists {
-    margin: -16px 0 0 12px;
-
     button {
+      margin: 0;
       padding: 0;
-      font-size: var(--font-normal);
+      font-size: var(--font-little);
       color: var(--color-text-caption);
-      padding: 8px 4px 8px 4px;
+      padding: 4px 2px;
       border-radius: 8px;
       background-color: var(--color-transparent);
       transition: 0.3s ease;
@@ -204,7 +175,7 @@
   }
   .playback {
     width: calc(100% - 24px * 2);
-    margin: 24px;
+    margin: 32px 24px 48px 24px;
     height: 2px;
     border-radius: 2px;
     background: var(--color-text-caption);
