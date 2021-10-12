@@ -45,6 +45,7 @@
     }
   }
   .miniplayer {
+    position: relative;
     display: flex;
     align-items: center;
     width: 100%;
@@ -121,7 +122,7 @@
   }
   .playback {
     position: absolute;
-    bottom: 1px;
+    bottom: 0px;
     height: 2px;
     width: 0%;
 

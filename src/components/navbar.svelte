@@ -21,7 +21,7 @@
     height: 49px;
 
     button {
-      padding: 1px 0 1px 0;
+      padding: 2px 0 1px 0;
       font-size: var(--font-caption);
 
       &:before {
