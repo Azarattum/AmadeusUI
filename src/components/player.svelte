@@ -48,11 +48,13 @@
     <div class="info">
       <div class="topbar">
         <div class="title">{track.title}</div>
-        <div class="options" on:touchstart|stopPropagation><button /></div>
+        <div class="options" on:touchstart|stopPropagation|preventDefault>
+          <button />
+        </div>
       </div>
       <div class="artists">
         {#each track.artists as artist, i}
-          <button class="artist" on:touchstart|stopPropagation>
+          <button class="artist" on:touchstart|stopPropagation|preventDefault>
             {artist + (i + 1 != track.artists.length ? "," : "")}
           </button>
         {/each}
@@ -68,8 +70,16 @@
         <div class="thumb" />
       </div>
       <div class="time">
-        <div class="elapsed">{formatTime(time)}</div>
-        <div class="left">{formatTime(track.length - time)}</div>
+        <button
+          class="elapsed"
+          on:touchstart|stopPropagation|preventDefault
+          oncontextmenu={() => false}>{formatTime(time)}</button
+        >
+        <button
+          class="left"
+          on:touchstart|stopPropagation|preventDefault
+          on:contextmenu={() => false}>{formatTime(track.length - time)}</button
+        >
       </div>
     </div>
 
@@ -193,8 +203,8 @@
     box-shadow: 0 8px 8px rgba(0, 0, 0, 0.2);
   }
   .playback {
-    width: calc(100% - 32px);
-    margin: 16px;
+    width: calc(100% - 24px * 2);
+    margin: 24px;
     height: 2px;
     border-radius: 2px;
     background: var(--color-text-caption);
@@ -232,9 +242,11 @@
 
     * {
       position: relative;
-      padding: 4px 16px 4px 16px;
-      margin: 2px -8px 0px -8px;
+      padding: 4px 16px 10px 16px;
+      margin: 0px -16px 0px -16px;
+
       border-radius: 8px;
+      font-size: var(--font-little);
       transition: 0.2s all ease-in-out;
 
       &:active {
@@ -243,23 +255,36 @@
       }
     }
 
-    *:after {
+    .left:before,
+    .elapsed:before {
       display: block;
       content: "";
-      width: 32px;
-      height: 11px;
-      background-color: var(--color-text-caption);
-      mask: url(icons/arrow.svg) no-repeat 50% 50%;
-      background-size: cover;
+      border: solid var(--color-text-caption);
+      border-width: 0 1px 1px 0;
+      border-radius: 1px;
+      display: inline-block;
+      padding: 2px;
+      margin-top: 4px;
     }
-
+    .left:after,
     .elapsed:after {
-      transform: translateX(-2px);
+      display: block;
+      content: "";
+      width: 100%;
+      height: 1px;
+      border-radius: 1px;
+      margin-top: 3px;
+      background-color: var(--color-text-caption);
     }
-    .left:after {
-      position: absolute;
-      right: 16px;
-      transform: rotateZ(180deg) translateX(-2px);
+    .elapsed:before {
+      float: left;
+      margin-left: -4px;
+      transform: translate(4px, 18px) rotateZ(135deg);
+    }
+    .left:before {
+      float: right;
+      margin-right: -4px;
+      transform: translate(-4px, 18px) rotateZ(-45deg);
     }
   }
   .more {
