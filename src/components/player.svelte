@@ -8,13 +8,15 @@
   let cover: HTMLDivElement;
   let open = false;
   let paused = false;
-  let time = 0;
+  let time = 63;
 
   export let track: ITrack = {
-    title: "Not Playing",
-    artists: [],
+    title: "You Make Me Wanna Die",
+    artists: ["The Pretty Reckless"],
     album: "",
-    length: Infinity,
+    length: 210,
+    cover:
+      "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Ffanart.tv%2Ffanart%2Fmusic%2F54f8c12e-571c-4c5a-9f79-5336b39e84b0%2Falbumcover%2Fmake-me-wanna-die-593c68824c419.jpg&f=1&nofb=1",
   };
 
   const playerOffset = spring(0, { stiffness: 0.2 });
@@ -45,21 +47,23 @@
 >
   <Miniplayer bind:track bind:paused bind:time bind:hidden={open} />
   <div class="container">
-    <div class="info">
-      <div class="title">{track.title}</div>
-      <div class="artists">
-        {#each track.artists as artist, i}
-          <button class="artist" on:touchstart|stopPropagation|preventDefault>
-            {artist + (i + 1 != track.artists.length ? "," : "")}
-          </button>
-        {/each}
+    <div class="handle" />
+    <div>
+      <div class="info">
+        <div class="title">{track.title}</div>
+        <button class="artists" on:touchstart|stopPropagation>
+          {track.artists.join(", ")}
+        </button>
+      </div>
+      <div class="coversel">
+        <div class="cover-prev" />
+        <div bind:this={cover} class="cover">
+          <button class="options" on:touchstart|stopPropagation />
+        </div>
+        <div class="cover-next" />
       </div>
     </div>
-    <div class="coversel">
-      <div class="cover-prev" />
-      <div bind:this={cover} class="cover" />
-      <div class="cover-next" />
-    </div>
+
     <div class="playback">
       <div class="progress" style="width:{(time / track.length) * 100}%">
         <div class="thumb" />
@@ -80,7 +84,7 @@
 
     <div
       class="more"
-      use:pannable={{ offset: moreOffset, gap: 107 }}
+      use:pannable={{ offset: moreOffset, gap: 62 }}
       style="transform: translateY({-$moreOffset}px);"
     />
   </div>
@@ -127,37 +131,54 @@
     transition: 0.3s opacity ease;
     opacity: 0;
   }
+  .handle {
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+
+    margin: 12px 0 8px 0;
+    width: 35px;
+    height: 5px;
+    border-radius: 5px;
+    background-color: var(--color-text-caption);
+  }
   .info {
     font-family: "SF Pro Display", "SF Pro Icons", "Helvetica Neue", "Helvetica",
       "Arial", sans-serif;
-    padding: 16px;
+    padding-bottom: 8px;
   }
   .title {
-    width: 100%;
+    width: calc(100% - 32px);
+    margin: 0 16px 0 16px;
     font-size: var(--font-normal);
     font-weight: bold;
     padding: 4px 2px;
+    text-align: center;
 
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
   .artists {
-    button {
-      margin: 0;
-      padding: 0;
-      font-size: var(--font-little);
-      color: var(--color-text-caption);
-      padding: 4px 2px;
-      border-radius: 8px;
-      background-color: var(--color-transparent);
-      transition: 0.3s ease;
+    width: calc(100% - 32px);
+    margin: -8px 16px 0 16px;
+    text-align: center;
+    padding: 0;
+    font-size: var(--font-little);
+    color: var(--color-text-caption);
+    padding: 4px 2px;
+    border-radius: 8px;
 
-      &:active {
-        transition-duration: 0.05s;
-        transform: scale(0.9);
-        background-color: var(--color-highlight);
-      }
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    transition: 0.3s ease;
+    background-color: var(--color-transparent);
+    &:active {
+      transition-duration: 0.05s;
+      transform: scale(0.9);
+      background-color: var(--color-highlight);
     }
   }
   .coversel {
@@ -166,12 +187,45 @@
     justify-content: center;
   }
   .cover {
+    position: relative;
+    overflow: hidden;
     background-size: cover;
     width: calc(100% - 64px);
     aspect-ratio: 1/1;
     background-color: var(--color-element);
     border-radius: 16px;
     box-shadow: 0 8px 8px rgba(0, 0, 0, 0.2);
+  }
+  .options {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 8px;
+
+    width: 48px;
+    height: 48px;
+    backdrop-filter: blur(16px);
+    border-bottom-right-radius: inherit;
+    border-top-left-radius: inherit;
+    background-color: var(--color-glass);
+
+    &:before {
+      display: block;
+      content: "";
+      width: 100%;
+      height: 100%;
+      mask: url("icons/options.svg") no-repeat 50% 50%;
+      mask-size: 100% 100%;
+      background-color: var(--color-text-normal);
+    }
+
+    transform-origin: bottom right;
+    transition: background 0.2s ease, transform 0.2s ease;
+    &:active {
+      transition-duration: 0.05s;
+      transform: scale(0.9);
+      background-color: var(--color-overlay);
+    }
   }
   .playback {
     width: calc(100% - 24px * 2);
