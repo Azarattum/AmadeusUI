@@ -3,7 +3,7 @@
 
   let active = false;
   export let hidden = false;
-  export let paused = false;
+  export let paused = true;
   export let track: ITrack;
   export let time = 0;
 
@@ -27,7 +27,7 @@
     on:click|stopPropagation={() => (paused = !paused)}
     on:touchstart|stopPropagation
   >
-    <button class:paused />
+    <button class:paused={!paused} />
   </div>
   <div class="playback" style="width:{(time / track.length) * 100}%" />
 </div>
@@ -87,7 +87,6 @@
   .button {
     --size: 35px;
 
-    height: var(--size);
     margin: 0 8px 0 8px;
     padding: 16px;
     background: transparent;

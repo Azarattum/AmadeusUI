@@ -7,7 +7,7 @@
 
   let cover: HTMLDivElement;
   let open = false;
-  let paused = false;
+  let paused = true;
   let time = 63;
 
   export let track: ITrack = {
@@ -58,7 +58,12 @@
       <div class="coversel">
         <div class="cover-prev" />
         <div bind:this={cover} class="cover">
-          <button class="options" on:touchstart|stopPropagation />
+          <button
+            class="pause"
+            class:paused={!paused}
+            on:click={() => (paused = !paused)}
+          />
+          <button class="options" class:paused on:touchstart|stopPropagation />
         </div>
         <div class="cover-next" />
       </div>
@@ -189,12 +194,66 @@
   .cover {
     position: relative;
     overflow: hidden;
+    display: flex;
+
     background-size: cover;
     width: calc(100% - 64px);
     aspect-ratio: 1/1;
     background-color: var(--color-element);
     border-radius: 16px;
     box-shadow: 0 8px 8px rgba(0, 0, 0, 0.2);
+  }
+  .pause {
+    width: 100%;
+    aspect-ratio: 1/1;
+
+    background-color: var(--color-glass);
+    backdrop-filter: blur(16px);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    transform: scale(0.99999);
+
+    &.paused {
+      backdrop-filter: blur(0px);
+      background-color: var(--color-transparent);
+      border-radius: 100%;
+    }
+
+    &:after {
+      --size: 64px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      height: 0;
+
+      border-color: transparent transparent transparent var(--color-text-normal);
+      transition: 0.3s all ease;
+
+      border-style: solid;
+      border-width: calc(var(--size) / 2) 0 calc(var(--size) / 2)
+        calc(var(--size) / 1.2);
+    }
+
+    &:active {
+      background-color: var(--color-glass);
+      backdrop-filter: blur(16px);
+      transition-duration: 0.05s;
+      border-radius: 100%;
+      transform: scale(0.8);
+    }
+
+    &:active:after {
+      transition-duration: 0.05s;
+      opacity: 1 !important;
+    }
+
+    &.paused:after {
+      height: var(--size);
+      border-style: double;
+      border-width: 0 0 0 calc(var(--size) / 1.2);
+      opacity: 0;
+    }
   }
   .options {
     position: absolute;
@@ -224,6 +283,10 @@
     &:active {
       transition-duration: 0.05s;
       transform: scale(0.9);
+      background-color: var(--color-overlay);
+    }
+
+    &.paused {
       background-color: var(--color-overlay);
     }
   }
@@ -282,6 +345,7 @@
 
     .left:before,
     .elapsed:before {
+      position: absolute;
       display: block;
       content: "";
       border: solid var(--color-text-caption);
@@ -302,14 +366,14 @@
       background-color: var(--color-text-caption);
     }
     .elapsed:before {
-      float: left;
-      margin-left: -4px;
-      transform: translate(4px, 18px) rotateZ(135deg);
+      bottom: 8px;
+      left: 16px;
+      transform: rotateZ(135deg);
     }
     .left:before {
-      float: right;
-      margin-right: -4px;
-      transform: translate(-4px, 18px) rotateZ(-45deg);
+      bottom: 8px;
+      right: 16px;
+      transform: rotateZ(-45deg);
     }
   }
   .more {
