@@ -6,6 +6,8 @@
   import Miniplayer from "./miniplayer.svelte";
 
   let cover: HTMLDivElement;
+  let prev: HTMLDivElement;
+  let next: HTMLDivElement;
   let open = false;
   let paused = true;
   let time = 63;
@@ -34,6 +36,8 @@
 
   $: if (track.cover && cover) {
     cover.style.backgroundImage = `url(${track.cover})`;
+    prev.style.backgroundImage = `url(${track.cover})`;
+    next.style.backgroundImage = `url(${track.cover})`;
   }
 </script>
 
@@ -56,7 +60,7 @@
         </button>
       </div>
       <div class="coversel">
-        <div class="cover-prev" />
+        <div bind:this={prev} class="cover-prev" />
         <div bind:this={cover} class="cover">
           <button
             class="pause"
@@ -65,7 +69,7 @@
           />
           <button class="options" class:paused on:touchstart|stopPropagation />
         </div>
-        <div class="cover-next" />
+        <div bind:this={next} class="cover-next" />
       </div>
     </div>
 
@@ -193,21 +197,40 @@
     }
   }
   .coversel {
+    position: relative;
+    width: 100%;
+
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-  .cover {
-    position: relative;
-    overflow: hidden;
-    display: flex;
 
-    background-size: cover;
-    width: calc(100% - 64px);
-    aspect-ratio: 1/1;
-    background-color: var(--color-element);
-    border-radius: 16px;
-    box-shadow: 0 8px 8px rgba(0, 0, 0, 0.2);
+    div {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+
+      background-size: cover;
+      background-color: var(--color-element);
+      border-radius: 16px;
+
+      &:before {
+        float: left;
+        padding-top: 100%;
+        content: "";
+      }
+    }
+
+    .cover-prev,
+    .cover-next {
+      min-width: calc(80% - 64px);
+      margin: 20px;
+      opacity: 0.4;
+    }
+
+    .cover {
+      min-width: calc(100% - 64px);
+      box-shadow: 0 8px 8px rgba(0, 0, 0, 0.2);
+    }
   }
   .pause {
     width: 100%;
@@ -419,6 +442,7 @@
     }
   }
   .more {
+    z-index: 2;
     width: 100%;
     margin-bottom: calc(-1 * var(--view-height) + 45px);
     height: var(--view-height);
