@@ -70,9 +70,15 @@
     </div>
 
     <div class="playback">
-      <div class="progress" style="width:{(time / track.length) * 100}%">
-        <div class="thumb" />
-      </div>
+      <input
+        class="progress"
+        type="range"
+        min="0"
+        max={track.length}
+        style="--progress:{(time / track.length) * 100}%"
+        bind:value={time}
+        on:touchstart|stopPropagation
+      />
       <div class="time">
         <button
           class="elapsed"
@@ -259,7 +265,7 @@
     position: absolute;
     bottom: 0;
     right: 0;
-    padding: 8px;
+    padding: 4px;
 
     width: 48px;
     height: 48px;
@@ -273,17 +279,24 @@
       content: "";
       width: 100%;
       height: 100%;
+      border-radius: 100%;
       mask: url("icons/options.svg") no-repeat 50% 50%;
       mask-size: 100% 100%;
-      background-color: var(--color-text-normal);
+
+      background-color: currentColor;
+      transition: transform 0.2s ease;
+      transition-duration: inherit;
     }
 
     transform-origin: bottom right;
-    transition: background 0.2s ease, transform 0.2s ease;
+    transition: background 0.2s ease;
     &:active {
       transition-duration: 0.05s;
-      transform: scale(0.9);
       background-color: var(--color-overlay);
+
+      &:before {
+        transform: scale(0.7);
+      }
     }
 
     &.paused {
@@ -291,35 +304,52 @@
     }
   }
   .playback {
-    width: calc(100% - 24px * 2);
-    margin: 32px 24px 48px 24px;
-    height: 2px;
-    border-radius: 2px;
-    background: var(--color-text-caption);
+    margin: 24px;
 
     .progress {
+      -webkit-appearance: none;
       position: relative;
-      top: -1px;
-      height: 4px;
-      background: var(--color-accent-75);
-      border-radius: 4px;
+      pointer-events: none;
+      z-index: 1;
+      width: 100%;
 
-      .thumb {
-        position: absolute;
-        right: 0;
-        top: -12px;
-        background: inherit;
-        width: 8px;
-        height: 16px;
-        border-radius: 8px 8px 0 0;
+      &::-webkit-slider-runnable-track {
+        height: 4px;
+        border-radius: 4px;
+        background: linear-gradient(
+              to right,
+              var(--color-accent-50),
+              var(--color-accent-75)
+            )
+            0 / var(--progress) 100% no-repeat,
+          var(--color-text-caption);
+      }
 
-        transition-property: transform;
-        transition: 0.2s ease;
-        transform: scale(1);
-        &:active {
-          transform-origin: bottom;
-          transform: scale(1.3);
-        }
+      &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        position: relative;
+        width: 32px;
+        height: 32px;
+        margin-top: -14px;
+        border: none;
+        border-radius: 100%;
+        background: radial-gradient(
+            circle,
+            var(--color-accent-75),
+            var(--color-accent-75) 20%,
+            transparent 20%,
+            transparent 100%
+          )
+          50% 50%;
+
+        pointer-events: auto;
+        transform: translateX(calc(var(--progress) - 50%));
+        background-size: 100%;
+        transition: background-size 0.3s ease;
+      }
+
+      &:active::-webkit-slider-thumb {
+        background-size: 500%;
       }
     }
   }
@@ -340,7 +370,19 @@
       &:active {
         transition-duration: 0.05s;
         background-color: var(--color-highlight);
+
+        &:before,
+        &:after {
+          transition-duration: 0.05s;
+          opacity: 1;
+        }
       }
+    }
+
+    *:before,
+    *:after {
+      opacity: 0;
+      transition: opacity 0.2s ease;
     }
 
     .left:before,
@@ -348,7 +390,7 @@
       position: absolute;
       display: block;
       content: "";
-      border: solid var(--color-text-caption);
+      border: solid currentColor;
       border-width: 0 1px 1px 0;
       border-radius: 1px;
       display: inline-block;
@@ -363,7 +405,7 @@
       height: 1px;
       border-radius: 1px;
       margin-top: 3px;
-      background-color: var(--color-text-caption);
+      background-color: currentColor;
     }
     .elapsed:before {
       bottom: 8px;
