@@ -71,7 +71,14 @@
         on:swipeleft={prev}
       >
         {#each [trackPrev, track, trackNext] as x, i (x || i)}
-          <div animate:flip={{ duration: 300 }} in:fade={{ delay: 300 }}>
+          <div
+            animate:flip={{ duration: 300 }}
+            in:fade={{ delay: 300 }}
+            on:click={() => {
+              if (x == trackPrev) prev();
+              if (x == trackNext) next();
+            }}
+          >
             {#if x}
               <Cover bind:paused {...{ img: x.cover, main: x === track }} />
             {/if}
@@ -215,6 +222,7 @@
     div {
       will-change: transform;
       min-width: calc(100% - 64px);
+      cursor: pointer;
       &:nth-child(2) {
         margin: 0 -10px 0 -10px;
         z-index: 1;
