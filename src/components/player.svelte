@@ -1,43 +1,46 @@
 <script lang="ts">
   import "actions/pannable.d";
+  import "actions/swipable.d";
   import type { ITrack } from "utils/track.interface";
   import { pannable } from "actions/pannable";
+  import { swipable } from "actions/swipable";
+  import { slide, fade } from "svelte/transition";
   import { spring } from "svelte/motion";
+  import { flip } from "svelte/animate";
+  import { formatTime } from "utils/time";
   import Miniplayer from "./miniplayer.svelte";
+  import Cover from "./cover.svelte";
 
-  let cover: HTMLDivElement;
-  let prev: HTMLDivElement;
-  let next: HTMLDivElement;
   let open = false;
   let paused = true;
-  let time = 63;
+  let time = 0;
 
+  export let trackNext: ITrack | null = null;
+  export let trackPrev: ITrack | null = null;
   export let track: ITrack = {
-    title: "You Make Me Wanna Die",
-    artists: ["The Pretty Reckless"],
+    title: "Not Playing",
+    artists: [],
     album: "",
-    length: 210,
-    cover:
-      "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Ffanart.tv%2Ffanart%2Fmusic%2F54f8c12e-571c-4c5a-9f79-5336b39e84b0%2Falbumcover%2Fmake-me-wanna-die-593c68824c419.jpg&f=1&nofb=1",
+    length: Infinity,
   };
 
   const playerOffset = spring(0, { stiffness: 0.2 });
   const moreOffset = spring(0, { stiffness: 0.2 });
 
-  function formatTime(x: number) {
-    const minutes = ~~(x / 60);
-    const seconds = (x - minutes * 60).toLocaleString("en-US", {
-      minimumIntegerDigits: 2,
-      useGrouping: false,
-    });
-    if (!Number.isFinite(x)) return seconds;
-    return `${minutes}:${seconds}`;
+  function next() {
+    if (!trackNext) return;
+    time = 0;
+    trackPrev = track;
+    track = trackNext;
+    trackNext = null;
   }
 
-  $: if (track.cover && cover) {
-    cover.style.backgroundImage = `url(${track.cover})`;
-    prev.style.backgroundImage = `url(${track.cover})`;
-    next.style.backgroundImage = `url(${track.cover})`;
+  function prev() {
+    if (!trackPrev) return;
+    time = 0;
+    trackNext = track;
+    track = trackPrev;
+    trackPrev = null;
   }
 </script>
 
@@ -53,23 +56,27 @@
   <div class="container">
     <div class="handle" />
     <div>
-      <div class="info">
-        <div class="title">{track.title}</div>
-        <button class="artists" on:touchstart|stopPropagation>
-          {track.artists.join(", ")}
-        </button>
-      </div>
-      <div class="coversel">
-        <div bind:this={prev} class="cover-prev" />
-        <div bind:this={cover} class="cover">
-          <button
-            class="pause"
-            class:paused={!paused}
-            on:click={() => (paused = !paused)}
-          />
-          <button class="options" class:paused on:touchstart|stopPropagation />
+      {#key track}
+        <div class="info" transition:slide>
+          <div class="title">{track.title}</div>
+          <button class="artists" on:touchstart|stopPropagation>
+            {track.artists.join(", ")}
+          </button>
         </div>
-        <div bind:this={next} class="cover-next" />
+      {/key}
+      <div
+        class="coversel"
+        use:swipable
+        on:swiperight={next}
+        on:swipeleft={prev}
+      >
+        {#each [trackPrev, track, trackNext] as x, i (x || i)}
+          <div animate:flip={{ duration: 300 }} in:fade={{ delay: 300 }}>
+            {#if x}
+              <Cover bind:paused {...{ img: x.cover, main: x === track }} />
+            {/if}
+          </div>
+        {/each}
       </div>
     </div>
 
@@ -78,7 +85,7 @@
         class="progress"
         type="range"
         min="0"
-        max={track.length}
+        max={Number.isFinite(track.length) ? track.length : 0}
         style="--progress:{(time / track.length) * 100}%"
         bind:value={time}
         on:touchstart|stopPropagation
@@ -161,6 +168,7 @@
     font-family: "SF Pro Display", "SF Pro Icons", "Helvetica Neue", "Helvetica",
       "Arial", sans-serif;
     padding-bottom: 8px;
+    background: var(--color-element);
   }
   .title {
     width: calc(100% - 32px);
@@ -205,127 +213,15 @@
     justify-content: center;
 
     div {
-      position: relative;
-      overflow: hidden;
-      display: flex;
-
-      background-size: cover;
-      background-color: var(--color-element);
-      border-radius: 16px;
-
-      &:before {
-        float: left;
-        padding-top: 100%;
-        content: "";
-      }
-    }
-
-    .cover-prev,
-    .cover-next {
-      min-width: calc(80% - 64px);
-      margin: 20px;
-      opacity: 0.4;
-    }
-
-    .cover {
+      will-change: transform;
       min-width: calc(100% - 64px);
-      box-shadow: 0 8px 8px rgba(0, 0, 0, 0.2);
-    }
-  }
-  .pause {
-    width: 100%;
-    aspect-ratio: 1/1;
-
-    background-color: var(--color-glass);
-    backdrop-filter: blur(16px);
-    border-radius: 16px;
-    transition: all 0.3s ease;
-    transform: scale(0.99999);
-
-    &.paused {
-      backdrop-filter: blur(0px);
-      background-color: var(--color-transparent);
-      border-radius: 100%;
-    }
-
-    &:after {
-      --size: 64px;
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      height: 0;
-
-      border-color: transparent transparent transparent var(--color-text-normal);
-      transition: 0.3s all ease;
-
-      border-style: solid;
-      border-width: calc(var(--size) / 2) 0 calc(var(--size) / 2)
-        calc(var(--size) / 1.2);
-    }
-
-    &:active {
-      background-color: var(--color-glass);
-      backdrop-filter: blur(16px);
-      transition-duration: 0.05s;
-      border-radius: 100%;
-      transform: scale(0.8);
-    }
-
-    &:active:after {
-      transition-duration: 0.05s;
-      opacity: 1 !important;
-    }
-
-    &.paused:after {
-      height: var(--size);
-      border-style: double;
-      border-width: 0 0 0 calc(var(--size) / 1.2);
-      opacity: 0;
-    }
-  }
-  .options {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    padding: 4px;
-
-    width: 48px;
-    height: 48px;
-    backdrop-filter: blur(16px);
-    border-bottom-right-radius: inherit;
-    border-top-left-radius: inherit;
-    background-color: var(--color-glass);
-
-    &:before {
-      display: block;
-      content: "";
-      width: 100%;
-      height: 100%;
-      border-radius: 100%;
-      mask: url("icons/options.svg") no-repeat 50% 50%;
-      mask-size: 100% 100%;
-
-      background-color: currentColor;
-      transition: transform 0.2s ease;
-      transition-duration: inherit;
-    }
-
-    transform-origin: bottom right;
-    transition: background 0.2s ease;
-    &:active {
-      transition-duration: 0.05s;
-      background-color: var(--color-overlay);
-
-      &:before {
-        transform: scale(0.7);
+      &:nth-child(2) {
+        margin: 0 -10px 0 -10px;
+        z-index: 1;
       }
     }
-
-    &.paused {
-      background-color: var(--color-overlay);
-    }
   }
+
   .playback {
     margin: 24px;
 
