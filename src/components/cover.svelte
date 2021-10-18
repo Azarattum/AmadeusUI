@@ -1,18 +1,18 @@
 <script lang="ts">
   import { fade } from "svelte/transition";
 
-  let content: HTMLDivElement;
   export let img = "";
-  export let main = false;
+  export let controls = false;
   export let paused = true;
 
+  let content: HTMLDivElement;
   $: if (content && img) {
     content.style.backgroundImage = `url(${img})`;
   }
 </script>
 
-<div bind:this={content} class:main>
-  {#if main}
+<div bind:this={content}>
+  {#if controls}
     <button
       class="pause"
       class:paused={!paused}
@@ -30,25 +30,15 @@
 
 <style lang="postcss">
   div {
-    width: 100%;
+    width: calc(100% - 64px);
     position: relative;
     overflow: hidden;
     display: flex;
-    will-change: transform;
 
     background-color: var(--color-background);
     background-size: cover;
     border-radius: 16px;
-
-    transition: 0.5s ease;
-    transition-property: opacity, transform;
-    transform: scale(0.8);
-    opacity: 0.4;
-
-    &.main {
-      transform: scale(1);
-      opacity: 1;
-    }
+    margin: 0 32px;
 
     &:before {
       float: left;

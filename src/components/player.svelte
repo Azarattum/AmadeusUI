@@ -1,47 +1,30 @@
 <script lang="ts">
   import "actions/pannable.d";
-  import "actions/swipable.d";
   import type { ITrack } from "utils/track.interface";
   import { pannable } from "actions/pannable";
-  import { swipable } from "actions/swipable";
-  import { slide, fade } from "svelte/transition";
+  import { slide } from "svelte/transition";
   import { spring } from "svelte/motion";
-  import { flip } from "svelte/animate";
   import { formatTime } from "utils/time";
   import Miniplayer from "./miniplayer.svelte";
-  import Cover from "./cover.svelte";
+  import Coversel from "./coversel.svelte";
 
-  let open = false;
   let paused = true;
+  let open = false;
   let time = 0;
 
-  export let trackNext: ITrack | null = null;
-  export let trackPrev: ITrack | null = null;
-  export let track: ITrack = {
+  export let queue: ITrack[] | null = [];
+  export let current: ITrack = queue[0] || {
     title: "Not Playing",
     artists: [],
     album: "",
     length: Infinity,
   };
 
+  $: currentChanged(current);
+  const currentChanged = (_) => (time = 0);
+
   const playerOffset = spring(0, { stiffness: 0.2 });
   const moreOffset = spring(0, { stiffness: 0.2 });
-
-  function next() {
-    if (!trackNext) return;
-    time = 0;
-    trackPrev = track;
-    track = trackNext;
-    trackNext = null;
-  }
-
-  function prev() {
-    if (!trackPrev) return;
-    time = 0;
-    trackNext = track;
-    track = trackPrev;
-    trackPrev = null;
-  }
 </script>
 
 <div
@@ -52,39 +35,19 @@
   on:close={() => (open = false)}
   style="transform: translateY({-$playerOffset}px);"
 >
-  <Miniplayer bind:track bind:paused bind:time bind:hidden={open} />
+  <Miniplayer bind:current bind:paused bind:time bind:hidden={open} />
   <div class="container">
     <div class="handle" />
     <div>
-      {#key track}
+      {#key current}
         <div class="info" transition:slide>
-          <div class="title">{track.title}</div>
+          <div class="title">{current.title}</div>
           <button class="artists" on:touchstart|stopPropagation>
-            {track.artists.join(", ")}
+            {current.artists.join(", ")}
           </button>
         </div>
       {/key}
-      <div
-        class="coversel"
-        use:swipable
-        on:swiperight={next}
-        on:swipeleft={prev}
-      >
-        {#each [trackPrev, track, trackNext] as x, i (x || i)}
-          <div
-            animate:flip={{ duration: 300 }}
-            in:fade={{ delay: 300 }}
-            on:click={() => {
-              if (x == trackPrev) prev();
-              if (x == trackNext) next();
-            }}
-          >
-            {#if x}
-              <Cover bind:paused {...{ img: x.cover, main: x === track }} />
-            {/if}
-          </div>
-        {/each}
-      </div>
+      <Coversel bind:current bind:paused {queue} />
     </div>
 
     <div class="playback">
@@ -92,23 +55,26 @@
         class="progress"
         type="range"
         min="0"
-        max={Number.isFinite(track.length) ? track.length : 0}
-        style="--progress:{(time / track.length) * 100}%"
+        max={Number.isFinite(current.length) ? current.length : 0}
+        style="--progress:{(time / current.length) * 100}%"
         bind:value={time}
         on:touchstart|stopPropagation
       />
-      <div class="time">
-        <button
-          class="elapsed"
-          on:touchstart|stopPropagation|preventDefault
-          oncontextmenu={() => false}>{formatTime(time)}</button
-        >
-        <button
-          class="left"
-          on:touchstart|stopPropagation|preventDefault
-          on:contextmenu={() => false}>{formatTime(track.length - time)}</button
-        >
-      </div>
+      {#key current}
+        <div class="time">
+          <button
+            class="elapsed"
+            on:touchstart|stopPropagation|preventDefault
+            oncontextmenu={() => false}>{formatTime(time)}</button
+          >
+          <button
+            class="left"
+            on:touchstart|stopPropagation|preventDefault
+            on:contextmenu={() => false}
+            >{formatTime(current.length - time)}</button
+          >
+        </div>
+      {/key}
     </div>
 
     <div
@@ -211,25 +177,6 @@
       background-color: var(--color-highlight);
     }
   }
-  .coversel {
-    position: relative;
-    width: 100%;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    div {
-      will-change: transform;
-      min-width: calc(100% - 64px);
-      cursor: pointer;
-      &:nth-child(2) {
-        margin: 0 -10px 0 -10px;
-        z-index: 1;
-      }
-    }
-  }
-
   .playback {
     margin: 24px;
 

@@ -2,14 +2,14 @@
   import type { ITrack } from "utils/track.interface";
 
   let active = false;
+  export let current: ITrack;
+  export let paused: boolean;
+  export let time: number;
   export let hidden = false;
-  export let paused = true;
-  export let track: ITrack;
-  export let time = 0;
 
   let cover: HTMLDivElement;
-  $: if (track.cover && cover) {
-    cover.style.backgroundImage = `url(${track.cover})`;
+  $: if (current.cover && cover) {
+    cover.style.backgroundImage = `url(${current.cover})`;
   }
 </script>
 
@@ -21,7 +21,7 @@
   on:touchend={() => (active = false)}
 >
   <div bind:this={cover} class="cover" />
-  <span class="title">{track.title}</span>
+  <span class="title">{current.title}</span>
   <div
     class="button"
     on:click|stopPropagation={() => (paused = !paused)}
@@ -29,7 +29,7 @@
   >
     <button class:paused={!paused} />
   </div>
-  <div class="playback" style="width:{(time / track.length) * 100}%" />
+  <div class="playback" style="width:{(time / current.length) * 100}%" />
 </div>
 
 <style lang="postcss">
