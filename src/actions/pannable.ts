@@ -1,13 +1,14 @@
-import type { Spring } from "svelte/motion";
+import { spring } from "svelte/motion";
 
 export function pannable(
   node: HTMLElement,
-  { threshold = 32, gap = 8, clickable = true, offset }: PanOptions
+  { threshold = 32, gap = 8, clickable = true, handle }: PanOptions = {}
 ): { destroy: () => void } {
   const styles = getComputedStyle(node);
-  const bottom = parseFloat(styles.bottom);
+  const bottom = parseFloat(styles.bottom) || parseFloat(styles.marginBottom);
   const height = parseFloat(styles.height);
 
+  const offset = spring(0, { stiffness: 0.2 });
   const target = innerHeight - bottom - height - gap;
   const { stiffness, damping } = offset;
 
@@ -25,6 +26,8 @@ export function pannable(
       open = x >= target - threshold;
       if (!x) node.dispatchEvent(new CustomEvent("close"));
     }
+
+    node.style.transform = `translate3d(0,${-x}px,0)`;
   });
 
   function handleStart(event: TouchEvent) {
@@ -59,27 +62,37 @@ export function pannable(
     removeEventListener("touchend", handleEnd);
   }
 
-  function handleClick() {
+  function handleOpen() {
     if (open) return;
     offset.set(target).then(() => {
       opened = true;
     });
   }
 
-  if (clickable) node.addEventListener("click", handleClick);
+  function handleClose() {
+    if (!open) return;
+    opened = false;
+    offset.set(0);
+  }
+
+  if (handle) node.querySelector(handle).addEventListener("click", handleClose);
+  if (clickable) node.addEventListener("click", handleOpen);
   node.addEventListener("touchstart", handleStart);
 
   return {
     destroy() {
-      if (clickable) node.removeEventListener("click", handleClick);
       node.removeEventListener("touchstart", handleStart);
+      if (clickable) node.removeEventListener("click", handleOpen);
+      if (handle) {
+        node.querySelector(handle).removeEventListener("click", handleClose);
+      }
     },
   };
 }
 
 export interface PanOptions {
-  offset: Spring<number>;
   clickable?: boolean;
   threshold?: number;
+  handle?: string;
   gap?: number;
 }

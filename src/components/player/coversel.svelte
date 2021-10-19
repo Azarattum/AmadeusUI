@@ -4,7 +4,7 @@
   import { Swiper, SwiperSlide } from "swiper/svelte";
   import { Virtual, Swiper as SwiperRef } from "swiper";
   import "swiper/css";
-  import Cover from "components/cover.svelte";
+  import Cover from "components/player/cover.svelte";
 
   export let queue: ITrack[];
   export let current: ITrack;

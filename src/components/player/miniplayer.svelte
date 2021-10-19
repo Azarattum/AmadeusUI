@@ -45,6 +45,7 @@
     }
   }
   .miniplayer {
+    z-index: -1;
     position: relative;
     display: flex;
     align-items: center;
@@ -58,13 +59,10 @@
     user-select: none;
     overflow: hidden;
 
-    transition: background-color 0.1s ease-out;
+    transition: background-color 0.2s ease, transform 0.3s ease;
     &.hidden,
     &.active {
       background-color: var(--color-element);
-    }
-    * {
-      transition: transform 0.3s ease;
     }
   }
   .cover {
@@ -131,8 +129,7 @@
     background-color: var(--color-text-caption);
   }
   .hidden {
-    * {
-      transform: translateY(64px);
-    }
+    transform-origin: top;
+    transform: scaleY(0);
   }
 </style>
