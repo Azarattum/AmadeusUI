@@ -54,13 +54,13 @@
     background-color: var(--color-glass);
     backdrop-filter: blur(16px);
     border-radius: 16px;
-    transition: all 0.3s ease;
+    transition: 0.5s ease;
+    transition-property: border-radius, opacity;
     transform: scale(0.99999);
 
     &.paused {
-      backdrop-filter: blur(0px);
-      background-color: var(--color-transparent);
       border-radius: 100%;
+      opacity: 0;
     }
 
     &:after {
@@ -79,24 +79,10 @@
         calc(var(--size) / 1.2);
     }
 
-    &:active {
-      background-color: var(--color-glass);
-      backdrop-filter: blur(16px);
-      transition-duration: 0.05s;
-      border-radius: 100%;
-      transform: scale(0.8);
-    }
-
-    &:active:after {
-      transition-duration: 0.05s;
-      opacity: 1 !important;
-    }
-
     &.paused:after {
       height: var(--size);
       border-style: double;
       border-width: 0 0 0 calc(var(--size) / 1.2);
-      opacity: 0;
     }
   }
   .options {
