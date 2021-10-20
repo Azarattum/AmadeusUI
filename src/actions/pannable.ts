@@ -1,4 +1,5 @@
 import { spring } from "svelte/motion";
+import { animateTo } from "utils/animation";
 
 export function pannable(
   node: HTMLElement,
@@ -64,15 +65,31 @@ export function pannable(
 
   function handleOpen() {
     if (open) return;
-    offset.set(target).then(() => {
+    node.dispatchEvent(new CustomEvent("open"));
+    animateTo(node, [{ transform: `translate3d(0,${-target}px,0)` }], {
+      duration: 300,
+      easing: "ease",
+    }).addEventListener("finish", () => {
+      offset.stiffness = offset.damping = 1;
+      offset.set(target);
       opened = true;
+      offset.stiffness = stiffness;
+      offset.damping = damping;
     });
   }
 
   function handleClose() {
     if (!open) return;
-    opened = false;
-    offset.set(0);
+    animateTo(node, [{ transform: `translate3d(0,0px,0)` }], {
+      duration: 300,
+      easing: "ease",
+    }).addEventListener("finish", () => {
+      offset.stiffness = offset.damping = 1;
+      offset.set(0);
+      opened = false;
+      offset.stiffness = stiffness;
+      offset.damping = damping;
+    });
   }
 
   if (handle) node.querySelector(handle).addEventListener("click", handleClose);
