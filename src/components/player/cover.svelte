@@ -104,7 +104,7 @@
       width: 100%;
       height: 100%;
       border-radius: 100%;
-      mask: url("icons/options.svg") no-repeat 50% 50%;
+      mask: url("/icons/options.svg") no-repeat 50% 50%;
       mask-size: 100% 100%;
 
       background-color: currentColor;
