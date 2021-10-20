@@ -41,7 +41,7 @@
       min-width: 52px;
       border-radius: 4px;
       margin: 0 16px 0 8px;
-      box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.4);
+      box-shadow: 0px 2px 6px var(--color-shadow);
     }
   }
   .miniplayer {

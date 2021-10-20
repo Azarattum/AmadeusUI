@@ -36,7 +36,6 @@
     width: calc(100% - 32px);
     font-size: var(--font-normal);
     font-weight: bold;
-    padding: 4px 2px;
     text-align: center;
 
     overflow: hidden;

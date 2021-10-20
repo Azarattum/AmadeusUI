@@ -4,6 +4,7 @@
   import Miniplayer from "./miniplayer.svelte";
   import Coversel from "./coversel.svelte";
   import Playback from "./playback.svelte";
+  import Slider from "./slider.svelte";
   import Info from "./info.svelte";
 
   let paused = true;
@@ -37,7 +38,7 @@
       <Coversel bind:current bind:paused {queue} />
     </div>
     <Playback length={current.length} bind:time />
-    <div class="more" use:pannable={{ gap: 16 }} />
+    <Slider />
   </div>
 </div>
 
@@ -93,15 +94,5 @@
     height: 5px;
     border-radius: 5px;
     background-color: var(--color-text-caption);
-  }
-  .more {
-    z-index: 2;
-    margin-bottom: calc(-1 * var(--view-height) + 45px);
-    height: var(--view-height);
-
-    background-color: var(--color-element);
-    border-radius: 16px 16px 0 0;
-    pointer-events: all;
-    box-shadow: 0px 0px 8px var(--color-shadow);
   }
 </style>

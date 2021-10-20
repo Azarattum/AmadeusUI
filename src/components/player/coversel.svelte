@@ -66,6 +66,6 @@
     transform: scale(0.8) translateX(42px);
   }
   div :global(.swiper-slide-active > *) {
-    box-shadow: 0px 4px 28px rgba(0, 0, 0, 0.4);
+    box-shadow: 0px 4px 16px var(--color-shadow);
   }
 </style>
