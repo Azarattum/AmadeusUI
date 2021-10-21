@@ -38,7 +38,7 @@
       <Coversel bind:current bind:paused {queue} />
     </div>
     <Playback length={current.length} bind:time />
-    <Slider />
+    <Slider bind:current bind:queue />
   </div>
 </div>
 
@@ -94,5 +94,6 @@
     height: 5px;
     border-radius: 5px;
     background-color: var(--color-text-caption);
+    cursor: pointer;
   }
 </style>

@@ -92,16 +92,22 @@ export function pannable(
     });
   }
 
-  if (handle) node.querySelector(handle).addEventListener("click", handleClose);
-  if (clickable) node.addEventListener("click", handleOpen);
   node.addEventListener("touchstart", handleStart);
+  if (clickable) node.addEventListener("click", handleOpen);
+  if (handle) {
+    node
+      .querySelectorAll(handle)
+      .forEach((x) => x.addEventListener("click", handleClose));
+  }
 
   return {
     destroy() {
       node.removeEventListener("touchstart", handleStart);
       if (clickable) node.removeEventListener("click", handleOpen);
       if (handle) {
-        node.querySelector(handle).removeEventListener("click", handleClose);
+        node
+          .querySelectorAll(handle)
+          .forEach((x) => x.removeEventListener("click", handleClose));
       }
     },
   };
