@@ -38,7 +38,7 @@
       <Coversel bind:current bind:paused {queue} />
     </div>
     <Playback length={current.length} bind:time />
-    <Slider bind:current bind:queue />
+    <Slider bind:current bind:queue bind:time bind:paused />
   </div>
 </div>
 

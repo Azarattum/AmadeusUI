@@ -1,6 +1,185 @@
 <script lang="ts">
   import type { ITrack } from "utils/track.interface";
+  import Miniplayer from "./miniplayer.svelte";
+  import { fly } from "svelte/transition";
 
+  enum Diretion {
+    Normal,
+    Backwards,
+    Shuffled,
+  }
+  enum Repeat {
+    None,
+    All,
+    Single,
+  }
+
+  export let time: number;
+  export let paused: boolean;
   export let current: ITrack;
   export let queue: ITrack[];
+
+  let history = false;
+  let infinity = false;
+  let repeat = Repeat.None;
+  let direction = Diretion.Normal;
 </script>
+
+<svelte:head>
+  <link rel="preload" as="image" href="/icons/repeat.svg" />
+  <link rel="preload" as="image" href="/icons/repeat-one.svg" />
+  <link rel="preload" as="image" href="/icons/forward.svg" />
+  <link rel="preload" as="image" href="/icons/backwards.svg" />
+  <link rel="preload" as="image" href="/icons/shuffle.svg" />
+</svelte:head>
+
+<div class="container">
+  <Miniplayer bind:current bind:paused bind:time />
+  <div class="toolbar">
+    <button
+      class="history"
+      on:click={() => (history = !history)}
+      class:enabled={history}
+    />
+    <div>
+      {#if !history}
+        <h1 in:fly={{ x: -32, delay: 300 }} out:fly={{ x: -32, duration: 300 }}>
+          Queue
+        </h1>
+      {:else}
+        <h1 in:fly={{ x: -32, delay: 300 }} out:fly={{ x: -32, duration: 300 }}>
+          History
+        </h1>
+      {/if}
+    </div>
+
+    <button
+      class="infinity"
+      class:enabled={infinity}
+      on:click={() => (infinity = !infinity)}
+    />
+    <button
+      class="direction"
+      class:normal={direction == Diretion.Normal}
+      class:backwards={direction == Diretion.Backwards}
+      class:shuffled={direction == Diretion.Shuffled}
+      on:click={() => (direction = (direction + 1) % 3)}
+    />
+    <button
+      class="repeat"
+      class:none={repeat == Repeat.None}
+      class:all={repeat == Repeat.All}
+      class:single={repeat == Repeat.Single}
+      class:enabled={repeat}
+      on:click={() => (repeat = (repeat + 1) % 3)}
+    />
+  </div>
+</div>
+
+<style lang="postcss">
+  @import "../../styles/mixins.pcss";
+  .container {
+    margin: 32px 0px 0 0px;
+
+    & :global(.miniplayer) {
+      z-index: 1;
+      background: var(--color-element);
+      border-radius: 4px;
+      box-shadow: 0px 0px 4px var(--color-shadow);
+
+      margin: 0 4px;
+      width: calc(100% - 8px);
+    }
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: baseline;
+
+    * {
+      margin: 8px 4px;
+    }
+    .history {
+      &:before {
+        icon: history 24px;
+        transition: transform 0.5s ease;
+      }
+
+      &.enabled:before {
+        transform: rotate(-360deg);
+      }
+    }
+
+    & > div {
+      margin-left: 0;
+      width: 100%;
+      z-index: -1;
+    }
+
+    .infinity,
+    .direction,
+    .repeat {
+      &.infinity:before {
+        icon: infinity 24px;
+      }
+
+      &.direction.normal:before {
+        icon: forward 24px;
+        animation: fade-in 0.3s 1;
+      }
+      &.direction.backwards:before {
+        icon: backwards 24px;
+        animation: fade-in 0.3s 1;
+      }
+      &.direction.shuffled:before {
+        icon: shuffle 24px;
+        animation: fade-in 0.3s;
+      }
+
+      &.repeat.none:before,
+      &.repeat.all:before {
+        icon: repeat 24px;
+        animation: fade-in 0.3s;
+      }
+      &.repeat.single:before {
+        icon: repeat-one 24px;
+        animation: fade-in 0.3s;
+      }
+
+      &.direction:active:before,
+      &.repeat:active:before {
+        animation: none;
+      }
+    }
+
+    button {
+      padding: 8px;
+      border-radius: 4px;
+      background-color: var(--color-highlight);
+
+      transition: 0.3s ease;
+      transition-property: background-color, color;
+      &:active {
+        transition-duration: 0.05s;
+        background-color: var(--color-highlight-active);
+      }
+
+      &.enabled {
+        color: white;
+        transition-duration: 0.3s;
+        background-color: var(--color-accent-0);
+      }
+    }
+  }
+
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+      transform: scale(0);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+</style>

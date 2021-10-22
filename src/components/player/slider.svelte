@@ -4,6 +4,8 @@
   import Lyrics from "./lyrics.svelte";
   import Queue from "./queue.svelte";
 
+  export let time: number;
+  export let paused: boolean;
   export let current: ITrack;
   export let queue: ITrack[];
 
@@ -27,7 +29,7 @@
       <Lyrics {current} />
     </div>
     <div style="display: {selected == 1 ? 'block' : 'none'}">
-      <Queue bind:current bind:queue />
+      <Queue bind:current bind:queue bind:time bind:paused />
     </div>
   </div>
 </div>
