@@ -30,7 +30,7 @@
   />
   <i class="search" />
   {#if query}
-    <i
+    <button
       class="cancel"
       transition:fade={{ duration: 200 }}
       on:click={() => (query = "")}
@@ -39,6 +39,8 @@
 </div>
 
 <style lang="postcss">
+  @import "../styles/mixins.pcss";
+
   div {
     position: absolute;
     display: flex;
@@ -53,40 +55,42 @@
     background-color: var(--color-element);
     border-radius: 10px;
     box-shadow: 0px 4px 8px var(--color-shadow);
+
+    &.visible {
+      transform: translateX(-50%) scaleY(1);
+    }
   }
-  div.visible {
-    transform: translateX(-50%) scaleY(1);
-  }
-  input[type="text"] {
+  input {
     width: 100%;
-    max-height: 100%;
     padding: 7px 35px 7px 35px;
   }
-  .search {
-    left: 0;
-
-    mask: url("/icons/search.svg") no-repeat 50% 50%;
-    mask-size: 18px 18px;
-    pointer-events: none;
-  }
-  .cancel {
-    right: 0;
-
-    mask: url("/icons/cancel.svg") no-repeat 50% 50%;
-    mask-size: 16px 16px;
-    cursor: pointer;
-  }
-  .cancel:hover {
-    background-color: var(--color-text-selected);
-  }
-  i {
-    display: block;
+  i,
+  button {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    height: 35px;
-    width: 35px;
-
+  }
+  .search {
+    left: 9px;
+    icon: search 18px;
+    pointer-events: none;
     background-color: var(--color-text-caption);
+  }
+  .cancel {
+    height: 100%;
+    width: 32px;
+    right: 0;
+    cursor: pointer;
+
+    &:before {
+      icon: cancel 16px;
+      position: relative;
+      left: 8px;
+      background: var(--color-text-caption);
+    }
+
+    &:active:before {
+      background-color: var(--color-text-selected);
+    }
   }
 </style>

@@ -60,6 +60,7 @@
 </div>
 
 <style lang="postcss">
+  @import "../../styles/mixins.pcss";
   @font-face {
     font-family: "Blokk";
     src: url("/fonts/blokk.woff2") format("woff2");
@@ -121,12 +122,7 @@
     }
 
     &:before {
-      display: block;
-      content: "";
-      height: 32px;
-      width: 32px;
-      mask: url("/icons/hide.svg") no-repeat 50% 50%;
-      background-color: currentColor;
+      icon: hide 32px;
     }
   }
 

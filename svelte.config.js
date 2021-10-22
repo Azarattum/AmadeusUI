@@ -3,8 +3,11 @@ import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 import preprocess from "svelte-preprocess";
 import ctr from "@sveltejs/adapter-static";
-import autoprefixer from "autoprefixer";
+
 import aspect from "postcss-aspect-ratio-polyfill";
+import defineprops from "postcss-define-property";
+import autoprefixer from "autoprefixer";
+import importer from "postcss-import";
 import nested from "postcss-nested";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -13,7 +16,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const config = {
   preprocess: preprocess({
     postcss: {
-      plugins: [nested, autoprefixer, aspect],
+      plugins: [importer, defineprops, nested, autoprefixer, aspect],
     },
   }),
 

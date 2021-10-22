@@ -17,16 +17,18 @@
 </nav>
 
 <style lang="postcss">
+  @import "../styles/mixins.pcss";
+
   :global(.standalone) nav {
     height: 49px;
 
     button {
-      padding: 2px 0 1px 0;
+      padding: 8px 0 1px 0;
       font-size: var(--font-caption);
 
       &:before {
         position: relative;
-        top: 1px;
+        top: -1.5px;
       }
     }
   }
@@ -48,7 +50,7 @@
     flex-direction: column;
     align-items: center;
     color: var(--color-text-caption);
-    padding: 6px 0 6px 0;
+    padding: 8px 0 8px 0;
     width: 128px;
     font-size: 0;
 
@@ -68,29 +70,23 @@
       background-color: var(--color-highlight);
     }
 
-    &.library::before {
-      mask-image: url("/icons/library.svg");
+    &:before {
+      background-color: var(--color-text-caption);
+      pointer-events: none;
+      transition: inherit;
+      transition: inherit;
     }
-    &.listen::before {
-      mask-image: url("/icons/listen.svg");
+    &.library:before {
+      icon: library 28px;
     }
-    &.explore::before {
-      mask-image: url("/icons/explore.svg");
+    &.listen:before {
+      icon: listen 28px;
+    }
+    &.explore:before {
+      icon: explore 28px;
     }
   }
-  button:before {
-    display: block;
-    content: "";
-    height: 32px;
-    width: 35px;
-    background-color: var(--color-text-caption);
 
-    mask: no-repeat 50% 50%;
-    mask-size: 27px 27px;
-    pointer-events: none;
-
-    transition: inherit;
-  }
   button.active {
     color: var(--color-accent-75);
     &::before {

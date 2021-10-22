@@ -7,10 +7,6 @@
   export let current: ITrack;
   export let queue: ITrack[];
 
-  const tabs = [
-    { name: "lyrics", icon: "lyrics.svg", size: 60, component: Lyrics },
-    { name: "queue", icon: "queue.svg", size: 55, component: Queue },
-  ];
   let selected = 0;
   let open = false;
 </script>
@@ -23,25 +19,22 @@
 >
   <div class="handle-slider" class:open />
   <div class="mode" class:open>
-    {#each tabs as tab, i}
-      <button
-        class={tab.name}
-        style={`-webkit-mask: url("/icons/${tab.icon}") no-repeat 50% 50%;` +
-          `-webkit-mask-size: ${tab.size}% ${tab.size}%;`}
-        on:touchstart={() => (selected = i)}
-      />
-    {/each}
+    <button class="lyrics" on:touchstart={() => (selected = 0)} />
+    <button class="queue" on:touchstart={() => (selected = 1)} />
   </div>
   <div class="content" class:open>
-    {#each tabs as tab, i}
-      <div style="display: {i == selected ? 'block' : 'none'}">
-        <svelte:component this={tab.component} bind:current bind:queue />
-      </div>
-    {/each}
+    <div style="display: {selected == 0 ? 'block' : 'none'}">
+      <Lyrics {current} />
+    </div>
+    <div style="display: {selected == 1 ? 'block' : 'none'}">
+      <Queue bind:current bind:queue />
+    </div>
   </div>
 </div>
 
 <style lang="postcss">
+  @import "../../styles/mixins.pcss";
+
   .more {
     z-index: 2;
     margin-bottom: calc(-1 * var(--view-height) + 45px);
@@ -61,14 +54,19 @@
 
     button {
       width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      &.lyrics:before {
+        icon: lyrics 27px;
+      }
+      &.queue:before {
+        icon: queue 24.75px;
+      }
 
       &:before {
-        display: block;
-        content: "";
-        height: 45px;
         opacity: 0.7;
-        background-color: var(--color-text-normal);
-
         transition: opacity 0.5s ease;
       }
       &:active:before {

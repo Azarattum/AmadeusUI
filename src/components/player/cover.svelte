@@ -29,6 +29,8 @@
 </div>
 
 <style lang="postcss">
+  @import "../../styles/mixins.pcss";
+
   div {
     width: calc(100% - 64px);
     position: relative;
@@ -99,15 +101,7 @@
     background-color: var(--color-glass);
 
     &:before {
-      display: block;
-      content: "";
-      width: 100%;
-      height: 100%;
-      border-radius: 100%;
-      mask: url("/icons/options.svg") no-repeat 50% 50%;
-      mask-size: 100% 100%;
-
-      background-color: currentColor;
+      icon: options 100%;
       transition: transform 0.2s ease;
       transition-duration: inherit;
     }
