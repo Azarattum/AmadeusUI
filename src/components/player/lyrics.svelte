@@ -1,44 +1,18 @@
 <script lang="ts">
   import { fetchLyrics } from "utils/api";
   import { fade } from "svelte/transition";
-  import scrollIntoView from "scroll-into-view";
+  import { scroller } from "actions/scroller";
   import type { ITrack } from "utils/track.interface";
 
   export let current: ITrack;
-  let container: HTMLElement | null = null;
-  let hider: HTMLButtonElement | null = null;
 
-  let showHider = false;
-  function updateHider(passthrough?: string) {
-    globalThis.setTimeout?.(() => {
-      showHider = container && container.scrollHeight > container.clientHeight;
-    }, 500);
-    return passthrough;
-  }
-
-  let touched = false;
-  function onScroll({ target }) {
-    if (hider && touched && target.scrollTop < -80) hider.click();
-  }
-
-  function scrollToTop() {
-    if (!container) return;
-    scrollIntoView(container.firstElementChild, {
-      time: 200,
-      align: { top: 0, topOffset: 64 },
-    });
-  }
-
-  $: lyrics = (showHider = false) || fetchLyrics(current).then(updateHider);
+  $: lyrics = fetchLyrics(current);
 </script>
 
-<h1 on:click={scrollToTop}>Lyrics</h1>
+<h1>Lyrics</h1>
 <div
-  bind:this={container}
+  use:scroller={{ header: "h1", hider: ".handle-slider", dynamicHider: true }}
   class="text"
-  on:scroll={onScroll}
-  on:touchstart={(e) => (touched = true) && showHider && e.stopPropagation()}
-  on:touchend={() => (touched = false)}
 >
   {#await lyrics}
     <span class="loading" out:fade={{ duration: 300 }}>
@@ -52,11 +26,7 @@
   {:then text}
     <span in:fade={{ delay: 300 }}>{text}</span>
   {/await}
-  <button
-    bind:this={hider}
-    class="handle-slider"
-    style="display: {showHider ? 'block' : 'none'}"
-  />
+  <button class="handle-slider" style="display: none;" />
 </div>
 
 <style lang="postcss">

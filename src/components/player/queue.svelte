@@ -1,6 +1,9 @@
 <script lang="ts">
   import type { ITrack } from "utils/track.interface";
+  import VirtualList from "@sveltejs/svelte-virtual-list";
   import Miniplayer from "./miniplayer.svelte";
+  import Track from "components/track.svelte";
+  import { scroller } from "actions/scroller";
   import { fly } from "svelte/transition";
 
   enum Diretion {
@@ -74,20 +77,51 @@
       on:click={() => (repeat = (repeat + 1) % 3)}
     />
   </div>
+  <div
+    class="queue"
+    use:scroller={{ header: ".toolbar>div", hider: ".handle-slider" }}
+  >
+    {#if !history}
+      <div transition:fly={{ y: 48 }}>
+        <VirtualList items={queue.slice(queue.indexOf(current) + 1)} let:item>
+          <Track
+            track={item}
+            extra="duration"
+            on:click={() => (current = item)}
+          />
+        </VirtualList>
+      </div>
+    {:else}
+      <div transition:fly={{ y: -48 }}>
+        <VirtualList items={queue.slice(0, queue.indexOf(current))} let:item>
+          <Track
+            track={item}
+            extra="duration"
+            on:click={() => (current = item)}
+          />
+        </VirtualList>
+      </div>
+    {/if}
+    <div class="handle-slider" style="display: none;" />
+  </div>
 </div>
 
 <style lang="postcss">
   @import "../../styles/mixins.pcss";
   .container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100% + 16px);
     margin: 32px 0px 0 0px;
 
     & :global(.miniplayer) {
       z-index: 1;
+      flex-shrink: 0;
       background: var(--color-element);
       border-radius: 4px;
       box-shadow: 0px 0px 4px var(--color-shadow);
 
-      margin: 0 4px;
+      margin: 4px;
       width: calc(100% - 8px);
     }
   }
@@ -95,6 +129,15 @@
   .toolbar {
     display: flex;
     align-items: baseline;
+    min-height: 71px;
+    max-height: 71px;
+    z-index: 2;
+    background: linear-gradient(
+      180deg,
+      var(--color-element) calc(100% - 8px),
+      var(--color-element-transparent)
+    );
+    margin-bottom: -8px;
 
     * {
       margin: 8px 4px;
@@ -116,40 +159,36 @@
       z-index: -1;
     }
 
-    .infinity,
-    .direction,
-    .repeat {
-      &.infinity:before {
-        icon: infinity 24px;
-      }
+    .infinity:before {
+      icon: infinity 24px;
+    }
 
-      &.direction.normal:before {
-        icon: forward 24px;
-        animation: fade-in 0.3s 1;
-      }
-      &.direction.backwards:before {
-        icon: backwards 24px;
-        animation: fade-in 0.3s 1;
-      }
-      &.direction.shuffled:before {
-        icon: shuffle 24px;
-        animation: fade-in 0.3s;
-      }
+    .direction.normal:before {
+      icon: forward 24px;
+      animation: fade-in 0.3s 1;
+    }
+    .direction.backwards:before {
+      icon: backwards 24px;
+      animation: fade-in 0.3s 1;
+    }
+    .direction.shuffled:before {
+      icon: shuffle 24px;
+      animation: fade-in 0.3s;
+    }
 
-      &.repeat.none:before,
-      &.repeat.all:before {
-        icon: repeat 24px;
-        animation: fade-in 0.3s;
-      }
-      &.repeat.single:before {
-        icon: repeat-one 24px;
-        animation: fade-in 0.3s;
-      }
+    .repeat.none:before,
+    .repeat.all:before {
+      icon: repeat 24px;
+      animation: fade-in 0.3s;
+    }
+    .repeat.single:before {
+      icon: repeat-one 24px;
+      animation: fade-in 0.3s;
+    }
 
-      &.direction:active:before,
-      &.repeat:active:before {
-        animation: none;
-      }
+    .direction:active:before,
+    .repeat:active:before {
+      animation: none;
     }
 
     button {
@@ -169,6 +208,25 @@
         transition-duration: 0.3s;
         background-color: var(--color-accent-0);
       }
+    }
+  }
+
+  .queue {
+    height: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    overflow: hidden scroll;
+
+    div {
+      grid-row: 1;
+      grid-column: 1;
+    }
+
+    & :global(.track) {
+      width: calc(100% - 8px);
+      box-shadow: 0 0 2px var(--color-shadow);
+      margin-bottom: 1px;
+      padding: 4px;
     }
   }
 
