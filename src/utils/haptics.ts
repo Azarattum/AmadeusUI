@@ -1,11 +1,11 @@
-const global = globalThis as ExtendedGlobal;
+const scope = globalThis as ExtendedGlobal;
 
 /**
  * Generate selection haptic feedback
  */
 export function select(): void {
-  if (global.UINative) {
-    global.UINative.feedback("selection");
+  if (scope.UINative) {
+    scope.UINative.feedback("selection");
   }
 }
 
@@ -13,8 +13,8 @@ export function select(): void {
  * Generate a light haptic feedback
  */
 export function light(): void {
-  if (global.UINative) {
-    global.UINative.feedback("light");
+  if (scope.UINative) {
+    scope.UINative.feedback("light");
   }
 }
 

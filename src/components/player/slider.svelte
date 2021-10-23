@@ -25,11 +25,13 @@
       class="lyrics"
       aria-label="Show Lyrics"
       on:touchstart={() => (selected = 0)}
+      on:mousedown={() => (selected = 0)}
     />
     <button
       class="queue"
       aria-label="Open Queue"
       on:touchstart={() => (selected = 1)}
+      on:mousedown={() => (selected = 1)}
     />
   </div>
   <div class="content" class:open>
