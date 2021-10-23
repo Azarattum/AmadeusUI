@@ -14,6 +14,7 @@
     if (open) return;
     updateStyles();
     event.preventDefault();
+    activator.click();
     light();
     open = true;
     activator?.classList.add("active");
