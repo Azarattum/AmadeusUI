@@ -1,7 +1,7 @@
 <script lang="ts">
   import Library from "components/library.svelte";
   import Navbar from "components/navbar.svelte";
-  import Player from "components/player.svelte";
+  import Player from "components/player/player.svelte";
 
   const tabs = [Library];
   let selected = 0;
