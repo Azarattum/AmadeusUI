@@ -35,7 +35,7 @@
         style={`left: ${offset}px`}
         let:data={{ isActive }}
       >
-        <Cover img={track.cover} controls={isActive} bind:paused />
+        <Cover {track} controls={isActive} bind:paused />
       </SwiperSlide>
     {/each}
   </Swiper>
@@ -46,6 +46,7 @@
     overflow: visible;
   }
   div :global(.swiper-slide) {
+    cursor: pointer;
     transition: 0.3s ease;
     transition-property: transform, opacity;
   }
@@ -65,7 +66,7 @@
     transform-origin: right;
     transform: scale(0.8) translateX(42px);
   }
-  div :global(.swiper-slide-active > *) {
+  div :global(.swiper-slide-active img) {
     box-shadow: 0px 4px 16px var(--color-shadow);
   }
 </style>

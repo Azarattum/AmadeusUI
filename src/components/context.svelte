@@ -69,8 +69,10 @@
     position: absolute;
     backdrop-filter: blur(16px);
     background-color: var(--color-overlay);
+    font-family: "SF Pro Display", "SF Pro Icons", "Helvetica Neue", "Helvetica",
+      "Arial", sans-serif;
 
-    min-width: 256px;
+    min-width: 240px;
     width: max-content;
     height: min-content;
     border-radius: 10px;

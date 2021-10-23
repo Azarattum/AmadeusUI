@@ -1,15 +1,16 @@
 <script lang="ts">
   import { empty } from "utils/cover";
   import { fade } from "svelte/transition";
-  import Context from "components/context.svelte";
+  import type { ITrack } from "utils/track.interface";
+  import Options from "./options.svelte";
 
-  export let img = "";
+  export let track: ITrack;
   export let controls = false;
   export let paused = true;
 </script>
 
 <div class="container">
-  <img src={img || empty} alt="" class="cover" loading="lazy" />
+  <img src={track.cover || empty} alt="" class="cover" loading="lazy" />
   {#if controls}
     <button
       class="pause"
@@ -18,19 +19,7 @@
       on:click={() => (paused = !paused)}
       transition:fade
     />
-
-    <div transition:fade>
-      <Context>
-        <button
-          slot="activator"
-          class="options"
-          aria-label="Show Options"
-          class:active={false}
-          class:paused
-          on:touchstart|stopPropagation
-        />
-      </Context>
-    </div>
+    <Options {paused} {track} />
   {/if}
 </div>
 
@@ -40,12 +29,9 @@
   .container {
     width: calc(100% - 64px);
     position: relative;
-    overflow: hidden;
     display: flex;
 
-    background-color: var(--color-background);
     background-size: cover;
-    border-radius: 16px;
     margin: 0 32px;
 
     &:before {
@@ -55,6 +41,8 @@
     }
   }
   img {
+    background-color: var(--color-background);
+    border-radius: 16px;
     position: absolute;
     width: 100%;
   }
@@ -68,7 +56,6 @@
     border-radius: 16px;
     transition: 0.5s ease;
     transition-property: border-radius, opacity;
-    transform: scale(0.99999);
 
     &.paused {
       border-radius: 100%;
@@ -95,37 +82,6 @@
       height: var(--size);
       border-style: double;
       border-width: 0 0 0 calc(var(--size) / 1.2);
-    }
-  }
-  .options {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    padding: 4px;
-
-    width: 48px;
-    height: 48px;
-    backdrop-filter: blur(16px);
-    border-bottom-right-radius: 16px;
-    border-top-left-radius: 16px;
-    background-color: var(--color-glass);
-
-    &:before {
-      icon: options 100%;
-      transition: transform 0.2s ease;
-      transition-duration: inherit;
-    }
-
-    transform-origin: bottom right;
-    transition: 0.2s ease;
-    transition-property: background, border-radius, transform;
-    &.active {
-      background-color: var(--color-overlay);
-      border-top-left-radius: 0;
-    }
-
-    &.paused {
-      background-color: var(--color-overlay);
     }
   }
 </style>
