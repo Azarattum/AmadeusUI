@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Context from "components/context.svelte";
   import { fly, fade } from "svelte/transition";
 
   export let title: string;
@@ -9,13 +10,30 @@
   {#key title || artists}
     <div in:fly={{ y: 64 }} out:fade={{ duration: 200 }}>
       <div class="title">{title}</div>
-      <button
-        class="artists"
-        aria-label="Show Artists"
-        on:touchstart|stopPropagation
-      >
-        {artists.join(", ")}
-      </button>
+      {#if artists.length > 1}
+        <Context align="top">
+          {#each artists as artist}
+            <div class="artist">{artist}</div>
+          {/each}
+          <button
+            slot="activator"
+            class="artists"
+            class:active={false}
+            aria-label="Show Artists"
+            on:touchstart|stopPropagation
+          >
+            {artists.join(", ")}
+          </button>
+        </Context>
+      {:else}
+        <button
+          class="artists"
+          aria-label="Show Artists"
+          on:touchstart|stopPropagation
+        >
+          {artists.join(", ")}
+        </button>
+      {/if}
     </div>
   {/key}
 </div>
@@ -34,6 +52,12 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+    }
+
+    :global(.context) {
+      width: 100%;
+      display: flex;
+      justify-content: center;
     }
   }
   .title {
@@ -61,11 +85,20 @@
 
     transition: 0.3s ease;
     background-color: var(--color-transparent);
+
     &:active {
       transition-duration: 0.05s;
-      transform: scale(0.95);
       background-color: var(--color-highlight);
       color: var(--color-accent-75);
     }
+
+    &.active {
+      background-color: var(--color-transparent);
+      color: var(--color-text-caption);
+      filter: blur(4px);
+    }
+  }
+  .artist {
+    text-align: center;
   }
 </style>

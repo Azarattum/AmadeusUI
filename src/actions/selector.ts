@@ -4,8 +4,13 @@ export function selector(node: HTMLElement): { destroy: () => void } {
   let target: Element | null = null;
 
   function handleMove(event: TouchEvent) {
-    const { pageX, pageY } = event.touches[0];
-    let element = document.elementFromPoint(pageX, pageY) as HTMLElement | null;
+    event.preventDefault();
+
+    const { clientY, clientX } = event.touches[0];
+    let element = document.elementFromPoint(
+      clientX,
+      clientY
+    ) as HTMLElement | null;
     if (!node.contains(element)) element = null;
     if (element === target) return;
     target?.classList.remove("active");
@@ -14,7 +19,9 @@ export function selector(node: HTMLElement): { destroy: () => void } {
     if (target) select();
   }
 
-  function handleEnd() {
+  function handleEnd(event: TouchEvent) {
+    event.preventDefault();
+
     const parent = node.parentElement;
     parent?.removeEventListener("touchcancel", handleEnd);
     parent?.removeEventListener("touchmove", handleMove);
@@ -25,6 +32,8 @@ export function selector(node: HTMLElement): { destroy: () => void } {
   }
 
   function handleStart(event: TouchEvent) {
+    event.preventDefault();
+
     if (node != event.target && node.contains(event.target as Element)) {
       target?.classList.remove("active");
       target = event.target as Element;
@@ -33,12 +42,12 @@ export function selector(node: HTMLElement): { destroy: () => void } {
     event.stopPropagation();
 
     const parent = node.parentElement;
-    parent?.addEventListener("touchcancel", handleEnd, { passive: true });
-    parent?.addEventListener("touchmove", handleMove, { passive: true });
-    parent?.addEventListener("touchend", handleEnd, { passive: true });
+    parent?.addEventListener("touchcancel", handleEnd);
+    parent?.addEventListener("touchmove", handleMove);
+    parent?.addEventListener("touchend", handleEnd);
   }
 
-  node.addEventListener("touchstart", handleStart, { passive: true });
+  node.addEventListener("touchstart", handleStart);
   return {
     destroy() {
       node.removeEventListener("touchstart", handleMove);

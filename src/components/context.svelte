@@ -3,7 +3,7 @@
   import { onDestroy, onMount } from "svelte";
   import { light } from "utils/haptics";
 
-  export let align: "bottom right" = "bottom right";
+  export let align: "bottom right" | "top" = "bottom right";
 
   let open = false;
   let activator: HTMLElement | null = null;
@@ -12,6 +12,7 @@
 
   function activate(event: Event) {
     if (open) return;
+    updateStyles();
     event.preventDefault();
     light();
     open = true;
@@ -26,18 +27,22 @@
     activator?.classList.remove("active");
   }
 
-  onMount(() => {
-    activator = context.lastElementChild as HTMLElement;
+  function updateStyles() {
     if (!activator) return;
-
-    activator.addEventListener("touchstart", activate);
     if (align === "bottom right") {
       menu.style.top = `${activator.offsetTop - menu.clientHeight}px`;
       menu.style.left = `${
         activator.offsetLeft - menu.clientWidth + activator.clientWidth
       }px`;
       menu.style.borderBottomRightRadius = "0";
+    } else if (align == "top") {
+      menu.style.top = `${activator.offsetTop + activator.clientHeight}px`;
     }
+  }
+
+  onMount(() => {
+    activator = context.lastElementChild as HTMLElement;
+    activator?.addEventListener("touchstart", activate);
   });
 
   onDestroy(() => {
@@ -65,11 +70,12 @@
     backdrop-filter: blur(16px);
     background-color: var(--color-overlay);
 
-    min-width: 192px;
-    width: min-content;
+    min-width: 256px;
+    width: max-content;
     height: min-content;
     border-radius: 10px;
     overflow: hidden;
+    z-index: 100;
 
     transition: transform 0.3s ease;
     :global(*) {
