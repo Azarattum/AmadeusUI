@@ -81,7 +81,7 @@
     transform: translateX(-50%);
     margin-top: 16px;
     margin-bottom: 32px;
-    padding: 16px;
+    padding: 8px 24px;
     border-radius: 16px;
 
     background: var(--color-highlight);
@@ -92,7 +92,7 @@
     }
 
     &:before {
-      icon: hide 32px;
+      icon: down 32px;
     }
   }
 
