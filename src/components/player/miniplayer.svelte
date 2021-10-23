@@ -23,7 +23,7 @@
     on:click|stopPropagation={() => (paused = !paused)}
     on:touchstart|stopPropagation
   >
-    <button class:paused={!paused} />
+    <button class:paused={!paused} aria-label="Pause/Play" />
   </div>
   <div class="playback" style="width:{(time / current.length) * 100}%" />
 </div>

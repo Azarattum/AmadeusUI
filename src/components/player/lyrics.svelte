@@ -26,7 +26,11 @@
   {:then text}
     <span in:fade={{ delay: 300 }}>{text}</span>
   {/await}
-  <button class="handle-slider" style="display: none;" />
+  <button
+    class="handle-slider"
+    style="display: none;"
+    aria-label="Hide Lyrics"
+  />
 </div>
 
 <style lang="postcss">

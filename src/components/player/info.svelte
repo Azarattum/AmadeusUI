@@ -9,7 +9,11 @@
   {#key title || artists}
     <div in:fly={{ y: 64 }} out:fade={{ duration: 200 }}>
       <div class="title">{title}</div>
-      <button class="artists" on:touchstart|stopPropagation>
+      <button
+        class="artists"
+        aria-label="Show Artists"
+        on:touchstart|stopPropagation
+      >
         {artists.join(", ")}
       </button>
     </div>

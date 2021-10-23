@@ -32,6 +32,7 @@
   {#if query}
     <button
       class="cancel"
+      aria-label="Close Search"
       transition:fade={{ duration: 200 }}
       on:click={() => (query = "")}
     />

@@ -33,6 +33,7 @@
   <div class="toolbar">
     <button
       class="history"
+      aria-label="Toggle History"
       on:click={() => (history = !history)}
       class:enabled={history}
     />
@@ -50,11 +51,13 @@
 
     <button
       class="infinity"
+      aria-label="Toggle Infinite Play"
       class:enabled={infinity}
       on:click={() => (infinity = !infinity)}
     />
     <button
       class="direction"
+      aria-label="Switch Playback Direction"
       class:normal={direction == Diretion.Normal}
       class:backwards={direction == Diretion.Backwards}
       class:shuffled={direction == Diretion.Shuffled}
@@ -62,6 +65,7 @@
     />
     <button
       class="repeat"
+      aria-label="Switch Repeat Mode"
       class:none={repeat == Repeat.None}
       class:all={repeat == Repeat.All}
       class:single={repeat == Repeat.Single}
@@ -94,7 +98,11 @@
         </VirtualList>
       </div>
     {/if}
-    <div class="handle-slider" style="display: none;" />
+    <div
+      class="handle-slider"
+      style="display: none;"
+      aria-label="Close Queue"
+    />
   </div>
 </div>
 

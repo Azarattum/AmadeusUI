@@ -7,6 +7,7 @@
 
 <div class="playback">
   <input
+    aria-label="Playback Progress"
     class="progress"
     type="range"
     min="0"
@@ -19,11 +20,13 @@
     <div class="time">
       <button
         class="elapsed"
+        aria-label="Seek Backwards"
         on:touchstart|stopPropagation|preventDefault
         oncontextmenu={() => false}>{formatTime(time)}</button
       >
       <button
         class="left"
+        aria-label="Seek Forward"
         on:touchstart|stopPropagation|preventDefault
         on:contextmenu={() => false}>{formatTime(length - time)}</button
       >

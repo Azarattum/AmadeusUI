@@ -21,8 +21,16 @@
 >
   <div class="handle-slider" class:open />
   <div class="mode" class:open>
-    <button class="lyrics" on:touchstart={() => (selected = 0)} />
-    <button class="queue" on:touchstart={() => (selected = 1)} />
+    <button
+      class="lyrics"
+      aria-label="Show Lyrics"
+      on:touchstart={() => (selected = 0)}
+    />
+    <button
+      class="queue"
+      aria-label="Open Queue"
+      on:touchstart={() => (selected = 1)}
+    />
   </div>
   <div class="content" class:open>
     <div style="display: {selected == 0 ? 'block' : 'none'}">

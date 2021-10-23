@@ -12,12 +12,14 @@
   {#if controls}
     <button
       class="pause"
+      aria-label="Pause/Play"
       class:paused={!paused}
       on:click={() => (paused = !paused)}
       transition:fade
     />
     <button
       class="options"
+      aria-label="Show Options"
       class:paused
       on:touchstart|stopPropagation
       transition:fade

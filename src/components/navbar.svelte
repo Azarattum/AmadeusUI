@@ -7,6 +7,7 @@
   {#each tabs as tab, i}
     <button
       tabindex="0"
+      aria-label={tab}
       class={tab.toLowerCase()}
       class:active={selected === i}
       on:click={() => (selected = i)}

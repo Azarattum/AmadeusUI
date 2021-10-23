@@ -63,6 +63,7 @@
       tabIndex="0"
       class:active={active === i}
       on:click={() => navigate(i)}
+      aria-label={section}
       alt={section}
     >
       {section}
