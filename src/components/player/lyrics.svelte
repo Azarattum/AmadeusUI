@@ -35,12 +35,6 @@
 
 <style lang="postcss">
   @import "../../styles/mixins.pcss";
-  @font-face {
-    font-family: "Blokk";
-    src: url("/fonts/blokk.woff2") format("woff2");
-    font-weight: normal;
-    font-style: normal;
-  }
 
   h1 {
     position: fixed;
