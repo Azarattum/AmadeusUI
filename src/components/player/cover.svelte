@@ -1,13 +1,14 @@
 <script lang="ts">
   import { empty } from "utils/cover";
   import { fade } from "svelte/transition";
+  import Context from "components/context.svelte";
 
   export let img = "";
   export let controls = false;
   export let paused = true;
 </script>
 
-<div>
+<div class="container">
   <img src={img || empty} alt="" class="cover" loading="lazy" />
   {#if controls}
     <button
@@ -17,20 +18,26 @@
       on:click={() => (paused = !paused)}
       transition:fade
     />
-    <button
-      class="options"
-      aria-label="Show Options"
-      class:paused
-      on:touchstart|stopPropagation
-      transition:fade
-    />
+
+    <div transition:fade>
+      <Context>
+        <button
+          slot="activator"
+          class="options"
+          aria-label="Show Options"
+          class:active={false}
+          class:paused
+          on:touchstart|stopPropagation
+        />
+      </Context>
+    </div>
   {/if}
 </div>
 
 <style lang="postcss">
   @import "../../styles/mixins.pcss";
 
-  div {
+  .container {
     width: calc(100% - 64px);
     position: relative;
     overflow: hidden;
@@ -99,8 +106,8 @@
     width: 48px;
     height: 48px;
     backdrop-filter: blur(16px);
-    border-bottom-right-radius: inherit;
-    border-top-left-radius: inherit;
+    border-bottom-right-radius: 16px;
+    border-top-left-radius: 16px;
     background-color: var(--color-glass);
 
     &:before {
@@ -110,14 +117,11 @@
     }
 
     transform-origin: bottom right;
-    transition: background 0.2s ease;
-    &:active {
-      transition-duration: 0.05s;
+    transition: 0.2s ease;
+    transition-property: background, border-radius, transform;
+    &.active {
       background-color: var(--color-overlay);
-
-      &:before {
-        transform: scale(0.7);
-      }
+      border-top-left-radius: 0;
     }
 
     &.paused {
