@@ -36,7 +36,7 @@ export function scroller(
     });
   }
 
-  node.addEventListener("touchstart", handleStart);
+  node.addEventListener("touchstart", handleStart, { passive: true });
   node.addEventListener("touchend", handleEnd);
   node.addEventListener("scroll", handleScroll);
   headerElement?.addEventListener("click", scrollToTop);

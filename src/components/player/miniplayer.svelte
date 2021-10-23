@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { empty } from "utils/cover";
   import type { ITrack } from "utils/track.interface";
 
   let active = false;
@@ -6,11 +7,6 @@
   export let paused: boolean;
   export let time: number;
   export let hidden = false;
-
-  let cover: HTMLDivElement;
-  $: if (current.cover && cover) {
-    cover.style.backgroundImage = `url(${current.cover})`;
-  }
 </script>
 
 <div
@@ -20,7 +16,7 @@
   on:touchstart={() => (active = true)}
   on:touchend={() => (active = false)}
 >
-  <div bind:this={cover} class="cover" />
+  <img src={current.cover || empty} alt="" class="cover" loading="lazy" />
   <span class="title">{current.title}</span>
   <div
     class="button"
@@ -37,6 +33,7 @@
     height: 64px;
 
     .cover {
+      height: 52px;
       min-height: 52px;
       min-width: 52px;
       border-radius: 4px;
@@ -67,6 +64,7 @@
   }
   .cover {
     background-size: cover;
+    height: 48px;
     min-height: 48px;
     min-width: 48px;
     margin-right: 8px;

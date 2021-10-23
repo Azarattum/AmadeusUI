@@ -1,17 +1,14 @@
 <script lang="ts">
+  import { empty } from "utils/cover";
   import { fade } from "svelte/transition";
 
   export let img = "";
   export let controls = false;
   export let paused = true;
-
-  let content: HTMLDivElement;
-  $: if (content && img) {
-    content.style.backgroundImage = `url(${img})`;
-  }
 </script>
 
-<div bind:this={content}>
+<div>
+  <img src={img || empty} alt="" class="cover" loading="lazy" />
   {#if controls}
     <button
       class="pause"
@@ -47,6 +44,10 @@
       padding-top: 100%;
       content: "";
     }
+  }
+  img {
+    position: absolute;
+    width: 100%;
   }
   .pause {
     width: 100%;

@@ -28,14 +28,6 @@
   let direction = Diretion.Normal;
 </script>
 
-<svelte:head>
-  <link rel="preload" as="image" href="/icons/repeat.svg" />
-  <link rel="preload" as="image" href="/icons/repeat-one.svg" />
-  <link rel="preload" as="image" href="/icons/forward.svg" />
-  <link rel="preload" as="image" href="/icons/backwards.svg" />
-  <link rel="preload" as="image" href="/icons/shuffle.svg" />
-</svelte:head>
-
 <div class="container">
   <Miniplayer bind:current bind:paused bind:time />
   <div class="toolbar">

@@ -1,6 +1,7 @@
 /// <reference lib="webworker" />
-import { build, files, timestamp } from "$service-worker";
+import { build, files as cached, timestamp } from "$service-worker";
 
+const files = cached.filter((x) => x != "/.DS_Store");
 const worker = self as unknown as ServiceWorkerGlobalScope;
 const assets = `cache${timestamp}`;
 
