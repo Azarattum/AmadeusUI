@@ -10,17 +10,25 @@ export function scroller(
     | HTMLElement
     | undefined;
 
+  const overflow = node.style.overflowY;
+
   function handleStart(event: TouchEvent) {
     if (node.scrollHeight > node.clientHeight) event.stopPropagation();
     touched = true;
+    node.style.overflowY = overflow;
   }
 
   function handleEnd() {
     touched = false;
+    node.style.overflowY = overflow;
   }
 
   function handleScroll({ target }) {
     if (hiderElement && touched && target.scrollTop < -80) hiderElement.click();
+  }
+
+  function handleCancel() {
+    node.style.overflowY = "hidden";
   }
 
   function handleUpdate() {
@@ -38,7 +46,8 @@ export function scroller(
 
   node.addEventListener("touchstart", handleStart, { passive: true });
   node.addEventListener("touchend", handleEnd);
-  node.addEventListener("scroll", handleScroll);
+  node.addEventListener("scroll", handleScroll, { passive: false });
+  node.addEventListener("scrollcancel", handleCancel);
   headerElement?.addEventListener("click", scrollToTop);
 
   let mutationObserver: MutationObserver | null = null;
@@ -65,6 +74,7 @@ export function scroller(
       node.removeEventListener("touchstart", handleStart);
       node.removeEventListener("touchend", handleEnd);
       node.removeEventListener("scroll", handleScroll);
+      node.removeEventListener("scrollcancel", handleCancel);
       headerElement?.removeEventListener("click", scrollToTop);
     },
   };
