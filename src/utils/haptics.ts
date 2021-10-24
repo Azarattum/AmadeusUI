@@ -18,6 +18,15 @@ export function light(): void {
   }
 }
 
+/**
+ * Generate a rigid haptic feedback
+ */
+export function rigid(): void {
+  if (scope.UINative) {
+    scope.UINative.feedback("rigid");
+  }
+}
+
 type ExtendedGlobal = typeof globalThis & {
   UINative?: { feedback: (string) => void };
 };

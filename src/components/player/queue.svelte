@@ -4,6 +4,7 @@
   import Miniplayer from "./miniplayer.svelte";
   import Track from "components/track.svelte";
   import { scroller } from "actions/scroller";
+  import draggable from "actions/dragable";
   import { fly } from "svelte/transition";
 
   enum Diretion {
@@ -26,6 +27,14 @@
   let infinity = false;
   let repeat = Repeat.None;
   let direction = Diretion.Normal;
+
+  function onSwap({ detail }) {
+    const { from, to } = detail;
+    const index = queue.indexOf(current) + 1;
+    const item = queue.splice(index + from, 1)[0];
+    queue.splice(index + to, 0, item);
+    queue = queue;
+  }
 </script>
 
 <div class="container">
@@ -80,11 +89,15 @@
     {#if !history}
       <div transition:fly={{ y: 48 }}>
         <VirtualList items={queue.slice(queue.indexOf(current) + 1)} let:item>
-          <Track
-            track={item}
-            extra="duration"
-            on:click={() => (current = item)}
-          />
+          <div
+            class="track"
+            use:draggable
+            class:dragging={false}
+            on:swap={onSwap}
+            on:dragstart|preventDefault
+          >
+            <Track track={item} extra="duration" />
+          </div>
         </VirtualList>
       </div>
     {:else}
@@ -217,16 +230,33 @@
     grid-template-columns: minmax(0, 1fr);
     overflow: hidden scroll;
 
-    div {
+    & > div {
       grid-row: 1;
       grid-column: 1;
     }
 
-    & :global(.track) {
+    .track {
+      -webkit-user-drag: element;
+
       width: calc(100% - 8px);
       box-shadow: 0 0 2px var(--color-shadow);
       margin-bottom: 1px;
       padding: 4px;
+
+      &.dragging {
+        transition: 0.3s ease;
+        transition-property: box-shadow, border-radius;
+
+        position: relative;
+        background: var(--color-element);
+        box-shadow: 0 0 16px var(--color-shadow);
+        border-radius: 8px;
+        z-index: 1;
+      }
+    }
+
+    :global(svelte-virtual-list-row) {
+      overflow: visible;
     }
   }
 
