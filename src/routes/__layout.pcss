@@ -57,17 +57,17 @@
 
 html,
 body {
-  position: relative;
+  position: fixed;
   width: 100vw;
   height: 100vh;
   margin: 0;
   overscroll-behavior-y: none;
-  position: fixed;
   overflow: hidden;
 
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: var(--color-background);
   user-select: none;
+  touch-action: none;
 
   &::-webkit-scrollbar {
     display: none;

@@ -69,7 +69,7 @@ export default function draggable(node: HTMLElement): { destroy: () => void } {
       node.dispatchEvent(new Event("scrollcancel", { bubbles: true }));
 
       startPosition = [event.touches[0].clientX, event.touches[0].clientY];
-      addEventListener("touchmove", handleMove);
+      addEventListener("touchmove", handleMove, { passive: false });
       addEventListener("touchend", handleEnd);
       node.classList.add("dragging");
     };
@@ -98,6 +98,7 @@ export default function draggable(node: HTMLElement): { destroy: () => void } {
   }
 
   function handleMove(event: TouchEvent) {
+    event.preventDefault();
     const { clientX, clientY } = event.touches[0];
     const dx = clientX - startPosition[0];
     const dy = clientY - startPosition[1];

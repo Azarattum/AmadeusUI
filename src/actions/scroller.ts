@@ -13,14 +13,22 @@ export function scroller(
   const overflow = node.style.overflowY;
 
   function handleStart(event: TouchEvent) {
-    if (node.scrollHeight > node.clientHeight) event.stopPropagation();
+    if (node.scrollHeight <= node.clientHeight) return;
+    event.stopPropagation();
+
     touched = true;
     node.style.overflowY = overflow;
+    node.addEventListener("touchend", handleEnd);
+
+    // A weird hack to fix iOS scroll blocking from body in PWA mode
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((navigator as any).standalone && !node.scrollTop) node.scrollTo(0, 1);
   }
 
   function handleEnd() {
     touched = false;
     node.style.overflowY = overflow;
+    node.removeEventListener("touchend", handleEnd);
   }
 
   function handleScroll({ target }) {
@@ -45,8 +53,7 @@ export function scroller(
   }
 
   node.addEventListener("touchstart", handleStart, { passive: true });
-  node.addEventListener("touchend", handleEnd);
-  node.addEventListener("scroll", handleScroll, { passive: false });
+  node.addEventListener("scroll", handleScroll, { passive: true });
   node.addEventListener("scrollcancel", handleCancel);
   headerElement?.addEventListener("click", scrollToTop);
 
@@ -72,7 +79,6 @@ export function scroller(
       mutationObserver?.disconnect();
       intersectionObserver?.disconnect();
       node.removeEventListener("touchstart", handleStart);
-      node.removeEventListener("touchend", handleEnd);
       node.removeEventListener("scroll", handleScroll);
       node.removeEventListener("scrollcancel", handleCancel);
       headerElement?.removeEventListener("click", scrollToTop);

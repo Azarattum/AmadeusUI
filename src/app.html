@@ -19,6 +19,7 @@
       );
     };
     addEventListener("resize", updateHeight);
+    addEventListener("touchend", () => {scrollTo(0, 0);}, {passive: true});
     updateHeight();
   </script>
 </html>
