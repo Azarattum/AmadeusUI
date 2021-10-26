@@ -28,7 +28,7 @@
   let repeat = Repeat.None;
   let direction = Diretion.Normal;
 
-  function onSwap({ detail }) {
+  function onSwap({ detail }: SwapEvent) {
     const { from, to } = detail;
     const index = queue.indexOf(current) + 1;
     const item = queue.splice(index + from, 1)[0];
@@ -91,7 +91,7 @@
         <VirtualList items={queue.slice(queue.indexOf(current) + 1)} let:item>
           <div
             class="track"
-            use:draggable
+            use:draggable={{ key: "queue" }}
             class:dragging={false}
             on:swap={onSwap}
             on:dragstart|preventDefault

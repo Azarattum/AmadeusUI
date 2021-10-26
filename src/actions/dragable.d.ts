@@ -2,6 +2,10 @@
 
 declare namespace svelte.JSX {
   interface HTMLAttributes {
-    onswap?: (event: { detail: { from: number; to: number } }) => void;
+    onswap?: (event: SwapEvent) => void;
   }
+}
+
+declare interface SwapEvent {
+  detail: { from: number; to: number };
 }
