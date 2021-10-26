@@ -93,6 +93,7 @@ export function pannable(
     });
   }
 
+  node.addEventListener("scrollcancel", handleEnd);
   node.addEventListener("touchstart", handleStart, { passive: true });
   if (clickable) node.addEventListener("click", handleOpen);
   if (handle) {
@@ -104,6 +105,7 @@ export function pannable(
   return {
     destroy() {
       node.removeEventListener("touchstart", handleStart);
+      node.removeEventListener("scrollcancel", handleEnd);
       if (clickable) node.removeEventListener("click", handleOpen);
       if (handle) {
         node
