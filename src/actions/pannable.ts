@@ -1,3 +1,4 @@
+import "./pannable.d";
 import { spring } from "svelte/motion";
 import { animateTo } from "utils/animation";
 

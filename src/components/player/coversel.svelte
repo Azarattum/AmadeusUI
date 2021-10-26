@@ -10,6 +10,7 @@
   export let current: ITrack;
   export let paused: boolean;
 
+  $: queue && swiper?.virtual.update(true);
   $: {
     const index = queue.indexOf(current);
     if (index != swiper?.activeIndex) swiper?.slideTo(index);

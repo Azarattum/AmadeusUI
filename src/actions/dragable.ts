@@ -1,3 +1,4 @@
+import "./dragable.d";
 import { animateTo } from "utils/animation";
 import { rigid, select } from "utils/haptics";
 
