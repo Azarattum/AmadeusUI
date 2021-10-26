@@ -1,67 +1,26 @@
 import { animateTo } from "utils/animation";
 import { rigid, select } from "utils/haptics";
 
-function findCommonAncestor(
-  elements: Element[],
-  source: HTMLElement
-): {
-  commonAncestor?: HTMLElement;
-  target: HTMLElement;
-  sourceIndex?: number;
-  targetIndex?: number;
-} {
-  let parent = source.parentElement;
-  if (!parent) return { target: null };
-
-  let sourceIndex = Array.prototype.indexOf.call(parent.children, source);
-  let depth = 0;
-
-  while (parent) {
-    let targetIndex = -1;
-    const element =
-      (elements.find((x) => {
-        if (x == source) return false;
-
-        let parentX = x.parentElement;
-        for (let i = 0; i < depth; i++) {
-          if (i == depth - 1) {
-            targetIndex = Array.prototype.indexOf.call(
-              parentX?.parentElement?.children || [],
-              parentX
-            );
-          }
-          parentX = parentX?.parentElement;
-        }
-
-        return parentX == parent;
-      }) as HTMLElement) || null;
-
-    if (element) {
-      return {
-        commonAncestor: parent,
-        target: element,
-        sourceIndex,
-        targetIndex,
-      };
-    }
-
-    depth += 1;
-    sourceIndex = Array.prototype.indexOf.call(
-      parent.parentElement?.children || [],
-      parent
-    );
-    parent = parent?.parentElement;
-  }
-
-  if (!parent) return { target: null };
+function childIndex(element: HTMLElement): number {
+  return Array.prototype.indexOf.call(
+    element.parentElement?.children || [],
+    element
+  );
 }
 
 export default function draggable(node: HTMLElement): { destroy: () => void } {
   let startPosition = [0, 0];
   let target: HTMLElement | null = null;
-  let to: number | null = null;
-  let from: number | null = null;
-  const transformed = new Set<HTMLElement>();
+  let targetIndex: number | null = null;
+  const transformed = new Map<HTMLElement, Animation>();
+
+  let index = childIndex(node);
+  let holder = node.parentElement;
+  while (holder.childElementCount <= 1) {
+    index = childIndex(holder);
+    holder = holder.parentElement;
+  }
+  node.dataset["dragIndex"] = index.toString();
 
   function handleStart(event: TouchEvent) {
     const start = () => {
@@ -104,35 +63,35 @@ export default function draggable(node: HTMLElement): { destroy: () => void } {
     const dy = clientY - startPosition[1];
     node.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
 
-    const elements = document.elementsFromPoint(clientX, clientY);
-    const {
-      target: element = null,
-      sourceIndex,
-      targetIndex,
-    } = findCommonAncestor(elements, node);
+    const elements = document.elementsFromPoint(
+      clientX,
+      clientY
+    ) as HTMLElement[];
+    const element = elements.find(
+      (x) => x != node && Number.isInteger(+x.dataset["dragIndex"])
+    );
 
     if (element == target) return;
     target = element as HTMLElement;
 
     if (target) {
-      const modifier = sourceIndex > targetIndex ? 1 : -1;
+      const elementIndex = +element.dataset["dragIndex"];
+      const modifier = index > elementIndex ? 1 : -1;
       const seen = transformed.has(target);
 
       const transform = !seen
         ? `translate3d(0,${modifier * (node.clientHeight + 1)}px,0)`
         : "translate3d(0,0,0)";
-      if (!seen) transformed.add(target);
-      else transformed.delete(target);
-
-      select();
-      animateTo(target, [{ transform }], {
+      const animation = animateTo(target, [{ transform }], {
         duration: 300,
         easing: "ease",
       });
 
-      from = sourceIndex;
-      //A little bit hacky :(
-      to = targetIndex + (from == sourceIndex ? -seen : 0);
+      if (!seen) transformed.set(target, animation);
+      else transformed.delete(target);
+
+      targetIndex = elementIndex + +seen * modifier;
+      select();
     }
   }
 
@@ -141,14 +100,16 @@ export default function draggable(node: HTMLElement): { destroy: () => void } {
     node.classList.remove("dragging");
     removeEventListener("touchmove", handleMove);
     removeEventListener("touchend", handleEnd);
-
-    transformed.forEach((x) => {
-      x.style.transform = "none";
+    transformed.forEach((animation, element) => {
+      animation.cancel();
+      element.style.transform = "none";
     });
     transformed.clear();
 
-    if (to == null || from == null) return;
-    node.dispatchEvent(new CustomEvent("swap", { detail: { from, to } }));
+    if (targetIndex == null || targetIndex == index) return;
+    node.dispatchEvent(
+      new CustomEvent("swap", { detail: { from: index, to: targetIndex } })
+    );
   }
 
   node.addEventListener("touchstart", handleStart);
