@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { onDestroy, onMount, tick } from "svelte";
+  import { onDestroy } from "svelte";
 
   export let items: any[];
+  export let viewport: HTMLElement;
   export let container: HTMLElement;
   export let itemHeight: number;
 
@@ -22,10 +23,10 @@
   });
   $: container && (container.style.paddingTop = top + "px");
   $: container && (container.style.paddingBottom = bottom + "px");
-  $: container && observe();
+  $: viewport && observe();
 
   function update(..._: any[]) {
-    if (!itemHeight || !container || !containerHeight) return;
+    if (!itemHeight || !viewport || !containerHeight) return;
 
     let newStart = ~~(scroll / itemHeight) - buffer;
     let newEnd =
@@ -48,9 +49,9 @@
 
   let frame: number;
   function poll() {
-    if (container && container.scrollTop !== scroll) {
+    if (viewport && viewport.scrollTop !== scroll) {
       const maxScroll = items.length * itemHeight - containerHeight;
-      let newScroll = container.scrollTop;
+      let newScroll = viewport.scrollTop;
 
       if (newScroll < 0) newScroll = 0;
       else if (newScroll > maxScroll) newScroll = maxScroll;
@@ -60,8 +61,8 @@
   }
 
   function activate() {
-    if (containerHeight || !container) return;
-    containerHeight = container.offsetHeight;
+    if (containerHeight || !viewport) return;
+    containerHeight = viewport.offsetHeight;
     frame = requestAnimationFrame(poll);
   }
 
@@ -74,9 +75,9 @@
           observer?.disconnect();
         }
       },
-      { root: container?.parentElement }
+      { root: viewport?.parentElement }
     );
-    observer.observe(container);
+    observer.observe(viewport);
   }
 
   onDestroy(() => {

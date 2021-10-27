@@ -4,7 +4,7 @@
   import Miniplayer from "./miniplayer.svelte";
   import Track from "components/track.svelte";
   import { scroller } from "actions/scroller";
-  import draggable from "actions/dragable";
+  import draggable from "actions/draggable";
   import { fly } from "svelte/transition";
 
   enum Diretion {
@@ -28,7 +28,10 @@
   let repeat = Repeat.None;
   let direction = Diretion.Normal;
 
-  let container: HTMLElement;
+  const itemHeight = 57;
+  let viewport: HTMLElement;
+  let queueContainer: HTMLElement;
+  let lyricsContainer: HTMLElement;
   function onSwap({ detail }: SwapEvent) {
     const { from, to } = detail;
     const index = queue.indexOf(current) + 1;
@@ -84,43 +87,41 @@
     />
   </div>
   <div
-    bind:this={container}
-    class="queue"
     use:scroller={{ header: ".toolbar>div", hider: ".handle-slider" }}
+    bind:this={viewport}
+    class="queue"
   >
     {#if !history}
-      <div transition:fly={{ y: 48 }}>
+      <div
+        transition:fly={{ y: itemHeight }}
+        bind:this={queueContainer}
+        on:swap={onSwap}
+        use:draggable
+      >
         <VirtualList
           items={queue.slice(queue.indexOf(current) + 1)}
-          itemHeight={57}
-          {container}
+          container={queueContainer}
+          {itemHeight}
+          {viewport}
           let:item={track}
           let:index
         >
-          <div
-            class="track"
-            use:draggable={{ container, index }}
-            class:dragging={false}
-            on:swap={onSwap}
-          >
+          <div class="track" class:dragging={false} data-index={index}>
             <Track {track} extra="duration" />
           </div>
         </VirtualList>
       </div>
     {:else}
-      <div transition:fly={{ y: -48 }}>
+      <div transition:fly={{ y: -itemHeight }} bind:this={lyricsContainer}>
         <VirtualList
           items={queue.slice(0, queue.indexOf(current))}
-          itemHeight={57}
-          {container}
+          container={lyricsContainer}
+          {itemHeight}
+          {viewport}
           let:item
         >
-          <div class="track">
-            <Track
-              track={item}
-              extra="duration"
-              on:click={() => (current = item)}
-            />
+          <div class="track" on:click={() => (current = item)}>
+            <Track track={item} extra="duration" />
           </div>
         </VirtualList>
       </div>
@@ -252,20 +253,24 @@
     .track {
       -webkit-user-drag: element;
 
+      background: var(--color-element);
       width: calc(100% - 8px);
       box-shadow: 0 0 2px var(--color-shadow);
       margin-bottom: 1px;
       padding: 4px;
 
+      transition: box-shadow 0.3s ease, border-radius 0.3s ease,
+        transform 0.3s ease;
       &.dragging {
-        transition: 0.3s ease;
-        transition-property: box-shadow, border-radius;
-
+        transition: box-shadow 0.3s ease, border-radius 0.3s ease;
         position: relative;
-        background: var(--color-element);
         box-shadow: 0 0 16px var(--color-shadow);
         border-radius: 8px;
         z-index: 1;
+      }
+
+      :global(*) {
+        pointer-events: none;
       }
     }
   }
