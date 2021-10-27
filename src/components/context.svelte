@@ -58,7 +58,7 @@
     bind:this={menu}
     style="
       transform-origin: {align};
-      transform: scale({open ? 1 : 0.01});
+      transform: scale({open ? 1 : 0.1});
       opacity: {open ? 1 : 0};
     "
   >
