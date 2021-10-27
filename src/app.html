@@ -2,7 +2,12 @@
 <html lang="en">
   <head>
     <style>
-      @font-face { font-family: "Blokk"; src: url("/fonts/blokk.woff2") format("woff2"); font-style: normal; font-weight: normal; }
+      @font-face {
+        font-family: "Blokk";
+        src: url("/fonts/blokk.woff2") format("woff2");
+        font-style: normal;
+        font-weight: normal;
+      }
     </style>
     %svelte.head%
   </head>
@@ -19,7 +24,13 @@
       );
     };
     addEventListener("resize", updateHeight);
-    addEventListener("touchend", () => {scrollTo(0, 0);}, {passive: true});
+    addEventListener(
+      "touchend",
+      () => {
+        scrollTo(0, 0);
+      },
+      { passive: true }
+    );
     updateHeight();
   </script>
 </html>
