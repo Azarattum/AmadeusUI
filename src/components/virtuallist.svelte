@@ -2,12 +2,11 @@
   import { onDestroy, onMount, tick } from "svelte";
 
   export let items: any[];
-  export let container: HTMLElement | null = null;
+  export let container: HTMLElement;
   export let itemHeight: number;
 
   let observer: IntersectionObserver | null = null;
   let containerHeight: number;
-  let contents: HTMLElement;
   let scroll: number;
 
   const buffer = 2;
@@ -21,9 +20,12 @@
   $: visible = items.slice(start, end).map((data, i) => {
     return { index: i + start, data };
   });
+  $: container && (container.style.paddingTop = top + "px");
+  $: container && (container.style.paddingBottom = bottom + "px");
+  $: container && observe();
 
   function update(..._: any[]) {
-    if (!itemHeight || !container || !contents || !containerHeight) return;
+    if (!itemHeight || !container || !containerHeight) return;
 
     let newStart = ~~(scroll / itemHeight) - buffer;
     let newEnd =
@@ -63,10 +65,7 @@
     frame = requestAnimationFrame(poll);
   }
 
-  onMount(() => {
-    container = container || (contents.parentElement as HTMLElement);
-    if (!container) throw new Error("Virtual needs a vailid container!");
-
+  function observe() {
     //Activate component when becomes visible
     observer = new IntersectionObserver(
       ([entry]) => {
@@ -78,7 +77,7 @@
       { root: container?.parentElement }
     );
     observer.observe(container);
-  });
+  }
 
   onDestroy(() => {
     globalThis.cancelAnimationFrame?.(frame);
@@ -86,11 +85,6 @@
   });
 </script>
 
-<div
-  bind:this={contents}
-  style="padding-top:{top}px; padding-bottom:{bottom}px;"
->
-  {#each visible as row (row.index)}
-    <slot item={row.data} index={row.index} />
-  {/each}
-</div>
+{#each visible as row (row.index)}
+  <slot item={row.data} index={row.index} />
+{/each}
