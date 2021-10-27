@@ -14,12 +14,12 @@
     if (open) return;
     updateStyles();
     event.preventDefault();
-    activator.click();
+    activator?.click();
     light();
     open = true;
     activator?.classList.add("active");
 
-    menu.dispatchEvent(new Event("touchstart"));
+    menu?.dispatchEvent(new Event("touchstart"));
     addEventListener("click", deactivate, { passive: true, once: true });
   }
 
@@ -29,7 +29,7 @@
   }
 
   function updateStyles() {
-    if (!activator) return;
+    if (!activator || !menu) return;
     if (align === "bottom right") {
       menu.style.top = `${activator.offsetTop - menu.clientHeight}px`;
       menu.style.left = `${
@@ -42,7 +42,7 @@
   }
 
   onMount(() => {
-    activator = context.lastElementChild as HTMLElement;
+    activator = context?.lastElementChild as HTMLElement;
     activator?.addEventListener("touchstart", activate);
   });
 

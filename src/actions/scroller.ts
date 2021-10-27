@@ -5,10 +5,12 @@ export function scroller(
   { hider, header, dynamicHider = false }: ScrollerOptions
 ): { destroy: () => void } {
   let touched = false;
-  const hiderElement = node.querySelector(hider) as HTMLElement | undefined;
-  const headerElement = node.parentElement?.querySelector(header) as
-    | HTMLElement
-    | undefined;
+  const hiderElement = hider
+    ? (node.querySelector(hider) as HTMLButtonElement)
+    : null;
+  const headerElement = header
+    ? node.parentElement?.querySelector(header) || null
+    : null;
 
   const overflow = node.style.overflowY;
 
@@ -31,8 +33,9 @@ export function scroller(
     node.removeEventListener("touchend", handleEnd);
   }
 
-  function handleScroll({ target }) {
-    if (hiderElement && touched && target.scrollTop < -80) hiderElement.click();
+  function handleScroll({ target }: Event) {
+    const top = (target as HTMLElement).scrollTop;
+    if (hiderElement && touched && top < -80) hiderElement?.click();
   }
 
   function handleCancel() {
@@ -40,13 +43,14 @@ export function scroller(
   }
 
   function handleUpdate() {
+    if (!hiderElement) return;
     const shown =
       node.scrollHeight - hiderElement.clientHeight > node.clientHeight;
     hiderElement.style.display = shown ? "block" : "none";
   }
 
   function scrollToTop() {
-    scrollIntoView(node.firstElementChild, {
+    scrollIntoView(node.firstElementChild as HTMLElement, {
       time: 200,
       align: { top: 0, topOffset: 64 },
     });
@@ -65,13 +69,14 @@ export function scroller(
       childList: true,
     });
 
+    const parent = node.parentElement;
     intersectionObserver = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) handleUpdate();
       },
-      { root: node.parentElement.parentElement }
+      { root: parent?.parentElement }
     );
-    intersectionObserver.observe(node.parentElement);
+    if (parent) intersectionObserver.observe(parent);
   }
 
   return {

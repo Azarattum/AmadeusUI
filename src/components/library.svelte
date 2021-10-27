@@ -5,8 +5,8 @@
   let sections = ["Recent", "Playlists", "Artists", "Albums"];
   let drag = 0;
 
-  function onScroll({ target }) {
-    drag = target.scrollTop;
+  function onScroll({ target }: Event) {
+    drag = (target as HTMLElement).scrollTop;
   }
 </script>
 

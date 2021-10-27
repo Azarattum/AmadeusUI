@@ -11,7 +11,7 @@
   let open = false;
   let time = 0;
 
-  export let queue: ITrack[] | null = [];
+  export let queue: ITrack[] = [];
   export let current: ITrack = queue[0] || {
     title: "Not Playing",
     artists: [],
@@ -20,7 +20,7 @@
   };
 
   $: currentChanged(current);
-  const currentChanged = (_) => (time = 0);
+  const currentChanged = (..._: any[]) => (time = 0);
 </script>
 
 <div

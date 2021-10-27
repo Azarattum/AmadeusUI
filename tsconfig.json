@@ -14,6 +14,8 @@
     "baseUrl": ".",
     "allowJs": true,
     "checkJs": true,
+    "strict": true,
+    "strictNullChecks": true,
     "paths": {
       "components/*": ["src/components/*"],
       "actions/*": ["src/actions/*"],

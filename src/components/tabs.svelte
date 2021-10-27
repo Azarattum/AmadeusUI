@@ -1,7 +1,7 @@
 <script lang="ts">
   import scrollIntoView from "scroll-into-view";
 
-  export let sections = [];
+  export let sections: string[] = [];
   let active = 0;
   let header: HTMLElement;
   let tabs: HTMLElement;
@@ -14,7 +14,7 @@
       time: 200,
       align: { left: 0 },
       cancellable: true,
-      validTarget: (x) => x === tabs || x === header,
+      validTarget: (x: HTMLElement) => x === tabs || x === header,
     };
 
     async function scroll(node: HTMLElement) {
@@ -24,10 +24,10 @@
       scrolling.set(node, (scrolling.get(node) || 0) + 1);
 
       scrollIntoView(target, props, () => {
-        scrolling.set(node, scrolling.get(node) - 1);
+        scrolling.set(node, (scrolling.get(node) || 0) - 1);
         if (!scrolling.get(node)) {
           const left = node.scrollLeft;
-          node.style.scrollSnapType = null;
+          (node as any).style.scrollSnapType = null;
           node.scrollTo(left, 0);
         }
       });

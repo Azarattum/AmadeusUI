@@ -3,7 +3,7 @@
   import { fly, fade } from "svelte/transition";
 
   export let title: string;
-  export let artists = [];
+  export let artists: string[] = [];
 </script>
 
 <div class="info">

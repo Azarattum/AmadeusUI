@@ -28,5 +28,5 @@ export function rigid(): void {
 }
 
 type ExtendedGlobal = typeof globalThis & {
-  UINative?: { feedback: (string) => void };
+  UINative?: { feedback: (type: string) => void };
 };

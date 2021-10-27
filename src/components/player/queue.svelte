@@ -93,10 +93,10 @@
   >
     {#if !history}
       <div
+        use:draggable={{ fixedOffset: 16, margin: 1 }}
         transition:fly={{ y: itemHeight }}
         bind:this={queueContainer}
         on:swap={onSwap}
-        use:draggable
       >
         <VirtualList
           items={queue.slice(queue.indexOf(current) + 1)}
