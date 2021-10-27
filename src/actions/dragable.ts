@@ -2,34 +2,19 @@ import "./dragable.d";
 import { animateTo } from "utils/animation";
 import { rigid, select } from "utils/haptics";
 
-function childIndex(element: HTMLElement): number {
-  return Array.prototype.indexOf.call(
-    element.parentElement?.children || [],
-    element
-  );
-}
-
 export default function draggable(
   node: HTMLElement,
-  { container }: { container: HTMLElement }
+  { container, index }: { container: HTMLElement; index: number }
 ): { destroy: () => void } {
   const transformed = new Map<HTMLElement, Animation>();
-  const scrollThreshold = node.offsetHeight * 2;
+  node.dataset["dragIndex"] = index.toString();
+  node.style.transform = `translate3d(0, 0, 0)`;
 
-  let bounds = { top: 0, bottom: innerHeight };
+  let scrollThreshold: number;
+  let bounds: { top: number; bottom: number };
   let startPosition = [0, 0, 0];
   let target: HTMLElement | null = null;
   let targetIndex: number | null = null;
-
-  let index = childIndex(node);
-  let holder = node.parentElement;
-  while (holder && holder.childElementCount <= 1) {
-    index = childIndex(holder);
-    holder = holder.parentElement;
-  }
-  if (node.dataset["dragIndex"] == null) {
-    node.dataset["dragIndex"] = index.toString();
-  }
 
   let lastAnimated: number | null = null;
   let lastDirection: boolean | null = null;
@@ -91,8 +76,8 @@ export default function draggable(
     const start = () => {
       rigid();
       node.dispatchEvent(new Event("scrollcancel", { bubbles: true }));
-
       const rect = container.getBoundingClientRect();
+      scrollThreshold = node.offsetHeight * 2;
       bounds = { top: rect.top, bottom: rect.top + rect.height };
       lastAnimated = index;
       startPosition = [
@@ -131,7 +116,7 @@ export default function draggable(
 
   function handleMove(event: TouchEvent) {
     lastEvent = event;
-    event.preventDefault();
+    if (event.cancelable) event.preventDefault();
     const { clientX, clientY } = event.touches[0];
     const normY = Math.min(Math.max(clientY, bounds.top), bounds.bottom - 1);
     const dx = clientX - startPosition[0];
@@ -139,13 +124,9 @@ export default function draggable(
     const ds = container.scrollTop - startPosition[2];
     node.style.transform = `translate3d(${dx}px, ${dy + ds}px, 0)`;
 
-    const elements = document.elementsFromPoint(
-      clientX,
-      normY
-    ) as HTMLElement[];
-    const element = elements.find(
-      (x) => x != node && Number.isInteger(+(x.dataset["dragIndex"] || NaN))
-    );
+    const element = document
+      .elementsFromPoint(clientX, normY)
+      .find((x) => x != node && (x as HTMLElement).dataset["dragIndex"]);
 
     if (clientY - bounds.top < scrollThreshold) {
       startScroll(false);
@@ -208,12 +189,24 @@ export default function draggable(
     node.dispatchEvent(
       new CustomEvent("swap", { detail: { from: index, to: targetIndex } })
     );
+
+    //Preserve scroll position
+    const scroll = container.scrollTop;
+    requestAnimationFrame(() => {
+      container.scrollTo(0, scroll);
+    });
   }
 
-  node.addEventListener("touchstart", handleStart);
+  function handleDrag(event: Event) {
+    event.preventDefault();
+  }
+
+  node.addEventListener("touchstart", handleStart, { passive: true });
+  node.addEventListener("dragstart", handleDrag);
   return {
     destroy() {
       node.removeEventListener("touchstart", handleStart);
+      node.removeEventListener("dragstart", handleDrag);
     },
   };
 }

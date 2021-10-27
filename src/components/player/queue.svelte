@@ -1,6 +1,6 @@
 <script lang="ts">
+  import VirtualList from "components/virtuallist.svelte";
   import type { ITrack } from "utils/track.interface";
-  import VirtualList from "@sveltejs/svelte-virtual-list";
   import Miniplayer from "./miniplayer.svelte";
   import Track from "components/track.svelte";
   import { scroller } from "actions/scroller";
@@ -28,6 +28,7 @@
   let repeat = Repeat.None;
   let direction = Diretion.Normal;
 
+  let container: HTMLElement;
   function onSwap({ detail }: SwapEvent) {
     const { from, to } = detail;
     const index = queue.indexOf(current) + 1;
@@ -83,31 +84,44 @@
     />
   </div>
   <div
+    bind:this={container}
     class="queue"
     use:scroller={{ header: ".toolbar>div", hider: ".handle-slider" }}
   >
     {#if !history}
       <div transition:fly={{ y: 48 }}>
-        <VirtualList items={queue.slice(queue.indexOf(current) + 1)} let:item>
+        <VirtualList
+          items={queue.slice(queue.indexOf(current) + 1)}
+          itemHeight={57}
+          {container}
+          let:item={track}
+          let:index
+        >
           <div
             class="track"
-            use:draggable={{ key: "queue" }}
+            use:draggable={{ container, index }}
             class:dragging={false}
             on:swap={onSwap}
-            on:dragstart|preventDefault
           >
-            <Track track={item} extra="duration" />
+            <Track {track} extra="duration" />
           </div>
         </VirtualList>
       </div>
     {:else}
       <div transition:fly={{ y: -48 }}>
-        <VirtualList items={queue.slice(0, queue.indexOf(current))} let:item>
-          <Track
-            track={item}
-            extra="duration"
-            on:click={() => (current = item)}
-          />
+        <VirtualList
+          items={queue.slice(0, queue.indexOf(current))}
+          itemHeight={57}
+          {container}
+          let:item
+        >
+          <div class="track">
+            <Track
+              track={item}
+              extra="duration"
+              on:click={() => (current = item)}
+            />
+          </div>
         </VirtualList>
       </div>
     {/if}
@@ -253,10 +267,6 @@
         border-radius: 8px;
         z-index: 1;
       }
-    }
-
-    :global(svelte-virtual-list-row) {
-      overflow: visible;
     }
   }
 
