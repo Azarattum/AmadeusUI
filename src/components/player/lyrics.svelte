@@ -60,8 +60,9 @@
   .text {
     padding: 16px;
     margin-top: 64px;
-    max-height: calc(100% - 16px);
     overflow-y: scroll;
+    word-break: break-word;
+    max-height: calc(100% - 16px);
 
     span:not(.loading) {
       user-select: auto;

@@ -18,13 +18,12 @@
 >
   <img src={current.cover || empty} alt="" class="cover" loading="lazy" />
   <span class="title">{current.title}</span>
-  <div
-    class="button"
-    on:click|stopPropagation={() => (paused = !paused)}
+  <button
+    class:paused={!paused}
+    aria-label="Pause/Play"
     on:touchstart|stopPropagation
-  >
-    <button class:paused={!paused} aria-label="Pause/Play" />
-  </div>
+    on:click|stopPropagation={() => (paused = !paused)}
+  />
   <div class="playback" style="width:{(time / current.length) * 100}%" />
 </div>
 
@@ -80,7 +79,7 @@
     white-space: nowrap;
     text-overflow: ellipsis;
   }
-  .button {
+  button {
     --size: 35px;
 
     margin: 0 8px 0 8px;
@@ -97,7 +96,10 @@
       background: var(--color-highlight);
     }
 
-    button {
+    &:before {
+      display: block;
+      content: "";
+      box-sizing: border-box;
       padding: 0;
       transform: scale(0.6);
       height: var(--size);
@@ -108,11 +110,11 @@
       border-style: solid;
       border-width: calc(var(--size) / 2) 0 calc(var(--size) / 2)
         calc(var(--size) / 1.2);
+    }
 
-      &.paused {
-        border-style: double;
-        border-width: 0 0 0 calc(var(--size) / 1.2);
-      }
+    &.paused:before {
+      border-style: double;
+      border-width: 0 0 0 calc(var(--size) / 1.2);
     }
   }
   .playback {

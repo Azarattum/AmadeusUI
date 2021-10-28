@@ -7,7 +7,7 @@
   export let extra: "none" | "duration" = "none";
 </script>
 
-<div class="track" on:click>
+<div class="track">
   <img src={track.cover || empty} alt="" class="cover" loading="lazy" />
   <div class="info">
     <div class="title">{track.title}</div>
