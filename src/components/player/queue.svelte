@@ -15,10 +15,10 @@
 
   const history = tracks.history;
   const queue = tracks.queue;
+  const direction = tracks.direction;
 
   let infinity = false;
   let repeat = Repeat.None;
-  let direction = Diretion.Normal;
 
   const itemHeight = 57;
   let showHistory = false;
@@ -62,10 +62,10 @@
     <button
       class="direction"
       aria-label="Switch Playback Direction"
-      class:normal={direction == Diretion.Normal}
-      class:backwards={direction == Diretion.Backwards}
-      class:shuffled={direction == Diretion.Shuffled}
-      on:click={() => (direction = (direction + 1) % 3)}
+      class:normal={$direction == Diretion.Normal}
+      class:backwards={$direction == Diretion.Backwards}
+      class:shuffled={$direction == Diretion.Shuffled}
+      on:click={() => tracks.sort(($direction + 1) % 3)}
     />
     <button
       class="repeat"

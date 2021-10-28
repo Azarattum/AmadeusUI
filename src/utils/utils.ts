@@ -7,15 +7,13 @@ export async function sleep(ms: number): Promise<void> {
 }
 
 /**
- * Returns a copy of the array but shuffled
+ * Shuffles the array in place and returns it
  * @param array Array to shuffle
  */
 export function shuffle<T>(array: T[]): T[] {
-  array = [...array];
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
   }
-
   return array;
 }
