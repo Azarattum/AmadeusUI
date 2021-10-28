@@ -25,6 +25,11 @@
   let queueContainer: HTMLElement;
   let historyContainer: HTMLElement;
 
+  $: {
+    showHistory;
+    viewport?.scrollTo(0, 0);
+  }
+
   function onSwap({ detail }: SwapEvent) {
     const { from, to } = detail;
     tracks.rearrage(from, to);
@@ -84,7 +89,7 @@
     {#if showHistory}
       <div transition:fly={{ y: -itemHeight }} bind:this={historyContainer}>
         <VirtualList
-          items={$history}
+          items={[...$history].reverse()}
           container={historyContainer}
           {itemHeight}
           {viewport}
