@@ -1,8 +1,10 @@
 <script lang="ts">
   import { fade } from "svelte/transition";
+
   export let drag: number;
-  let query: string = "";
+
   let input: HTMLInputElement;
+  let query: string = "";
   let visible = false;
   let touched = false;
 

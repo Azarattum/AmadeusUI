@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   const tabs = ["Library", "Listen", "Explore"];
   export let selected = 0;
 </script>
@@ -87,7 +87,6 @@
       icon: explore 28px;
     }
   }
-
   button.active {
     color: var(--color-accent-75);
     &::before {

@@ -1,31 +1,45 @@
 <script lang="ts">
   //@ts-nocheck
-  import type { ITrack } from "utils/track.interface";
-  import { Swiper, SwiperSlide } from "swiper/svelte";
-  import { Virtual, Swiper as SwiperRef } from "swiper";
+  import type { Tracks } from "models/tracks";
+  import { tick } from "svelte";
   import "swiper/css";
-  import Cover from "components/player/cover.svelte";
 
-  export let queue: ITrack[];
-  export let current: ITrack;
+  import { Virtual, Swiper as SwiperRef } from "swiper";
+  import { Swiper, SwiperSlide } from "swiper/svelte";
+  import Cover from "components/player/cover.svelte";
+  import Options from "./options.svelte";
+  import Pause from "./pause.svelte";
+
+  export let tracks: Tracks;
   export let paused: boolean;
 
-  $: queue && swiper?.virtual.update(true);
-  $: {
-    const index = queue.indexOf(current);
-    if (index != swiper?.activeIndex) swiper?.slideTo(index);
-  }
-
   let swiper: SwiperRef | null = null;
+  const index = tracks.listened;
+  const all = tracks.all;
+
+  all.subscribe(async () => {
+    await tick();
+    swiper?.virtual.update(true);
+  });
+  index.subscribe((i) => {
+    if (i != swiper?.activeIndex) swiper?.slideTo(i);
+  });
+
+  function onChange() {
+    if (!swiper) return;
+    const { activeIndex, previousIndex } = swiper;
+    if (activeIndex > previousIndex) tracks.next();
+    else if (activeIndex < previousIndex) tracks.previous();
+  }
 </script>
 
 <div>
   <Swiper
-    on:swiper={({ detail }) => (swiper = detail[0])}
-    on:slideChange={({ detail }) => (current = queue[detail[0][0].activeIndex])}
+    on:init={({ detail }) => (swiper = detail[0]?.[0])}
+    on:slideChange={onChange}
     modules={[Virtual]}
-    virtual={{ slides: queue }}
-    initialSlide={queue.indexOf(current)}
+    virtual={{ slides: $all }}
+    initialSlide={$index}
     let:virtualData={{ slides, offset, from }}
     touchMoveStopPropagation
     slideToClickedSlide
@@ -36,13 +50,38 @@
         style={`left: ${offset}px`}
         let:data={{ isActive }}
       >
-        <Cover {track} controls={isActive} bind:paused />
+        <div class="container">
+          <Cover image={track.cover} />
+          {#if isActive}
+            <Pause bind:paused />
+            <Options multiartist={track.artists.length > 1} />
+          {/if}
+        </div>
       </SwiperSlide>
     {/each}
   </Swiper>
 </div>
 
 <style lang="postcss">
+  .container {
+    width: calc(100% - 64px);
+    position: relative;
+    display: flex;
+
+    margin: 0 32px;
+    overflow: hidden;
+    border-radius: 16px;
+
+    &:before {
+      float: left;
+      padding-top: 100%;
+      content: "";
+    }
+
+    & > :global(*:first-child) {
+      position: absolute;
+    }
+  }
   div :global(.swiper) {
     overflow: visible;
   }

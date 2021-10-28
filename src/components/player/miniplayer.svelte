@@ -1,12 +1,16 @@
 <script lang="ts">
-  import { empty } from "utils/cover";
-  import type { ITrack } from "utils/track.interface";
+  import type { Tracks } from "models/tracks";
 
-  let active = false;
-  export let current: ITrack;
+  import Cover from "./cover.svelte";
+
+  export let tracks: Tracks;
   export let paused: boolean;
   export let time: number;
+
+  const current = tracks.current;
+
   export let hidden = false;
+  let active = false;
 </script>
 
 <div
@@ -16,27 +20,27 @@
   on:touchstart={() => (active = true)}
   on:touchend={() => (active = false)}
 >
-  <img src={current.cover || empty} alt="" class="cover" loading="lazy" />
-  <span class="title">{current.title}</span>
+  <div class="cover"><Cover image={$current.cover} /></div>
+  <span class="title">{$current.title}</span>
   <button
     class:paused={!paused}
     aria-label="Pause/Play"
     on:touchstart|stopPropagation
     on:click|stopPropagation={() => (paused = !paused)}
   />
-  <div class="playback" style="width:{(time / current.length) * 100}%" />
+  <div class="playback" style="width:{(time / $current.length) * 100}%" />
 </div>
 
 <style lang="postcss">
   :global(.standalone) .miniplayer {
     height: 64px;
+    border-bottom: solid 1px var(--color-highlight);
 
     .cover {
       height: 52px;
-      min-height: 52px;
-      min-width: 52px;
-      border-radius: 4px;
+      width: 52px;
       margin: 0 16px 0 8px;
+      border-radius: 4px;
       box-shadow: 0px 2px 6px var(--color-shadow);
     }
   }
@@ -55,21 +59,23 @@
     user-select: none;
     overflow: hidden;
 
-    transition: background-color 0.2s ease, transform 0.3s ease;
+    will-change: opacity;
+
+    transition: 0.3s ease;
+    transition-property: opacity, border-radius;
     &.hidden,
     &.active {
       background-color: var(--color-element);
     }
   }
   .cover {
-    background-size: cover;
     height: 48px;
-    min-height: 48px;
-    min-width: 48px;
+    width: 48px;
     margin-right: 8px;
     background-color: var(--color-element);
 
-    pointer-events: none;
+    flex-shrink: 0;
+    overflow: hidden;
   }
   span {
     width: 100%;
@@ -129,7 +135,8 @@
     background-color: var(--color-text-caption);
   }
   .hidden {
-    transform-origin: top;
-    transform: scaleY(0);
+    border-radius: 16px;
+    pointer-events: none;
+    opacity: 0;
   }
 </style>

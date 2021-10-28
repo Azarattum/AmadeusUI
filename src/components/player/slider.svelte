@@ -1,25 +1,26 @@
 <script lang="ts">
+  import type { Tracks } from "models/tracks";
   import { pannable } from "actions/pannable";
-  import type { ITrack } from "utils/track.interface";
+
   import Lyrics from "./lyrics.svelte";
   import Queue from "./queue.svelte";
 
-  export let time: number;
+  export let tracks: Tracks;
   export let paused: boolean;
-  export let current: ITrack;
-  export let queue: ITrack[];
+  export let time: number;
 
+  const current = tracks.current;
   let selected = 0;
   let open = false;
 </script>
 
 <div
   class="more"
-  use:pannable={{ gap: 16, handle: ".handle-slider" }}
+  use:pannable={{ gap: 16, handle: ".slider-handle" }}
   on:open={() => (open = true)}
   on:close={() => (open = false)}
 >
-  <div class="handle-slider" class:open />
+  <div class="slider-handle" class:open />
   <div class="mode" class:open>
     <button
       class="lyrics"
@@ -36,10 +37,10 @@
   </div>
   <div class="content" class:open>
     <div style="display: {selected == 0 ? 'block' : 'none'}">
-      <Lyrics {current} />
+      <Lyrics track={$current} />
     </div>
     <div style="display: {selected == 1 ? 'block' : 'none'}">
-      <Queue bind:current bind:queue bind:time bind:paused />
+      <Queue {tracks} bind:time bind:paused />
     </div>
   </div>
 </div>
@@ -108,7 +109,7 @@
       height: 100%;
     }
   }
-  .handle-slider {
+  .slider-handle {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);

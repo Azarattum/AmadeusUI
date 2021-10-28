@@ -39,6 +39,7 @@ const config = {
           utils: resolve(__dirname, "./src/utils"),
           actions: resolve(__dirname, "./src/actions"),
           components: resolve(__dirname, "./src/components"),
+          models: resolve(__dirname, "./src/models"),
         },
       },
     }),

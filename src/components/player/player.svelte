@@ -1,44 +1,41 @@
 <script lang="ts">
-  import type { ITrack } from "utils/track.interface";
+  import type { Tracks } from "models/tracks";
   import { pannable } from "actions/pannable";
+
   import Miniplayer from "./miniplayer.svelte";
   import Coversel from "./coversel.svelte";
   import Playback from "./playback.svelte";
   import Slider from "./slider.svelte";
   import Info from "./info.svelte";
 
+  export let tracks: Tracks;
+
+  const current = tracks.current;
   let paused = true;
   let open = false;
   let time = 0;
 
-  export let queue: ITrack[] = [];
-  export let current: ITrack = queue[0] || {
-    title: "Not Playing",
-    artists: [],
-    album: "",
-    length: Infinity,
-  };
-
-  $: currentChanged(current);
-  const currentChanged = (..._: any[]) => (time = 0);
+  tracks.current.subscribe(() => {
+    time = 0;
+  });
 </script>
 
 <div
   class="player"
   class:open
-  use:pannable={{ handle: ".handle" }}
+  use:pannable={{ handle: ".player-handle" }}
   on:open={() => (open = true)}
   on:close={() => (open = false)}
 >
-  <Miniplayer bind:current bind:paused bind:time hidden={open} />
+  <Miniplayer {tracks} bind:paused bind:time hidden={open} />
   <div class="container">
-    <div class="handle" />
+    <div class="player-handle" />
     <div>
-      <Info title={current.title} artists={current.artists} />
-      <Coversel bind:current bind:paused {queue} />
+      <Info title={$current.title} artists={$current.artists} />
+      <Coversel {tracks} bind:paused />
     </div>
-    <Playback length={current.length} bind:time />
-    <Slider bind:current bind:queue bind:time bind:paused />
+    <Playback bind:time length={$current.length} />
+    <Slider {tracks} bind:paused bind:time />
   </div>
 </div>
 
@@ -53,22 +50,23 @@
     bottom: calc(-1 * var(--view-height) + 77px);
 
     transition: 0.2s ease;
-    transition-property: background-color, border-radius, box-shadow;
+    transition-property: background-color, border-radius;
     background-color: var(--color-transparent);
 
     overflow: hidden;
     user-select: none;
     pointer-events: none;
     z-index: 1;
-  }
-  .player.open {
-    background-color: var(--color-element);
-    border-radius: 16px;
-    pointer-events: all;
-    box-shadow: 0px 0px 8px var(--color-shadow);
 
-    .container {
-      opacity: 1;
+    &.open {
+      border-radius: 16px;
+      pointer-events: all;
+      background-color: var(--color-element);
+      box-shadow: 0px 0px 8px var(--color-shadow);
+
+      .container {
+        opacity: 1;
+      }
     }
   }
   .container {
@@ -84,7 +82,7 @@
     z-index: 10;
     opacity: 0;
   }
-  .handle {
+  .player-handle {
     position: relative;
     left: 50%;
     transform: translateX(-50%);

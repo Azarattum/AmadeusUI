@@ -1,17 +1,16 @@
 <script lang="ts">
-  import { fetchLyrics } from "utils/api";
-  import { fade } from "svelte/transition";
+  import type { Track } from "models/tracks";
   import { scroller } from "actions/scroller";
-  import type { ITrack } from "utils/track.interface";
+  import { fade } from "svelte/transition";
+  import { fetchLyrics } from "utils/api";
 
-  export let current: ITrack;
-
-  $: lyrics = fetchLyrics(current);
+  export let track: Track;
+  $: lyrics = fetchLyrics(track);
 </script>
 
 <h1>Lyrics</h1>
 <div
-  use:scroller={{ header: "h1", hider: ".handle-slider", dynamicHider: true }}
+  use:scroller={{ header: "h1", hider: ".slider-handle", dynamicHider: true }}
   class="text"
 >
   {#await lyrics}
@@ -27,7 +26,7 @@
     <span in:fade={{ delay: 300 }}>{text}</span>
   {/await}
   <button
-    class="handle-slider"
+    class="slider-handle"
     style="display: none;"
     aria-label="Hide Lyrics"
   />
@@ -74,7 +73,7 @@
       height: 16px;
     }
   }
-  .handle-slider {
+  .slider-handle {
     position: relative;
     left: 50%;
     transform: translateX(-50%);

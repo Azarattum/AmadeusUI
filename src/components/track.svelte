@@ -1,14 +1,15 @@
 <script lang="ts">
-  import { empty } from "utils/cover";
+  import type { Track } from "models/tracks";
   import { formatTime } from "utils/time";
-  import type { ITrack } from "utils/track.interface";
 
-  export let track: ITrack;
+  import Cover from "./player/cover.svelte";
+
+  export let track: Track;
   export let extra: "none" | "duration" = "none";
 </script>
 
 <div class="track">
-  <img src={track.cover || empty} alt="" class="cover" loading="lazy" />
+  <Cover image={track.cover} size="48px" />
   <div class="info">
     <div class="title">{track.title}</div>
     <div class="artists">{track.artists.join(", ")}</div>
@@ -23,14 +24,16 @@
 <style lang="postcss">
   .track {
     --height: 48px;
-    height: var(--height);
-    width: 100%;
+    position: relative;
     display: flex;
-  }
-  .cover {
-    display: inline-block;
-    border-radius: 8px;
-    height: 100%;
+    overflow: visible;
+
+    width: 100%;
+    height: var(--height);
+
+    & > :global(img) {
+      border-radius: 6px;
+    }
   }
   .info {
     display: flex;

@@ -1,19 +1,18 @@
 <script lang="ts">
-  import Context from "components/context.svelte";
   import { fade } from "svelte/transition";
-  import type { ITrack } from "utils/track.interface";
 
-  export let paused = false;
-  export let track: ITrack;
+  import Context from "components/context.svelte";
+
+  export let multiartist = false;
 </script>
 
 <div transition:fade>
   <Context>
     <button class="info" aria-label="Show Info">Info</button>
-    {#if track.artists.length > 1}
-      <button class="artists" aria-label="Show Artists"> Artists</button>
+    {#if multiartist}
+      <button class="artists" aria-label="Show Artists">Artists</button>
     {:else}
-      <button class="artist" aria-label="Show Artist"> Artist</button>
+      <button class="artist" aria-label="Show Artist">Artist</button>
     {/if}
     <button class="album" aria-label="Show Album">Album</button>
     <button class="similar" aria-label="Find Similar">Similar</button>
@@ -24,7 +23,6 @@
       class="options"
       aria-label="Show Options"
       class:active={false}
-      class:paused
       on:touchstart|stopPropagation
     />
   </Context>
@@ -58,10 +56,6 @@
     &.active {
       background-color: var(--color-overlay);
       border-top-left-radius: 0;
-    }
-
-    &.paused {
-      background-color: var(--color-overlay);
     }
   }
 

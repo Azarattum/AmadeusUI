@@ -1,8 +1,11 @@
 <script lang="ts">
+  import { Tracks } from "models/tracks";
+
+  import Player from "components/player/player.svelte";
   import Library from "components/library.svelte";
   import Navbar from "components/navbar.svelte";
-  import Player from "components/player/player.svelte";
 
+  const tracks = new Tracks();
   const tabs = [Library];
   let selected = 0;
 </script>
@@ -12,5 +15,5 @@
     <svelte:component this={tab} />
   {/if}
 {/each}
-<Player />
+<Player {tracks} />
 <Navbar bind:selected />

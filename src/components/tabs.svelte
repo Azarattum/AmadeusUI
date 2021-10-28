@@ -2,9 +2,10 @@
   import scrollIntoView from "scroll-into-view";
 
   export let sections: string[] = [];
+
   let active = 0;
-  let header: HTMLElement;
   let tabs: HTMLElement;
+  let header: HTMLElement;
   let scrolling = new Map<HTMLElement, number>();
 
   $: focus(active);

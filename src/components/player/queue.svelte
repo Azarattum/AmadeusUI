@@ -1,63 +1,54 @@
 <script lang="ts">
-  import VirtualList from "components/virtuallist.svelte";
-  import type { ITrack } from "utils/track.interface";
-  import Miniplayer from "./miniplayer.svelte";
-  import Track from "components/track.svelte";
+  import type { Tracks } from "models/tracks";
+  import { Repeat, Diretion } from "models/tracks";
   import { scroller } from "actions/scroller";
   import draggable from "actions/draggable";
   import { fly } from "svelte/transition";
 
-  enum Diretion {
-    Normal,
-    Backwards,
-    Shuffled,
-  }
-  enum Repeat {
-    None,
-    All,
-    Single,
-  }
+  import VirtualList from "components/virtuallist.svelte";
+  import Miniplayer from "./miniplayer.svelte";
+  import Track from "components/track.svelte";
 
-  export let time: number;
+  export let tracks: Tracks;
   export let paused: boolean;
-  export let current: ITrack;
-  export let queue: ITrack[];
+  export let time: number;
 
-  let history = false;
+  const history = tracks.history;
+  const queue = tracks.queue;
+
   let infinity = false;
   let repeat = Repeat.None;
   let direction = Diretion.Normal;
 
   const itemHeight = 57;
+  let showHistory = false;
   let viewport: HTMLElement;
   let queueContainer: HTMLElement;
-  let lyricsContainer: HTMLElement;
+  let historyContainer: HTMLElement;
+
   function onSwap({ detail }: SwapEvent) {
     const { from, to } = detail;
-    const index = queue.indexOf(current) + 1;
-    const item = queue.splice(index + from, 1)[0];
-    queue.splice(index + to, 0, item);
-    queue = queue;
+    tracks.rearrage(from, to);
   }
 </script>
 
 <div class="container">
-  <Miniplayer bind:current bind:paused bind:time />
+  <Miniplayer {tracks} bind:paused bind:time />
   <div class="toolbar">
     <button
       class="history"
       aria-label="Toggle History"
-      on:click={() => (history = !history)}
-      class:enabled={history}
+      on:click={() => (showHistory = !showHistory)}
+      class:enabled={showHistory}
     />
     <div>
-      {#if !history}
+      {#if showHistory}
         <h1 in:fly={{ x: -32, delay: 300 }} out:fly={{ x: -32, duration: 300 }}>
-          Queue
+          History
         </h1>
       {:else}
         <h1 in:fly={{ x: -32, delay: 300 }} out:fly={{ x: -32, duration: 300 }}>
-          History
+          Queue
         </h1>
       {/if}
     </div>
@@ -87,11 +78,25 @@
     />
   </div>
   <div
-    use:scroller={{ header: ".toolbar>div", hider: ".handle-slider" }}
+    use:scroller={{ header: ".toolbar>div", hider: ".slider-handle" }}
     bind:this={viewport}
-    class="queue"
+    class="viewport"
   >
-    {#if !history}
+    {#if showHistory}
+      <div transition:fly={{ y: -itemHeight }} bind:this={historyContainer}>
+        <VirtualList
+          items={$history}
+          container={historyContainer}
+          {itemHeight}
+          {viewport}
+          let:item
+        >
+          <div class="track">
+            <Track track={item} extra="duration" />
+          </div>
+        </VirtualList>
+      </div>
+    {:else}
       <div
         use:draggable={{ fixedOffset: 16, margin: 1 }}
         transition:fly={{ y: itemHeight }}
@@ -99,7 +104,7 @@
         on:swap={onSwap}
       >
         <VirtualList
-          items={queue.slice(queue.indexOf(current) + 1)}
+          items={$queue}
           container={queueContainer}
           {itemHeight}
           {viewport}
@@ -111,23 +116,9 @@
           </div>
         </VirtualList>
       </div>
-    {:else}
-      <div transition:fly={{ y: -itemHeight }} bind:this={lyricsContainer}>
-        <VirtualList
-          items={queue.slice(0, queue.indexOf(current))}
-          container={lyricsContainer}
-          {itemHeight}
-          {viewport}
-          let:item
-        >
-          <div class="track" on:click={() => (current = item)}>
-            <Track track={item} extra="duration" />
-          </div>
-        </VirtualList>
-      </div>
     {/if}
     <div
-      class="handle-slider"
+      class="slider-handle"
       style="display: none;"
       aria-label="Close Queue"
     />
@@ -239,7 +230,7 @@
     }
   }
 
-  .queue {
+  .viewport {
     height: 100%;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
