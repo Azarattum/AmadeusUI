@@ -18,7 +18,6 @@
   const direction = tracks.direction;
 
   let infinity = false;
-  let repeat = Repeat.None;
 
   const itemHeight = 57;
   let showHistory = false;
@@ -70,11 +69,11 @@
     <button
       class="repeat"
       aria-label="Switch Repeat Mode"
-      class:none={repeat == Repeat.None}
-      class:all={repeat == Repeat.All}
-      class:single={repeat == Repeat.Single}
-      class:enabled={repeat}
-      on:click={() => (repeat = (repeat + 1) % 3)}
+      class:none={tracks.repeat == Repeat.None}
+      class:all={tracks.repeat == Repeat.All}
+      class:single={tracks.repeat == Repeat.Single}
+      class:enabled={tracks.repeat}
+      on:click={() => (tracks.repeat = (tracks.repeat + 1) % 3)}
     />
   </div>
   <div

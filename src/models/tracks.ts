@@ -17,6 +17,7 @@ export class Tracks {
   private _direction: Writable<Diretion> = writable(Diretion.Normal);
   private _trackIndex = 0;
 
+  repeat = Repeat.None;
   current: Readable<Track> = this._current;
   history: Readable<Track[]> = this._history;
   queue: Readable<Track[]> = this._queue;
@@ -87,6 +88,9 @@ export class Tracks {
           return history;
         });
 
+        setTimeout(() => {
+          if (this.repeat == Repeat.All) this.pushLast(current);
+        });
         return item;
       });
 
@@ -104,6 +108,11 @@ export class Tracks {
 
         this._queue.update((queue) => {
           queue.unshift(...this.indexTracks([current], true));
+          const index = queue.indexOf(item as IndexedTrack);
+          if (~index) {
+            queue.splice(index, 1);
+            this.updateAll({ history, current: item, queue });
+          }
           return queue;
         });
 
