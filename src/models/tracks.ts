@@ -76,18 +76,21 @@ export class Tracks {
   }
 
   next(): void {
+    let track: Track | undefined;
     this._queue.update((queue) => {
       const item = queue.shift();
       if (!item || item === none) return queue;
 
       this._current.update((current) => {
         if (current === none) return item;
-        this.pushHistory(current);
+        track = current;
         return item;
       });
 
       return queue;
     });
+
+    if (track) this.pushHistory(track);
   }
 
   previous(): void {
@@ -116,8 +119,9 @@ export class Tracks {
   }
 
   switch(to: Track): void {
+    let track: Track | undefined;
     this._current.update((current) => {
-      this.pushHistory(current, to);
+      track = current;
 
       this._queue.update((queue) => {
         const index = queue.indexOf(to as IndexedTrack);
@@ -125,9 +129,10 @@ export class Tracks {
         return queue;
       });
 
-      setTimeout(() => this.updateAll({ current: to }));
       return to;
     });
+
+    if (track) this.pushHistory(track, to);
   }
 
   sort(direction: Diretion): void {
@@ -169,7 +174,7 @@ export class Tracks {
         const index = history.indexOf(remove);
         if (~index) history.splice(index, 1);
       }
-      history.push(track);
+      history.push(...this.indexTracks([{ ...track }], true));
       return history;
     });
 
