@@ -82,15 +82,7 @@ export class Tracks {
 
       this._current.update((current) => {
         if (current === none) return item;
-
-        this._history.update((history) => {
-          history.push(current);
-          return history;
-        });
-
-        setTimeout(() => {
-          if (this.repeat == Repeat.All) this.pushLast(current);
-        });
+        this.pushHistory(current);
         return item;
       });
 
@@ -123,6 +115,21 @@ export class Tracks {
     });
   }
 
+  switch(to: Track): void {
+    this._current.update((current) => {
+      this.pushHistory(current, to);
+
+      this._queue.update((queue) => {
+        const index = queue.indexOf(to as IndexedTrack);
+        if (~index) queue.splice(index, 1);
+        return queue;
+      });
+
+      setTimeout(() => this.updateAll({ current: to }));
+      return to;
+    });
+  }
+
   sort(direction: Diretion): void {
     if (direction == Diretion.Normal) {
       this._queue.update((queue) => {
@@ -149,12 +156,17 @@ export class Tracks {
     this._direction.set(direction);
   }
 
-  private indexTracks(tracks: Track[], backwards = false): IndexedTrack[] {
-    return tracks.map((x, i) => {
-      (x as IndexedTrack).index = backwards
-        ? -this._trackIndex++ + i * 2 - tracks.length + 1
-        : this._trackIndex++;
-      return x as IndexedTrack;
+  private pushHistory(track: Track, remove?: Track): void {
+    this._history.update((history) => {
+      if (remove) {
+        const index = history.indexOf(remove);
+        if (~index) history.splice(index, 1);
+      }
+      history.push(track);
+      return history;
+    });
+    setTimeout(() => {
+      if (this.repeat == Repeat.All) this.pushLast(track);
     });
   }
 
@@ -167,6 +179,15 @@ export class Tracks {
     current = current ?? get(this._current);
     queue = queue ?? get(this._queue);
     this._all.set([...history, current, ...queue]);
+  }
+
+  private indexTracks(tracks: Track[], backwards = false): IndexedTrack[] {
+    return tracks.map((x, i) => {
+      (x as IndexedTrack).index = backwards
+        ? -this._trackIndex++ + i * 2 - tracks.length + 1
+        : this._trackIndex++;
+      return x as IndexedTrack;
+    });
   }
 }
 

@@ -93,10 +93,10 @@
           container={historyContainer}
           {itemHeight}
           {viewport}
-          let:item
+          let:item={track}
         >
-          <div class="track">
-            <Track track={item} extra="duration" />
+          <div class="track" on:click={() => tracks.switch(track)}>
+            <Track {track} extra="duration" />
           </div>
         </VirtualList>
       </div>
@@ -115,7 +115,12 @@
           let:item={track}
           let:index
         >
-          <div class="track" class:dragging={false} data-index={index}>
+          <div
+            class="track"
+            on:click={() => tracks.switch(track)}
+            class:dragging={false}
+            data-index={index}
+          >
             <Track {track} extra="duration" />
           </div>
         </VirtualList>

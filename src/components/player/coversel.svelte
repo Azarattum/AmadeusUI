@@ -27,9 +27,9 @@
 
   function onChange() {
     if (!swiper) return;
-    const { activeIndex, previousIndex } = swiper;
-    if (activeIndex > previousIndex) tracks.next();
-    else if (activeIndex < previousIndex) tracks.previous();
+    const { activeIndex } = swiper;
+    if (activeIndex > $index) tracks.next();
+    else if (activeIndex < $index) tracks.previous();
   }
 </script>
 
