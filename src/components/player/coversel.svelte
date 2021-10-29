@@ -1,7 +1,7 @@
 <script lang="ts">
   //@ts-nocheck
   import type { Tracks } from "models/tracks";
-  import { tick } from "svelte";
+  import { onDestroy, tick } from "svelte";
   import "swiper/css";
 
   import { Virtual, Swiper as SwiperRef } from "swiper";
@@ -17,11 +17,11 @@
   const index = tracks.listened;
   const all = tracks.all;
 
-  all.subscribe(async () => {
+  const allUnsubscribe = all.subscribe(async () => {
     await tick();
     swiper?.virtual.update(true);
   });
-  index.subscribe((i) => {
+  const indexUnsubscribe = index.subscribe((i) => {
     if (i != swiper?.activeIndex) swiper?.slideTo(i);
   });
 
@@ -31,6 +31,11 @@
     if (activeIndex > $index) tracks.next();
     else if (activeIndex < $index) tracks.previous();
   }
+
+  onDestroy(() => {
+    allUnsubscribe();
+    indexUnsubscribe();
+  });
 </script>
 
 <div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Tracks } from "models/tracks";
+  import type { Tracks, Track as ITrack } from "models/tracks";
   import { Repeat, Diretion } from "models/tracks";
   import { scroller } from "actions/scroller";
   import draggable from "actions/draggable";
@@ -8,22 +8,35 @@
   import VirtualList from "components/virtuallist.svelte";
   import Miniplayer from "./miniplayer.svelte";
   import Track from "components/track.svelte";
+  import { onDestroy, tick } from "svelte";
 
   export let tracks: Tracks;
   export let paused: boolean;
   export let time: number;
 
-  const history = tracks.history;
-  const queue = tracks.queue;
-  const direction = tracks.direction;
-
-  let infinity = false;
-
   const itemHeight = 57;
   let showHistory = false;
   let viewport: HTMLElement;
+  let queueFlipping = 0;
+  let historyFlipping = 0;
   let queueContainer: HTMLElement;
   let historyContainer: HTMLElement;
+
+  let infinity = false;
+  const direction = tracks.direction;
+  let history: ITrack[] = [];
+  let queue: ITrack[] = [];
+
+  const queueUnsubscribe = tracks.queue.subscribe(async (x) => {
+    queueFlipping++;
+    await tick();
+    queue = x;
+  });
+  const historyUnsubscribe = tracks.history.subscribe(async (x) => {
+    historyFlipping++;
+    await tick();
+    history = x.slice().reverse();
+  });
 
   $: {
     showHistory;
@@ -33,7 +46,13 @@
   function onSwap({ detail }: SwapEvent) {
     const { from, to } = detail;
     tracks.rearrage(from, to);
+    queueFlipping = 0;
   }
+
+  onDestroy(() => {
+    queueUnsubscribe();
+    historyUnsubscribe();
+  });
 </script>
 
 <div class="container">
@@ -89,10 +108,11 @@
     {#if showHistory}
       <div transition:fly={{ y: -itemHeight }} bind:this={historyContainer}>
         <VirtualList
-          items={[...$history].reverse()}
+          items={history}
           container={historyContainer}
           {itemHeight}
           {viewport}
+          bind:flipping={historyFlipping}
           let:item={track}
         >
           <div class="track" on:click={() => tracks.switch(track)}>
@@ -108,10 +128,11 @@
         on:swap={onSwap}
       >
         <VirtualList
-          items={$queue}
+          items={queue}
           container={queueContainer}
           {itemHeight}
           {viewport}
+          bind:flipping={queueFlipping}
           let:item={track}
           let:index
         >

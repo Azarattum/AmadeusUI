@@ -1,10 +1,12 @@
 <script lang="ts">
+  import { flip } from "svelte/animate";
   import { onDestroy } from "svelte";
 
   export let items: any[];
   export let viewport: HTMLElement;
   export let container: HTMLElement;
   export let itemHeight: number;
+  export let flipping = 0;
 
   let observer: IntersectionObserver | null = null;
   let containerHeight: number;
@@ -24,6 +26,12 @@
   $: container && (container.style.paddingTop = top + "px");
   $: container && (container.style.paddingBottom = bottom + "px");
   $: viewport && observe();
+
+  let timeout: any;
+  $: if (flipping && container) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => (flipping = 0), 300);
+  }
 
   function update(..._: any[]) {
     if (!itemHeight || !viewport || !containerHeight) return;
@@ -64,6 +72,7 @@
     if (containerHeight || !viewport) return;
     containerHeight = viewport.offsetHeight;
     frame = requestAnimationFrame(poll);
+    flipping = 0;
   }
 
   function observe() {
@@ -86,6 +95,21 @@
   });
 </script>
 
-{#each visible as row (row.index)}
-  <slot item={row.data} index={row.index} />
-{/each}
+{#if !flipping}
+  {#each visible as row (row.index)}
+    <slot item={row.data} index={row.index} />
+  {/each}
+{:else}
+  {#each visible as row (row.data.index)}
+    <div animate:flip={{ duration: 300 }}>
+      <slot item={row.data} index={row.index} />
+    </div>
+  {/each}
+{/if}
+
+<style>
+  div {
+    position: relative;
+    transform: translate3d(0, 0, 0);
+  }
+</style>

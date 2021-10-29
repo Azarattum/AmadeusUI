@@ -165,9 +165,8 @@ export class Tracks {
       history.push(track);
       return history;
     });
-    setTimeout(() => {
-      if (this.repeat == Repeat.All) this.pushLast(track);
-    });
+
+    if (this.repeat == Repeat.All) this.pushLast(track);
   }
 
   private updateAll({

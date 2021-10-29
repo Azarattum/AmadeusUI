@@ -18,7 +18,7 @@ export function pannable(
   let open = false;
   let previous: number;
 
-  offset.subscribe((x) => {
+  const offsetUnsubscribe = offset.subscribe((x) => {
     if (x < 0 && offset.stiffness === 1) offset.set(0);
     if (x > target + gap && offset.stiffness === 1) offset.set(target + gap);
     if (!opened) {
@@ -104,6 +104,7 @@ export function pannable(
 
   return {
     destroy() {
+      offsetUnsubscribe();
       node.removeEventListener("touchstart", handleStart);
       node.removeEventListener("scrollcancel", handleEnd);
       if (clickable) node.removeEventListener("click", handleOpen);

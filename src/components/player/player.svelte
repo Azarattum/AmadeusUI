@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Tracks } from "models/tracks";
   import { pannable } from "actions/pannable";
+  import { onDestroy } from "svelte";
 
   import Miniplayer from "./miniplayer.svelte";
   import Coversel from "./coversel.svelte";
@@ -15,8 +16,12 @@
   let open = false;
   let time = 0;
 
-  tracks.current.subscribe(() => {
+  const currentUnsubscribe = tracks.current.subscribe(() => {
     time = 0;
+  });
+
+  onDestroy(() => {
+    currentUnsubscribe();
   });
 </script>
 
