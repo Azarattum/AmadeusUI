@@ -156,6 +156,13 @@ export class Tracks {
     this._direction.set(direction);
   }
 
+  clearHistory(): void {
+    this._history.update(() => {
+      this.updateAll({ history: [] });
+      return [];
+    });
+  }
+
   private pushHistory(track: Track, remove?: Track): void {
     this._history.update((history) => {
       if (remove) {

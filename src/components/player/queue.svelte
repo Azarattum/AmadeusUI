@@ -76,29 +76,37 @@
       {/if}
     </div>
 
-    <button
-      class="infinity"
-      aria-label="Toggle Infinite Play"
-      class:enabled={infinity}
-      on:click={() => (infinity = !infinity)}
-    />
-    <button
-      class="direction"
-      aria-label="Switch Playback Direction"
-      class:normal={$direction == Diretion.Normal}
-      class:backwards={$direction == Diretion.Backwards}
-      class:shuffled={$direction == Diretion.Shuffled}
-      on:click={() => tracks.sort(($direction + 1) % 3)}
-    />
-    <button
-      class="repeat"
-      aria-label="Switch Repeat Mode"
-      class:none={tracks.repeat == Repeat.None}
-      class:all={tracks.repeat == Repeat.All}
-      class:single={tracks.repeat == Repeat.Single}
-      class:enabled={tracks.repeat}
-      on:click={() => (tracks.repeat = (tracks.repeat + 1) % 3)}
-    />
+    {#if showHistory}
+      <button
+        class="clear"
+        aria-label="Clear History"
+        on:click={() => tracks.clearHistory()}
+      />
+    {:else}
+      <button
+        class="infinity"
+        aria-label="Toggle Infinite Play"
+        class:enabled={infinity}
+        on:click={() => (infinity = !infinity)}
+      />
+      <button
+        class="direction"
+        aria-label="Switch Playback Direction"
+        class:normal={$direction == Diretion.Normal}
+        class:backwards={$direction == Diretion.Backwards}
+        class:shuffled={$direction == Diretion.Shuffled}
+        on:click={() => tracks.sort(($direction + 1) % 3)}
+      />
+      <button
+        class="repeat"
+        aria-label="Switch Repeat Mode"
+        class:none={tracks.repeat == Repeat.None}
+        class:all={tracks.repeat == Repeat.All}
+        class:single={tracks.repeat == Repeat.Single}
+        class:enabled={tracks.repeat}
+        on:click={() => (tracks.repeat = (tracks.repeat + 1) % 3)}
+      />
+    {/if}
   </div>
   <div
     use:scroller={{ header: ".toolbar>div", hider: ".slider-handle" }}
@@ -208,8 +216,14 @@
       z-index: -1;
     }
 
+    .clear:before {
+      icon: clear 24px;
+      animation: fade-in 0.3s 1;
+    }
+
     .infinity:before {
       icon: infinity 24px;
+      animation: fade-in 0.3s 1;
     }
 
     .direction.normal:before {
