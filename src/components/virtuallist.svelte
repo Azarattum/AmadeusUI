@@ -100,7 +100,7 @@
     <slot item={row.data} index={row.index} />
   {/each}
 {:else}
-  {#each visible as row (row.data.index)}
+  {#each visible as row (row.data)}
     <div animate:flip={{ duration: 300 }}>
       <slot item={row.data} index={row.index} />
     </div>
