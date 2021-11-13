@@ -4,6 +4,7 @@
     "dev": "npx svelte-kit dev --host",
     "build": "svelte-kit build",
     "preview": "svelte-kit preview",
+    "test": "jest",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "prettier --ignore-path .gitignore --check --plugin-search-dir=. . && eslint --ignore-path .gitignore .",
@@ -12,6 +13,7 @@
   "devDependencies": {
     "@sveltejs/adapter-static": "^1.0.0-next.20",
     "@sveltejs/kit": "next",
+    "@types/jest": "^27.0.2",
     "@types/scroll-into-view": "^1.16.0",
     "@typescript-eslint/eslint-plugin": "^4.31.1",
     "@typescript-eslint/parser": "^4.31.1",
@@ -20,6 +22,7 @@
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-svelte3": "^3.2.1",
+    "jest": "^27.3.1",
     "postcss-aspect-ratio-polyfill": "^2.0.0",
     "postcss-base64": "^0.7.1",
     "postcss-define-property": "^0.5.0",
@@ -30,6 +33,7 @@
     "svelte": "^3.43.1",
     "svelte-check": "^2.2.6",
     "svelte-preprocess": "^4.9.4",
+    "ts-jest": "^27.0.7",
     "tslib": "^2.3.1",
     "typescript": "^4.4.3"
   },
