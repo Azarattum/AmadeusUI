@@ -120,7 +120,7 @@
           bind:flipping={historyFlipping}
           let:item={track}
         >
-          <div class="track" on:click={() => tracks.play(track)}>
+          <div class="track" on:click={() => tracks.play({ ...track })}>
             <Track {track} extra="duration" />
           </div>
         </VirtualList>

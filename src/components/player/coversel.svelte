@@ -1,7 +1,6 @@
 <script lang="ts">
   //@ts-nocheck
-  import type { Tracks } from "models/tracks";
-  import { onDestroy, tick } from "svelte";
+  import { Repeatition, Tracks, Track } from "models/tracks";
   import "swiper/css";
 
   import { Virtual, Swiper as SwiperRef } from "swiper";
@@ -13,29 +12,66 @@
   export let tracks: Tracks;
   export let paused: boolean;
 
+  let manual = false;
   let swiper: SwiperRef | null = null;
-  const index = tracks.listened;
-  const all = tracks.all;
 
-  const allUnsubscribe = all.subscribe(async () => {
-    await tick();
-    swiper?.virtual.update(true);
-  });
-  const indexUnsubscribe = index.subscribe((i) => {
-    if (i != swiper?.activeIndex) swiper?.slideTo(i);
-  });
+  $: if (swiper && $tracks) {
+    const view = [];
+    const slides = swiper.virtual.slides;
+    view[0] = tracks.history[tracks.history.length - 2] || null;
+    view[1] = tracks.history[tracks.history.length - 1] || null;
+    view[2] = tracks.current;
+    view[3] = tracks.queue[0];
+    view[4] = tracks.queue[1];
+    if (tracks.repeatition == Repeatition.All) {
+      if (!view[3]) view[3] = tracks.history[0];
+      if (!view[4]) view[4] = tracks.history[1];
+    }
+
+    const active = slides[swiper.activeIndex];
+    if (!view.includes(active) || !active) {
+      swiper.virtual.slides = view.filter(Boolean);
+      swiper.activeIndex = slides.indexOf(tracks.current);
+      swiper.update();
+    } else {
+      const slideIndex = swiper.activeIndex;
+      const viewIndex = view.indexOf(active);
+
+      for (let i = -4; i < 6; i++) {
+        if (!i) continue;
+        if (slides[slideIndex + i] != view[viewIndex + i]) {
+          if ([slideIndex + i]) {
+            slides[slideIndex + i] = view[viewIndex + i];
+          } else {
+            if (i < 0) {
+              swiper.virtual.prependSlide(view[viewIndex + i] as any);
+            } else {
+              swiper.virtual.appendSlide(view[viewIndex + i] as any);
+            }
+          }
+        }
+      }
+
+      swiper.virtual.update(true);
+      if (active != tracks.current) {
+        manual = true;
+        swiper.slideTo(swiper.virtual.slides.indexOf(tracks.current), 300);
+      }
+    }
+  }
 
   function onChange() {
     if (!swiper) return;
-    const { activeIndex } = swiper;
-    if (activeIndex > $index) tracks.next();
-    else if (activeIndex < $index) tracks.previous();
-  }
+    if (manual) {
+      manual = false;
+      return;
+    }
+    const { activeIndex, previousIndex } = swiper;
 
-  onDestroy(() => {
-    allUnsubscribe();
-    indexUnsubscribe();
-  });
+    if (previousIndex == -1) return;
+    if (activeIndex > previousIndex) tracks.next();
+    else if (activeIndex < previousIndex) tracks.previous();
+  }
 </script>
 
 <div>
@@ -43,8 +79,7 @@
     on:init={({ detail }) => (swiper = detail[0]?.[0])}
     on:slideChange={onChange}
     modules={[Virtual]}
-    virtual={{ slides: $all }}
-    initialSlide={$index}
+    virtual={{ slides: [] }}
     let:virtualData={{ slides, offset, from }}
     touchMoveStopPropagation
     slideToClickedSlide
@@ -55,13 +90,15 @@
         style={`left: ${offset}px`}
         let:data={{ isActive }}
       >
-        <div class="container">
-          <Cover image={track.cover} />
-          {#if isActive}
-            <Pause bind:paused />
-            <Options multiartist={track.artists.length > 1} />
-          {/if}
-        </div>
+        {#if track}
+          <div class="container">
+            <Cover image={track.cover} />
+            {#if isActive}
+              <Pause bind:paused />
+              <Options multiartist={track.artists.length > 1} />
+            {/if}
+          </div>
+        {/if}
       </SwiperSlide>
     {/each}
   </Swiper>
