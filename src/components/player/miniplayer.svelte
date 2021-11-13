@@ -7,8 +7,6 @@
   export let paused: boolean;
   export let time: number;
 
-  const current = tracks.current;
-
   export let hidden = false;
   let active = false;
 </script>
@@ -20,15 +18,18 @@
   on:touchstart={() => (active = true)}
   on:touchend={() => (active = false)}
 >
-  <div class="cover"><Cover image={$current.cover} /></div>
-  <span class="title">{$current.title}</span>
+  <div class="cover"><Cover image={$tracks.current.cover} /></div>
+  <span class="title">{$tracks.current.title}</span>
   <button
     class:paused={!paused}
     aria-label="Pause/Play"
     on:touchstart|stopPropagation
     on:click|stopPropagation={() => (paused = !paused)}
   />
-  <div class="playback" style="width:{(time / $current.length) * 100}%" />
+  <div
+    class="playback"
+    style="width:{(time / $tracks.current.length) * 100}%"
+  />
 </div>
 
 <style lang="postcss">

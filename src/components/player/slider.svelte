@@ -9,7 +9,6 @@
   export let paused: boolean;
   export let time: number;
 
-  const current = tracks.current;
   let selected = 0;
   let open = false;
 </script>
@@ -37,7 +36,7 @@
   </div>
   <div class="content" class:open>
     <div style="display: {selected == 0 ? 'block' : 'none'}">
-      <Lyrics track={$current} />
+      <Lyrics track={$tracks.current} />
     </div>
     <div style="display: {selected == 1 ? 'block' : 'none'}">
       <Queue {tracks} bind:time bind:paused />

@@ -11,18 +11,19 @@
 
   export let tracks: Tracks;
 
-  const current = tracks.current;
   let paused = true;
   let open = false;
   let time = 0;
 
-  const currentUnsubscribe = tracks.current.subscribe(() => {
-    time = 0;
+  let last = tracks.current;
+  const unsubscribe = tracks.subscribe(() => {
+    if (tracks.current != last) {
+      time = 0;
+      last = tracks.current;
+    }
   });
 
-  onDestroy(() => {
-    currentUnsubscribe();
-  });
+  onDestroy(unsubscribe);
 </script>
 
 <div
@@ -36,10 +37,10 @@
   <div class="container">
     <div class="player-handle" />
     <div>
-      <Info title={$current.title} artists={$current.artists} />
+      <Info title={$tracks.current.title} artists={$tracks.current.artists} />
       <Coversel {tracks} bind:paused />
     </div>
-    <Playback bind:time length={$current.length} />
+    <Playback bind:time length={$tracks.current.length} />
     <Slider {tracks} bind:paused bind:time />
   </div>
 </div>

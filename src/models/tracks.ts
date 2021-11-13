@@ -1,6 +1,5 @@
-import type { Readable, Writable } from "svelte/store";
-import { writable, derived, get } from "svelte/store";
-import { shuffle } from "utils/utils";
+import type { Readable, Subscriber, Unsubscriber } from "svelte/store";
+import { shuffle } from "../utils/utils";
 
 export const none: Track = {
   title: "Not Playing",
@@ -9,195 +8,217 @@ export const none: Track = {
   length: Infinity,
 };
 
-export class Tracks {
-  private _current: Writable<Track> = writable(none);
-  private _history: Writable<Track[]> = writable([]);
-  private _queue: Writable<IndexedTrack[]> = writable([]);
-  private _all: Writable<Track[]> = writable([]);
-  private _direction: Writable<Diretion> = writable(Diretion.Normal);
-  private _trackIndex = 0;
+export class Tracks implements Readable<Tracks> {
+  private subscribers: Subscriber<Tracks>[] = [];
+  private backwardQueue: Track[] = [];
+  private forwardQueue: Track[] = [];
 
-  repeat = Repeat.None;
-  current: Readable<Track> = this._current;
-  history: Readable<Track[]> = this._history;
-  queue: Readable<Track[]> = this._queue;
-  all: Readable<Track[]> = this._all;
-  direction: Readable<Diretion> = this._direction;
-  listened: Readable<number> = derived(
-    this._history,
-    (history) => history.length
-  );
+  current = none;
+  history: Track[] = [];
+  queue: Track[] = [];
 
-  pushNext(...tracks: Track[]): void {
-    this._current.update((current) => {
-      if (current === none) {
-        const first = tracks.shift();
-        if (first) current = first;
-      }
-
-      this._queue.update((queue) => {
-        queue.unshift(...this.indexTracks(tracks, true));
-        this.updateAll({ current, queue });
-        return queue;
-      });
-
-      return current;
-    });
-  }
+  repeatition = Repeatition.None;
+  direction = Diretion.Normal;
+  infinite = false;
 
   pushLast(...tracks: Track[]): void {
-    this._current.update((current) => {
-      if (current === none) {
-        const first = tracks.shift();
-        if (first) current = first;
-      }
+    if (!tracks.length) return;
 
-      this._queue.update((queue) => {
-        queue.push(...this.indexTracks(tracks));
-        this.updateAll({ current, queue });
-        return queue;
-      });
+    this.queue.push(...tracks);
+    if (this.direction != Diretion.Backwards) {
+      this.forwardQueue.push(...tracks);
+    } else {
+      this.backwardQueue.push(...tracks);
+    }
 
-      return current;
-    });
+    this.update();
   }
 
-  rearrage(from: number, to: number): void {
-    this._queue.update((queue) => {
-      const item = queue.splice(from, 1)[0];
-      const prevIndex = queue[to - 1]?.index ?? queue[to]?.index - 1;
-      const nextIndex = queue[to]?.index ?? queue[to - 1]?.index + 1;
-      item.index = (prevIndex + nextIndex) / 2;
+  pushNext(...tracks: Track[]): void {
+    if (!tracks.length) return;
 
-      queue.splice(to, 0, item);
-      this.updateAll({ queue });
-      return queue;
-    });
+    this.queue.unshift(...tracks);
+    if (this.direction != Diretion.Backwards) {
+      this.forwardQueue.unshift(...tracks);
+    } else {
+      this.backwardQueue.unshift(...tracks);
+    }
+
+    this.update();
+  }
+
+  pushAwaiting(...tracks: Track[]): void {
+    if (!tracks.length) return;
+
+    if (this.direction == Diretion.Backwards) {
+      this.forwardQueue.push(...tracks);
+    } else {
+      this.backwardQueue.push(...tracks);
+    }
+
+    if (
+      this.repeatition === Repeatition.All ||
+      this.direction === Diretion.Shuffled
+    ) {
+      this.queue.push(...tracks);
+      this.update();
+    }
+  }
+
+  pushPlaylist(tracks: Track[], index = 0): void {
+    this.pushNext(...tracks.slice(index));
+    this.pushAwaiting(...tracks.slice(0, index));
+  }
+
+  play(track: Track): void {
+    this.remove(track);
+    this.pushNext(track);
+    this.next();
   }
 
   next(): void {
-    let track: Track | undefined;
-    this._queue.update((queue) => {
-      const item = queue.shift();
-      if (!item || item === none) return queue;
+    let item = this.queue[0];
+    if (!item) {
+      if (this.repeatition != Repeatition.All) return;
+      this.pushNext(...this.history);
+      this.clearHistory();
+      item = this.queue[0];
+      if (!item) return;
+    }
+    if (this.current != none) this.history.push(this.current);
 
-      this._current.update((current) => {
-        if (current === none) return item;
-        track = current;
-        return item;
-      });
+    this.current = item;
+    this.remove(item);
 
-      return queue;
-    });
-
-    if (track) this.pushHistory(track);
+    this.update();
   }
 
   previous(): void {
-    this._history.update((history) => {
-      const item = history.pop();
-      if (!item || item === none) return history;
+    const item = this.history.pop();
+    if (!item) return;
+    if (this.current != none) this.pushNext(this.current);
+    this.current = item;
+    this.remove(item);
 
-      this._current.update((current) => {
-        if (current === none) return item;
-
-        this._queue.update((queue) => {
-          queue.unshift(...this.indexTracks([current], true));
-          const index = queue.indexOf(item as IndexedTrack);
-          if (~index) {
-            queue.splice(index, 1);
-            this.updateAll({ history, current: item, queue });
-          }
-          return queue;
-        });
-
-        return item;
-      });
-
-      return history;
-    });
+    this.update();
   }
 
-  switch(to: Track): void {
-    let track: Track | undefined;
-    this._current.update((current) => {
-      track = current;
-
-      this._queue.update((queue) => {
-        const index = queue.indexOf(to as IndexedTrack);
-        if (~index) queue.splice(index, 1);
-        return queue;
-      });
-
-      return to;
-    });
-
-    if (track) this.pushHistory(track, to);
-  }
-
-  sort(direction: Diretion): void {
+  direct(direction: Diretion): void {
     if (direction == Diretion.Normal) {
-      this._queue.update((queue) => {
-        queue.sort((a, b) => a.index - b.index);
-        this.updateAll({ queue });
-        return queue;
-      });
-    }
-    if (direction == Diretion.Backwards) {
-      this._queue.update((queue) => {
-        queue.sort((a, b) => b.index - a.index);
-        this.updateAll({ queue });
-        return queue;
-      });
-    }
-    if (direction == Diretion.Shuffled) {
-      this._queue.update((queue) => {
-        shuffle(queue);
-        this.updateAll({ queue });
-        return queue;
-      });
+      if (!this.forwardQueue.length) {
+        this.forwardQueue = this.backwardQueue;
+        this.backwardQueue = [];
+      }
+      this.queue = this.forwardQueue.slice();
+      if (this.repeatition == Repeatition.All) {
+        this.queue.push(...this.backwardQueue);
+      }
+    } else if (direction == Diretion.Backwards) {
+      if (!this.backwardQueue.length) {
+        this.backwardQueue = this.forwardQueue;
+        this.forwardQueue = [];
+      }
+      this.queue = this.backwardQueue.slice().reverse();
+      if (this.repeatition == Repeatition.All || !this.queue.length) {
+        this.queue.push(...this.forwardQueue.slice().reverse());
+      }
+    } else {
+      this.queue = this.forwardQueue.concat(this.backwardQueue);
+      shuffle(this.queue);
     }
 
-    this._direction.set(direction);
+    this.direction = direction;
+    this.update();
+  }
+
+  repeat(repeatition: Repeatition): void {
+    if (repeatition == this.repeatition) return;
+
+    this.repeatition = repeatition;
+    if (repeatition == Repeatition.All) {
+      if (this.direction == Diretion.Normal) {
+        this.queue.push(...this.backwardQueue);
+      } else if (this.direction == Diretion.Backwards) {
+        this.queue.push(...this.forwardQueue.slice().reverse());
+      }
+    } else {
+      if (this.direction == Diretion.Normal) {
+        this.queue = this.queue.filter((x) => this.forwardQueue.includes(x));
+      } else if (this.direction == Diretion.Backwards) {
+        this.queue = this.queue.filter((x) => this.backwardQueue.includes(x));
+      }
+    }
+    this.update();
+  }
+
+  remove(track: Track): void {
+    const backwardIndex = this.backwardQueue.indexOf(track);
+    const forwardIndex = this.forwardQueue.indexOf(track);
+    const queueIndex = this.queue.indexOf(track);
+
+    if (~backwardIndex) this.backwardQueue.splice(backwardIndex, 1);
+    if (~forwardIndex) this.forwardQueue.splice(forwardIndex, 1);
+    if (~queueIndex) this.queue.splice(queueIndex, 1);
+    if (~queueIndex) this.update();
+  }
+
+  rearrange(from: number, to: number): void {
+    if (from < 0 || from >= this.queue.length) return;
+    if (to < 0 || to >= this.queue.length) return;
+    if (from === to) return;
+
+    const item = this.queue.splice(from, 1)[0];
+    if (!item) return;
+    this.queue.splice(to, 0, item);
+    this.update();
+  }
+
+  clear(): void {
+    const updated = this.current != none;
+    this.current = none;
+    this.clearQueue();
+    this.clearHistory();
+
+    if (updated) this.update();
+  }
+
+  clearQueue(): void {
+    if (
+      !this.queue.length &&
+      !this.forwardQueue.length &&
+      !this.backwardQueue.length
+    ) {
+      return;
+    }
+
+    this.backwardQueue = [];
+    this.forwardQueue = [];
+    this.queue = [];
+
+    this.update();
   }
 
   clearHistory(): void {
-    this._history.update(() => {
-      this.updateAll({ history: [] });
-      return [];
-    });
+    if (!this.history.length) return;
+    this.history = [];
+    this.update();
   }
 
-  private pushHistory(track: Track, remove?: Track): void {
-    this._history.update((history) => {
-      if (remove) {
-        const index = history.indexOf(remove);
-        if (~index) history.splice(index, 1);
-      }
-      history.push(...this.indexTracks([{ ...track }], true));
-      return history;
-    });
-
-    if (this.repeat == Repeat.All) this.pushLast(track);
+  subscribe(run: Subscriber<Tracks>): Unsubscriber {
+    this.subscribers.push(run);
+    run(this);
+    return () => {
+      this.subscribers.splice(this.subscribers.indexOf(run), 1);
+    };
   }
 
-  private updateAll({
-    history = null as Track[] | null,
-    current = null as Track | null,
-    queue = null as Track[] | null,
-  } = {}) {
-    history = history ?? get(this._history);
-    current = current ?? get(this._current);
-    queue = queue ?? get(this._queue);
-    this._all.set([...history, current, ...queue]);
-  }
+  private debounce?: unknown;
+  private update(): void {
+    if (this.current === none && this.forwardQueue.length) this.next();
 
-  private indexTracks(tracks: Track[], backwards = false): IndexedTrack[] {
-    return tracks.map((x, i) => {
-      (x as IndexedTrack).index = backwards
-        ? -this._trackIndex++ + i * 2 - tracks.length + 1
-        : this._trackIndex++;
-      return x as IndexedTrack;
+    clearTimeout(this.debounce as number);
+    this.debounce = setTimeout(() => {
+      this.subscribers.forEach((x) => x(this));
     });
   }
 }
@@ -212,17 +233,13 @@ export interface Track {
   cover?: string;
 }
 
-interface IndexedTrack extends Track {
-  index: number;
-}
-
 export enum Diretion {
   Normal,
   Backwards,
   Shuffled,
 }
 
-export enum Repeat {
+export enum Repeatition {
   None,
   All,
   Single,

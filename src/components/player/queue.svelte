@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Tracks, Track as ITrack } from "models/tracks";
-  import { Repeat, Diretion } from "models/tracks";
+  import { Repeatition, Diretion } from "models/tracks";
   import { scroller } from "actions/scroller";
   import draggable from "actions/draggable";
   import { fly } from "svelte/transition";
@@ -17,25 +17,25 @@
   const itemHeight = 57;
   let showHistory = false;
   let viewport: HTMLElement;
+  let swapping = false;
   let queueFlipping = 0;
   let historyFlipping = 0;
   let queueContainer: HTMLElement;
   let historyContainer: HTMLElement;
 
   let infinity = false;
-  const direction = tracks.direction;
   let history: ITrack[] = [];
   let queue: ITrack[] = [];
 
-  const queueUnsubscribe = tracks.queue.subscribe(async (x) => {
-    queueFlipping++;
-    await tick();
-    queue = x;
-  });
-  const historyUnsubscribe = tracks.history.subscribe(async (x) => {
-    historyFlipping++;
-    await tick();
-    history = x.slice().reverse();
+  const unsubscribe = tracks.subscribe(async () => {
+    if (!swapping) {
+      queueFlipping++;
+      historyFlipping++;
+      await tick();
+    }
+    queue = tracks.queue;
+    history = tracks.history.slice().reverse();
+    swapping = false;
   });
 
   $: {
@@ -45,14 +45,11 @@
 
   function onSwap({ detail }: SwapEvent) {
     const { from, to } = detail;
-    tracks.rearrage(from, to);
-    queueFlipping = 0;
+    swapping = true;
+    tracks.rearrange(from, to);
   }
 
-  onDestroy(() => {
-    queueUnsubscribe();
-    historyUnsubscribe();
-  });
+  onDestroy(unsubscribe);
 </script>
 
 <div class="container">
@@ -92,19 +89,19 @@
       <button
         class="direction"
         aria-label="Switch Playback Direction"
-        class:normal={$direction == Diretion.Normal}
-        class:backwards={$direction == Diretion.Backwards}
-        class:shuffled={$direction == Diretion.Shuffled}
-        on:click={() => tracks.sort(($direction + 1) % 3)}
+        class:normal={$tracks.direction == Diretion.Normal}
+        class:backwards={$tracks.direction == Diretion.Backwards}
+        class:shuffled={$tracks.direction == Diretion.Shuffled}
+        on:click={() => tracks.direct((tracks.direction + 1) % 3)}
       />
       <button
         class="repeat"
         aria-label="Switch Repeat Mode"
-        class:none={tracks.repeat == Repeat.None}
-        class:all={tracks.repeat == Repeat.All}
-        class:single={tracks.repeat == Repeat.Single}
-        class:enabled={tracks.repeat}
-        on:click={() => (tracks.repeat = (tracks.repeat + 1) % 3)}
+        class:none={$tracks.repeatition == Repeatition.None}
+        class:all={$tracks.repeatition == Repeatition.All}
+        class:single={$tracks.repeatition == Repeatition.Single}
+        class:enabled={$tracks.repeatition}
+        on:click={() => tracks.repeat((tracks.repeatition + 1) % 3)}
       />
     {/if}
   </div>
@@ -123,7 +120,7 @@
           bind:flipping={historyFlipping}
           let:item={track}
         >
-          <div class="track" on:click={() => tracks.switch(track)}>
+          <div class="track" on:click={() => tracks.play(track)}>
             <Track {track} extra="duration" />
           </div>
         </VirtualList>
@@ -146,7 +143,7 @@
         >
           <div
             class="track"
-            on:click={() => tracks.switch(track)}
+            on:click={() => tracks.play(track)}
             class:dragging={false}
             data-index={index}
           >

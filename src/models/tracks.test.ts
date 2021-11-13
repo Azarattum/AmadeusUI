@@ -1,5 +1,5 @@
 import { sleep } from "../utils/utils";
-import { Tracks, Track, Diretion, Repeatition, none } from "./tracks2";
+import { Tracks, Track, Diretion, Repeatition, none } from "./tracks";
 
 const t0 = { title: "0" } as Track;
 const t1 = { title: "1" } as Track;
@@ -60,7 +60,6 @@ test("tracks updates", async () => {
 
   tracks.repeat(Repeatition.None);
   tracks.repeat(Repeatition.Single);
-  await sleep(0);
   tracks.repeat(Repeatition.All);
   await sleep(0);
   expect(sub).toBeCalledTimes(9);
@@ -268,4 +267,27 @@ test("repeat one", () => {
 
   tracks.next();
   expect(tracks.current).toBe(t0);
+});
+
+test("empty redirection", () => {
+  const tracks = new Tracks();
+
+  tracks.pushPlaylist([t0, t1, t2, t3]);
+  expect(tracks.queue).toEqual([t1, t2, t3]);
+
+  tracks.direct(Diretion.Backwards);
+  expect(tracks.queue).toEqual([t3, t2, t1]);
+
+  tracks.direct(Diretion.Normal);
+  expect(tracks.queue).toEqual([t1, t2, t3]);
+
+  tracks.pushLast(t4);
+  expect(tracks.queue).toEqual([t1, t2, t3, t4]);
+  tracks.direct(Diretion.Backwards);
+  expect(tracks.queue).toEqual([t4, t3, t2, t1]);
+
+  tracks.pushAwaiting(t5);
+  expect(tracks.queue).toEqual([t4, t3, t2, t1]);
+  tracks.direct(Diretion.Normal);
+  expect(tracks.queue).toEqual([t5]);
 });
