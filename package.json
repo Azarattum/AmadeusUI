@@ -38,8 +38,7 @@
     "typescript": "^4.4.3"
   },
   "dependencies": {
-    "scroll-into-view": "^1.16.0",
-    "swiper": "^7.0.8"
+    "scroll-into-view": "^1.16.0"
   },
   "type": "module"
 }

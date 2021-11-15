@@ -1,7 +1,7 @@
 <script lang="ts">
   import { fade } from "svelte/transition";
 
-  import Context from "components/context.svelte";
+  import Context from "components/common/context.svelte";
 
   export let multiartist = false;
 </script>

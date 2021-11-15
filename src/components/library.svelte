@@ -1,6 +1,6 @@
 <script lang="ts">
+  import Tabs from "./common/tabs.svelte";
   import Search from "./search.svelte";
-  import Tabs from "./tabs.svelte";
 
   let sections = ["Recent", "Playlists", "Artists", "Albums"];
   let drag = 0;

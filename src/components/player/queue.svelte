@@ -5,7 +5,7 @@
   import draggable from "actions/draggable";
   import { fly } from "svelte/transition";
 
-  import VirtualList from "components/virtuallist.svelte";
+  import VirtualList from "components/common/virtuallist.svelte";
   import Miniplayer from "./miniplayer.svelte";
   import Track from "components/track.svelte";
   import { onDestroy, tick } from "svelte";

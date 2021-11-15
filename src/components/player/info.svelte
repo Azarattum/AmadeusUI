@@ -1,7 +1,7 @@
 <script lang="ts">
   import { fly, fade } from "svelte/transition";
 
-  import Context from "components/context.svelte";
+  import Context from "components/common/context.svelte";
 
   export let title: string;
   export let artists: string[] = [];
