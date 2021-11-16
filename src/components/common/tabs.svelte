@@ -2,6 +2,7 @@
   import scrollIntoView from "scroll-into-view";
 
   export let sections: string[] = [];
+  export let navigation = true;
 
   let active = 0;
   let tabs: HTMLElement;
@@ -58,7 +59,7 @@
   }
 </script>
 
-<header bind:this={header}>
+<header bind:this={header} class:hidden={!navigation}>
   {#each sections as section, i}
     <button
       tabIndex="0"
@@ -74,11 +75,11 @@
 
 <slot name="search" />
 
-<nav bind:this={tabs} on:scroll={update}>
+<nav bind:this={tabs} on:scroll={update} class:hidden={!navigation}>
   <slot />
 </nav>
 
-<style>
+<style lang="postcss">
   header {
     display: flex;
     overflow: scroll hidden;
@@ -91,13 +92,19 @@
       var(--color-background) calc(100% - 8px),
       var(--color-transparent)
     );
+
+    transition: max-height 0.3s ease;
+    max-height: 200px;
+    &.hidden {
+      max-height: 0px;
+    }
   }
   button {
     font-family: "SF Pro Display", "SF Pro Icons", "Helvetica Neue", "Helvetica",
       "Arial", sans-serif;
     scroll-snap-align: start;
     font-size: var(--font-large);
-    padding: 16px 8px 16px 14px;
+    padding: 16px 8px 16px 16px;
     color: var(--color-text-caption);
     transition: color 0.2s;
     height: 64px;
@@ -128,6 +135,10 @@
 
     margin-top: -10px;
     height: var(--view-height);
+
+    &.hidden {
+      overflow: hidden;
+    }
   }
   nav > :global(*) {
     scroll-snap-align: start;

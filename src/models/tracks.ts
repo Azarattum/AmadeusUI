@@ -3,7 +3,7 @@ import { shuffle } from "../utils/utils";
 
 export const none: Track = {
   title: "Not Playing",
-  artists: [],
+  artists: ["No Artist"],
   album: "",
   length: Infinity,
 };

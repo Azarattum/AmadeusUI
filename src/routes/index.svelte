@@ -12,7 +12,10 @@
 
 {#each tabs as tab, i}
   {#if selected == i}
-    <svelte:component this={tab} />
+    <svelte:component
+      this={tab}
+      on:play={({ detail }) => tracks.play(detail)}
+    />
   {/if}
 {/each}
 <Player {tracks} />
