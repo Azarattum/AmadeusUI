@@ -14,7 +14,7 @@
   {#if selected == i}
     <svelte:component
       this={tab}
-      on:play={({ detail }) => tracks.play(detail)}
+      on:play={({ detail }) => tracks.play({ ...detail })}
     />
   {/if}
 {/each}

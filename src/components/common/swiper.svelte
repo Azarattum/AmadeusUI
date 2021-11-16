@@ -28,6 +28,12 @@
     if (!container) return;
 
     await tick();
+    //This should fix a weird bug, when the
+    // loop content is not being updated properly yet
+    while (container.children.length > 5) {
+      await new Promise(requestAnimationFrame);
+    }
+
     if (view[1] === previous) {
       container.style.transform = transform(offset - 1);
       animate(false, Math.max(speed, 0.8));
