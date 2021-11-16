@@ -66,22 +66,19 @@
     animation: loading-text 2s ease-in-out infinite;
     font-family: "Blokk";
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-text-fill-color: var(--color-text-caption);
+    background-color: var(--color-text-caption);
 
     :global(img) {
+      background-color: var(--color-text-caption);
       animation: loading-text 2s ease-in-out infinite;
     }
   }
 
   @keyframes loading-text {
-    0% {
-      background-color: var(--color-text-caption);
-    }
     50% {
       background-color: var(--color-text-normal);
-    }
-    100% {
-      background-color: var(--color-text-caption);
+      -webkit-text-fill-color: var(--color-text-normal);
     }
   }
 </style>

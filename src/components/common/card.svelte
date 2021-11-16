@@ -33,9 +33,11 @@
     padding: 16px;
     box-shadow: 0px 0px 8px var(--color-shadow);
     border-radius: 16px;
+    background-color: var(--color-element);
 
     transition: var(--transition);
-    transition-property: border-radius, margin, height, padding, max-height;
+    transition-property: border-radius, margin, height, padding, max-height,
+      background-color;
 
     overflow: hidden;
     max-height: 100vh;
@@ -78,8 +80,10 @@
 
   article.open {
     position: relative;
+    background-color: var(--color-background);
     border-radius: 0;
     margin: 0;
+
     h2 {
       padding-top: 10px;
       font-size: var(--font-large);
