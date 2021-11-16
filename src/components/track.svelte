@@ -1,14 +1,14 @@
 <script lang="ts">
-  import type { Track } from "models/tracks";
+  import { none, Track } from "models/tracks";
   import { formatTime } from "utils/time";
 
   import Cover from "./player/cover.svelte";
 
-  export let track: Track;
+  export let track: Track = none;
   export let extra: "none" | "duration" = "none";
 </script>
 
-<div class="track">
+<div class="track" class:empty={track === none}>
   <Cover image={track.cover} size="48px" />
   <div class="info">
     <div class="title">{track.title}</div>
@@ -61,5 +61,27 @@
   .artists {
     font-size: var(--font-tiny);
     color: var(--color-text-caption);
+  }
+  .empty {
+    animation: loading-text 2s ease-in-out infinite;
+    font-family: "Blokk";
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    :global(img) {
+      animation: loading-text 2s ease-in-out infinite;
+    }
+  }
+
+  @keyframes loading-text {
+    0% {
+      background-color: var(--color-text-caption);
+    }
+    50% {
+      background-color: var(--color-text-normal);
+    }
+    100% {
+      background-color: var(--color-text-caption);
+    }
   }
 </style>
