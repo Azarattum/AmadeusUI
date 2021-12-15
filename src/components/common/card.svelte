@@ -12,12 +12,7 @@
   }
 </script>
 
-<article
-  on:click={() => opened || (opened = !opened)}
-  bind:this={card}
-  use:expandable
-  class:opened
->
+<article bind:this={card} use:expandable class:opened on:click>
   <div class="container">
     <div class="header">
       <h2>{title}</h2>
@@ -46,7 +41,7 @@
     transition: var(--transition);
     transition-property: border-radius, background-color, transform;
 
-    height: 152px;
+    height: 164px;
     overflow: hidden;
   }
   .container {
@@ -98,6 +93,11 @@
     transition-property: transform;
     transform: scale(0.727272);
     transform-origin: left center;
+
+    height: 40px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
   button {
     flex-shrink: 0;

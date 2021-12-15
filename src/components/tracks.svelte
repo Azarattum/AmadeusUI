@@ -13,7 +13,9 @@
   export let tracks: Promise<ITrack[]>;
 
   let opened = false;
+  let loaded = false;
   $: if (!opened && viewport) viewport.scrollTo(0, 0);
+  tracks.then(() => setTimeout(() => (loaded = true), 300));
 
   function formatDuration(seconds: number) {
     let h = Math.floor(seconds / 3600);
@@ -26,12 +28,16 @@
     return hDisplay + mDisplay;
   }
 
-  const itemHeight = 52;
+  const itemHeight = 56;
   let viewport: HTMLElement;
   let container: HTMLElement;
 </script>
 
-<Card {title} bind:opened>
+<Card
+  {title}
+  bind:opened
+  on:click={() => opened || !loaded || (opened = !opened)}
+>
   <div class="viewport" bind:this={viewport} class:opened>
     {#await tracks}
       <div class="container" out:fade={{ duration: 300 }}>
@@ -98,7 +104,7 @@
     padding: 0 16px;
   }
   .track {
-    margin-top: 4px;
+    margin-top: 8px;
 
     :global(img) {
       cursor: pointer;
