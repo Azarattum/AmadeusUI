@@ -46,7 +46,7 @@
     transition: var(--transition);
     transition-property: border-radius, background-color, transform;
 
-    height: 156px;
+    height: 152px;
     overflow: hidden;
   }
   .container {
@@ -57,9 +57,34 @@
     padding: 0 8px;
   }
   .header {
+    position: relative;
+    z-index: 1;
+
     display: flex;
     justify-content: space-between;
     margin: 4px 0;
+    margin-bottom: -10px;
+    transform: translateZ(1px);
+
+    &:before {
+      position: absolute;
+      display: block;
+      content: "";
+      height: 100%;
+      width: 100%;
+      padding-bottom: 8px;
+
+      z-index: -1;
+      background: linear-gradient(
+        180deg,
+        var(--color-background) calc(100% - 8px),
+        var(--color-transparent)
+      );
+
+      opacity: 0;
+      transition: var(--transition);
+      transition-property: opacity;
+    }
   }
   h2 {
     display: inline-block;
@@ -100,6 +125,9 @@
 
     h2 {
       transform: scale(1);
+    }
+    .header:before {
+      opacity: 1;
     }
   }
 </style>
