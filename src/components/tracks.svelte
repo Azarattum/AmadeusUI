@@ -79,7 +79,7 @@
   .viewport {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    height: calc(100vh - 92px);
+    height: calc(var(--view-height) - 92px);
     overflow-y: hidden;
     margin: 0 -16px;
 
