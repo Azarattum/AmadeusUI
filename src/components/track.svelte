@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { createEventDispatcher } from "svelte";
   import { none, Track } from "models/tracks";
   import { formatTime } from "utils/time";
 
@@ -6,10 +7,19 @@
 
   export let track: Track = none;
   export let extra: "none" | "duration" = "none";
+
+  const dispatch = createEventDispatcher();
 </script>
 
 <div class="track" class:empty={track === none}>
-  <Cover image={track.cover} size="48px" />
+  <Cover
+    image={track.cover}
+    size="48px"
+    on:click={(e) => {
+      e.stopPropagation();
+      dispatch("play", track);
+    }}
+  />
   <div class="info">
     <div class="title">{track.title}</div>
     <div class="artists">{track.artists.join(", ")}</div>

@@ -62,7 +62,7 @@
     overflow: hidden;
     user-select: none;
     pointer-events: none;
-    z-index: 1;
+    z-index: 1000;
 
     &.open {
       border-radius: 16px;

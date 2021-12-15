@@ -41,6 +41,7 @@
     bottom: 0;
     height: 44px;
     width: 100vw;
+    z-index: 900;
 
     backdrop-filter: blur(16px);
     background: var(--color-overlay);

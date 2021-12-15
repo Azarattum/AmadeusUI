@@ -1,100 +1,105 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
+  import expandable from "actions/expandable";
 
-  const dispatch = createEventDispatcher();
-
-  export let hidden = false;
+  let card: HTMLElement | undefined;
   export let title: String;
+  export let opened = false;
 
-  let open = false;
-
-  $: if (open) dispatch("open");
-  else dispatch("close");
+  $: if (opened) {
+    card?.dispatchEvent(new Event("expand"));
+  } else {
+    card?.dispatchEvent(new Event("retract"));
+  }
 </script>
 
-<article class:open class:hidden on:click={() => (open = true)}>
-  <h2>{title}</h2>
-  <div>
+<article
+  on:click={() => opened || (opened = !opened)}
+  bind:this={card}
+  use:expandable
+  class:opened
+>
+  <div class="container">
+    <div class="header">
+      <h2>{title}</h2>
+      <button
+        class:hidden={!opened}
+        aria-label="Minimize"
+        on:click|stopPropagation={() => (opened = false)}
+      />
+    </div>
     <slot />
   </div>
-  <button
-    aria-label="Show More"
-    on:click|stopPropagation={() => (open = !open)}
-  />
 </article>
 
 <style lang="postcss">
   @import "../../styles/mixins.pcss";
 
   article {
+    position: relative;
     --transition: 0.6s ease;
 
     margin: 16px 8px;
-    padding: 16px;
     box-shadow: 0px 0px 8px var(--color-shadow);
-    border-radius: 16px;
+    border-radius: 8px;
     background-color: var(--color-element);
 
     transition: var(--transition);
-    transition-property: border-radius, margin, height, padding, max-height,
-      background-color;
+    transition-property: border-radius, background-color, transform;
 
+    height: 156px;
     overflow: hidden;
-    max-height: 100vh;
-    &.hidden {
-      padding-top: 0;
-      padding-bottom: 0;
-      margin-top: 0;
-      margin-bottom: 0;
-      max-height: 0;
-    }
+  }
+  .container {
+    transform-origin: center top;
+    transition: var(--transition);
+    transition-property: transform;
+
+    padding: 0 8px;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    margin: 4px 0;
   }
   h2 {
-    transition: var(--transition);
+    display: inline-block;
     transition-property: font-size, padding-top;
+    font-size: var(--font-large);
     font-family: SF Pro Display, SF Pro Icons, Helvetica Neue, Helvetica, Arial,
       sans-serif;
     margin: 0;
-    padding-bottom: 14px;
-  }
-  div {
-    position: relative;
-    max-height: 156px;
-    overflow: hidden;
 
-    transition: max-height var(--transition);
+    transition: var(--transition);
+    transition-property: transform;
+    transform: scale(0.727272);
+    transform-origin: left center;
   }
   button {
-    display: flex;
-    justify-content: center;
-    margin: 8px 0 -16px -16px;
-    width: calc(100% + 32px);
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    margin: 8px;
+    icon: cancel 24px;
 
-    &:before {
-      color: var(--color-text-caption);
-      icon: down 2rem;
+    transition: 0.3s ease;
+    color: var(--color-text-caption);
+    &:active {
+      transition-duration: 0.05s;
+      color: var(--color-text-selected);
+    }
 
-      transition: transform var(--transition);
+    &.hidden {
+      transition-duration: 0.5s;
+      opacity: 0;
     }
   }
-
-  article.open {
-    position: relative;
-    background-color: var(--color-background);
+  article.opened {
     border-radius: 0;
-    margin: 0;
+    box-shadow: none;
+    background-color: var(--color-background);
 
     h2 {
-      padding-top: 10px;
-      font-size: var(--font-large);
-    }
-    div {
-      max-height: 100vh;
-    }
-    button {
-      &:before {
-        transform: rotate(180deg);
-      }
+      transform: scale(1);
     }
   }
 </style>

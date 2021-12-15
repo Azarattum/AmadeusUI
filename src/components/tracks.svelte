@@ -9,11 +9,12 @@
   const dispatch = createEventDispatcher();
 
   export let title: String;
-  export let hidden: boolean;
   export let tracks: Promise<ITrack[]>;
+
+  let opened = false;
 </script>
 
-<Card {title} {hidden} on:open on:close>
+<Card {title} bind:opened>
   <div class="container">
     {#await tracks}
       <div out:fade={{ duration: 300 }}>
@@ -26,9 +27,13 @@
         {#each result as track}
           <div
             class="track"
-            on:click|stopPropagation={() => dispatch("play", track)}
+            on:click={(e) => {
+              if (!opened) return;
+              e.stopPropagation();
+              dispatch("play", track);
+            }}
           >
-            <Track {track} />
+            <Track {track} on:play />
           </div>
         {/each}
       </div>

@@ -6,6 +6,7 @@
 </script>
 
 <img
+  on:click
   src={image || empty}
   alt=""
   loading="lazy"

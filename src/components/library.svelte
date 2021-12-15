@@ -6,7 +6,6 @@
   import Tracks from "./tracks.svelte";
 
   let sections = ["Recent", "Playlists", "Artists", "Albums"];
-  let focused = "";
   let drag = 0;
 
   function onScroll({ target }: Event) {
@@ -16,16 +15,13 @@
   let recent = fetchRecent();
 </script>
 
-<Tabs {sections} navigation={!focused}>
+<Tabs {sections}>
   <Search slot="search" bind:drag />
   <section on:scroll={onScroll}>
     {#each Object.entries(recent) as [key, value]}
       <Tracks
         title={key.replace(/^\w/, (c) => c.toUpperCase())}
-        hidden={!!focused && focused !== key}
         tracks={value}
-        on:open={() => (focused = key)}
-        on:close={() => (focused = "")}
         on:play
       />
     {/each}

@@ -2,7 +2,6 @@
   import scrollIntoView from "scroll-into-view";
 
   export let sections: string[] = [];
-  export let navigation = true;
 
   let active = 0;
   let tabs: HTMLElement;
@@ -59,7 +58,7 @@
   }
 </script>
 
-<header bind:this={header} class:hidden={!navigation}>
+<header bind:this={header}>
   {#each sections as section, i}
     <button
       tabIndex="0"
@@ -75,12 +74,13 @@
 
 <slot name="search" />
 
-<nav bind:this={tabs} on:scroll={update} class:hidden={!navigation}>
+<nav bind:this={tabs} on:scroll={update}>
   <slot />
 </nav>
 
 <style lang="postcss">
   header {
+    position: absolute;
     display: flex;
     overflow: scroll hidden;
     scroll-snap-type: x mandatory;
@@ -93,11 +93,7 @@
       var(--color-transparent)
     );
 
-    transition: max-height 0.3s ease;
-    max-height: 200px;
-    &.hidden {
-      max-height: 0px;
-    }
+    z-index: 10;
   }
   button {
     font-family: "SF Pro Display", "SF Pro Icons", "Helvetica Neue", "Helvetica",
@@ -133,25 +129,28 @@
     overflow: auto hidden;
     scroll-snap-type: x mandatory;
 
-    margin-top: -10px;
     height: var(--view-height);
 
-    &.hidden {
-      overflow: hidden;
+    & > :global(*) {
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      overflow-y: auto;
+
+      &::before {
+        display: block;
+        content: "";
+        height: 54px;
+      }
+
+      &::after {
+        display: block;
+        content: "";
+        height: 90px;
+      }
     }
   }
-  nav > :global(*) {
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
-    overflow-y: auto;
-  }
-  nav > :global(*)::after {
-    display: block;
-    content: "";
-    height: 144px;
-  }
   :global(.standalone) nav > :global(*)::after {
-    height: 196px;
+    height: 142px;
   }
   *::-webkit-scrollbar {
     display: none;
