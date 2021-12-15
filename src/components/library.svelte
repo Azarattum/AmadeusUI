@@ -30,3 +30,9 @@
   <section on:scroll={onScroll} />
   <section on:scroll={onScroll} />
 </Tabs>
+
+<style lang="postcss">
+  :global(.focused) section {
+    overflow: hidden;
+  }
+</style>

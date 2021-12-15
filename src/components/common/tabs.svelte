@@ -152,6 +152,9 @@
   :global(.standalone) nav > :global(*)::after {
     height: 142px;
   }
+  :global(.focused) nav {
+    overflow: hidden;
+  }
   *::-webkit-scrollbar {
     display: none;
   }

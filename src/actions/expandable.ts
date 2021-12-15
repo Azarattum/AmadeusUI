@@ -17,6 +17,8 @@ export default function expandable(node: HTMLElement): { destroy: () => void } {
       if (x.nodeType != x.ELEMENT_NODE) return;
       (x as HTMLElement).style.transform = untransform;
     });
+
+    document.body.classList.add("focused");
   }
 
   function retract() {
@@ -35,6 +37,8 @@ export default function expandable(node: HTMLElement): { destroy: () => void } {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (node.style as any).zIndex = null;
     }, duration * 1000);
+
+    document.body.classList.remove("focused");
   }
 
   node.addEventListener("expand", expand);
