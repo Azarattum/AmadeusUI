@@ -64,6 +64,7 @@
     top: 0;
 
     padding: 0 8px;
+    width: calc(100% - 16px);
   }
   .header {
     position: relative;

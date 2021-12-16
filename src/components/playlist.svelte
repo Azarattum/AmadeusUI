@@ -214,7 +214,7 @@
     border-radius: 4px;
     pointer-events: none;
     transition: background-color 0.4s ease;
-    width: 100%;
+    width: calc(100% - 8px);
 
     &.tapped {
       transition-duration: 0s;
@@ -294,7 +294,6 @@
 
       transition: box-shadow 0.3s ease, border-radius 0.3s ease,
         transform 0.3s ease;
-
       &.dragging {
         background: var(--color-background);
         transition: box-shadow 0.3s ease, border-radius 0.3s ease;
