@@ -9,6 +9,7 @@ export default function tappable(node: HTMLElement): { destroy: () => void } {
       handleMouseLeave();
       node.removeEventListener("touchcancel", cancel);
       node.removeEventListener("touchmove", cancel);
+      node.removeEventListener("dragstart", cancel);
       node.removeEventListener("touchend", once);
     };
 
@@ -19,6 +20,7 @@ export default function tappable(node: HTMLElement): { destroy: () => void } {
 
     node.addEventListener("touchcancel", cancel, { passive: true, once: true });
     node.addEventListener("touchmove", cancel, { passive: true, once: true });
+    node.addEventListener("dragstart", cancel, { passive: true, once: true });
     node.addEventListener("touchend", once, { passive: true, once: true });
   }
 

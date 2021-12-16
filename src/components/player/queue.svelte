@@ -133,7 +133,7 @@
       </div>
     {:else}
       <div
-        use:draggable={{ fixedOffset: 16, margin: 1 }}
+        use:draggable={{ offsetTop: 16, margin: 1 }}
         transition:fly={{ y: itemHeight }}
         bind:this={queueContainer}
         on:swap={onSwap}
@@ -298,6 +298,7 @@
       box-shadow: 0 0 2px var(--color-shadow);
       margin-bottom: 1px;
       padding: 4px;
+      cursor: pointer;
 
       transition: box-shadow 0.3s ease, border-radius 0.3s ease,
         transform 0.3s ease;

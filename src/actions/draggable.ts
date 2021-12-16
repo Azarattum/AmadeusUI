@@ -4,7 +4,13 @@ import { rigid, select } from "utils/haptics";
 
 export default function draggable(
   node: HTMLElement,
-  { scrollThreshold = 64, fixedOffset = 0, margin = 0 }: DraggableOptions = {}
+  {
+    scrollThreshold = 64,
+    offsetTop = 0,
+    offsetLeft = 0,
+    offsetBottom = 0,
+    margin = 0,
+  }: DraggableOptions = {}
 ): { destroy: () => void } {
   const registerStart = () => {
     node.addEventListener("touchstart", handleStart, {
@@ -16,7 +22,7 @@ export default function draggable(
   let scrolling: number | undefined;
   let bounds = {
     top: 0,
-    bottom: innerHeight,
+    bottom: innerHeight - offsetBottom,
   };
 
   let startPosition: [number, number, number] = [0, 0, 0];
@@ -64,8 +70,8 @@ export default function draggable(
     puppet = from.cloneNode(true) as HTMLElement;
     puppet.style.position = "fixed";
     puppet.style.zIndex = "0";
-    puppet.style.left = box.left + "px";
-    puppet.style.top = box.top - fixedOffset + "px";
+    puppet.style.left = box.left - offsetLeft + "px";
+    puppet.style.top = box.top - offsetTop + "px";
     delete puppet.dataset["index"];
 
     node.appendChild(puppet);
@@ -93,9 +99,9 @@ export default function draggable(
       await new Promise((x) => requestAnimationFrame(x));
       const box = target.getBoundingClientRect();
       const position = {
-        transform: `translate3d(${box.left - puppet.offsetLeft}px,${
-          box.top - fixedOffset - puppet.offsetTop + scrollY
-        }px,0)`,
+        transform: `translate3d(${
+          box.left - offsetLeft - puppet.offsetLeft
+        }px,${box.top - offsetTop - puppet.offsetTop + scrollY}px,0)`,
       };
 
       puppet.classList.remove("dragging");
@@ -132,6 +138,7 @@ export default function draggable(
       if (!rect) return registerStart();
 
       node.dispatchEvent(new Event("scrollcancel", { bubbles: true }));
+      target.dispatchEvent(new Event("dragstart"));
 
       createPuppet(target);
       startIndex = targetIndex = index;
@@ -139,7 +146,7 @@ export default function draggable(
       lastPosition = [clientX, clientY];
       bounds = {
         top: Math.max(rect.top, bounds.top),
-        bottom: Math.min(rect.top + rect.height, bounds.bottom),
+        bottom: Math.min(rect.top + rect.height - offsetBottom, bounds.bottom),
       };
 
       addEventListener("touchend", handleEnd);
@@ -304,6 +311,8 @@ export default function draggable(
 
 interface DraggableOptions {
   scrollThreshold?: number;
-  fixedOffset?: number;
+  offsetTop?: number;
+  offsetLeft?: number;
+  offsetBottom?: number;
   margin?: number;
 }

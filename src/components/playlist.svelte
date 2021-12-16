@@ -2,6 +2,8 @@
   import type { Track as ITrack } from "models/tracks";
   import type Playlist from "models/playlist";
   import { createEventDispatcher } from "svelte";
+  import { scroller } from "actions/scroller";
+  import draggable from "actions/draggable";
   import { fade } from "svelte/transition";
   import tappable from "actions/tappable";
 
@@ -23,6 +25,8 @@
       : (Promise.race(
           [title, playlist.then((x) => x.title)].filter(Boolean)
         ) as Promise<string>);
+  let tracks: ITrack[] = [];
+  playlist.then((x) => (tracks = x.tracks));
 
   $: if (!opened && viewport) viewport.scrollTo(0, 0);
   playlist.then(() => setTimeout(() => (loaded = true), 300));
@@ -66,6 +70,20 @@
     dispatch("last", loaded);
   }
 
+  function swap({ detail }: SwapEvent) {
+    const { from, to } = detail;
+    if (from < 0 || from >= tracks.length) return;
+    if (to < 0 || to >= tracks.length) return;
+    if (from === to) return;
+
+    const item = tracks.splice(from, 1)[0];
+    if (!item) return;
+    tracks.splice(to, 0, item);
+    tracks = tracks;
+    /// FIRE EVENT TO SYNC PLAYLIST
+  }
+
+  const standalone = !!(navigator as any).standalone;
   const itemHeight = 56;
   let viewport: HTMLElement;
   let container: HTMLElement;
@@ -76,25 +94,44 @@
   bind:opened
   on:click={() => opened || !loaded || (opened = !opened)}
 >
-  <div class="viewport" bind:this={viewport} class:opened>
+  <div
+    class="viewport"
+    bind:this={viewport}
+    class:opened
+    use:scroller={{ header: "h2" }}
+  >
     {#await playlist}
       <div class="container" out:fade={{ duration: 300 }}>
         <div class="track"><Track /></div>
         <div class="track"><Track /></div>
       </div>
-    {:then result}
-      <div class="container" in:fade={{ delay: 300 }} bind:this={container}>
+    {:then}
+      <div
+        on:swap={swap}
+        class="container"
+        bind:this={container}
+        in:fade={{ delay: 300 }}
+        use:draggable={{
+          offsetTop: standalone ? 46.5 : 0,
+          offsetLeft: 8,
+          offsetBottom: standalone ? 114 : 92,
+          margin: 0,
+        }}
+      >
         <VirtualList
-          items={result.tracks}
+          items={tracks}
           {container}
           {itemHeight}
           {viewport}
           let:item={track}
+          let:index
         >
           <div
-            class="track"
-            class:tapped={false}
             use:tappable
+            class="track"
+            data-index={index}
+            class:tapped={false}
+            class:dragging={false}
             on:click={(e) => {
               if (!opened) return;
               e.stopPropagation();
@@ -104,7 +141,7 @@
             <Track {track} on:play={({ detail }) => play(detail)} />
           </div>
         </VirtualList>
-        <p>{getSummary(result.tracks)}</p>
+        <p>{getSummary(tracks)}</p>
       </div>
     {/await}
   </div>
@@ -137,7 +174,7 @@
   .viewport {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    height: calc(var(--view-height) - 50px);
+    height: calc(var(--view-height) - 46px);
     overflow-y: hidden;
     margin: 0 -16px;
 
@@ -177,6 +214,7 @@
     border-radius: 4px;
     pointer-events: none;
     transition: background-color 0.4s ease;
+    width: 100%;
 
     &.tapped {
       transition-duration: 0s;
@@ -250,6 +288,21 @@
     .track {
       cursor: pointer;
       pointer-events: all;
+      :global(*) {
+        pointer-events: none;
+      }
+
+      transition: box-shadow 0.3s ease, border-radius 0.3s ease,
+        transform 0.3s ease;
+
+      &.dragging {
+        background: var(--color-background);
+        transition: box-shadow 0.3s ease, border-radius 0.3s ease;
+        position: relative;
+        box-shadow: 0 0 16px var(--color-shadow);
+        border-radius: 8px;
+        z-index: 1;
+      }
     }
     & + :global(.context .options) {
       display: block;

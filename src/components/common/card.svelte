@@ -60,6 +60,8 @@
     transform-origin: center top;
     transition: var(--transition);
     transition-property: transform;
+    position: absolute;
+    top: 0;
 
     padding: 0 8px;
   }
@@ -72,6 +74,8 @@
     margin: 4px 0;
     margin-bottom: -10px;
     transform: translateZ(1px);
+    transition: var(--transition);
+    transition-property: margin-top;
 
     &:before {
       position: absolute;
@@ -79,6 +83,9 @@
       content: "";
       height: 100%;
       width: 100%;
+      margin-top: -16px;
+      margin-left: -16px;
+      padding: 16px;
       padding-bottom: 8px;
 
       z-index: -1;
@@ -138,8 +145,11 @@
     h2 {
       transform: scale(1);
     }
-    .header:before {
-      opacity: 1;
+    .header {
+      margin-top: 16px;
+      &:before {
+        opacity: 1;
+      }
     }
   }
   .loading {
