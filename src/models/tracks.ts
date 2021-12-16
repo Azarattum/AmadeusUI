@@ -1,5 +1,5 @@
 import type { Readable, Subscriber, Unsubscriber } from "svelte/store";
-import { shuffle } from "../utils/utils";
+import { cloneArray, shuffle } from "../utils/utils";
 
 export const none: Track = {
   title: "Not Playing",
@@ -23,6 +23,7 @@ export class Tracks implements Readable<Tracks> {
 
   pushLast(...tracks: Track[]): void {
     if (!tracks.length) return;
+    tracks = cloneArray(tracks);
 
     this.queue.push(...tracks);
     if (this.direction != Diretion.Backwards) {
@@ -36,6 +37,7 @@ export class Tracks implements Readable<Tracks> {
 
   pushNext(...tracks: Track[]): void {
     if (!tracks.length) return;
+    tracks = cloneArray(tracks);
 
     this.queue.unshift(...tracks);
     if (this.direction != Diretion.Backwards) {
@@ -49,6 +51,7 @@ export class Tracks implements Readable<Tracks> {
 
   pushAwaiting(...tracks: Track[]): void {
     if (!tracks.length) return;
+    tracks = cloneArray(tracks);
 
     if (this.direction == Diretion.Backwards) {
       this.forwardQueue.push(...tracks);
@@ -175,6 +178,7 @@ export class Tracks implements Readable<Tracks> {
 
   clear(): void {
     const updated = this.current != none;
+    this.direction = Diretion.Normal;
     this.current = none;
     this.clearQueue();
     this.clearHistory();
@@ -214,7 +218,10 @@ export class Tracks implements Readable<Tracks> {
 
   private debounce?: unknown;
   private update(): void {
-    if (this.current === none && this.forwardQueue.length) this.next();
+    if (this.current === none && this.forwardQueue.length) {
+      this.direction = Diretion.Normal;
+      this.next();
+    }
 
     clearTimeout(this.debounce as number);
     this.debounce = setTimeout(() => {

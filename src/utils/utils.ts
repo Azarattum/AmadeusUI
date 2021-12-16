@@ -17,3 +17,15 @@ export function shuffle<T>(array: T[]): T[] {
   }
   return array;
 }
+
+/**
+ * Creates a shallow copy of the array with all the objects inside cloned
+ * @param array Array to clone
+ */
+export function cloneArray<T>(array: T[]): T[] {
+  const cloned = [];
+  for (const obj of array) {
+    cloned.push({ ...obj });
+  }
+  return cloned;
+}
