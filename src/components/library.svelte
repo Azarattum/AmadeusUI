@@ -22,7 +22,9 @@
       <Tracks
         title={key.replace(/^\w/, (c) => c.toUpperCase())}
         tracks={value}
-        on:play
+        on:playlist
+        on:next
+        on:last
       />
     {/each}
   </section>

@@ -4,6 +4,7 @@
   import { fade } from "svelte/transition";
 
   import VirtualList from "components/common/virtuallist.svelte";
+  import Context from "./common/context.svelte";
   import Card from "./common/card.svelte";
   import Track from "./track.svelte";
 
@@ -26,6 +27,28 @@
     let hDisplay = h > 0 ? h + (h == 1 ? " hour " : " hours ") : "";
     let mDisplay = m > 0 ? m + (m == 1 ? " minute " : " minutes") : "";
     return hDisplay + mDisplay;
+  }
+
+  async function play(track: ITrack) {
+    const loaded = await tracks;
+    const index = loaded.indexOf(track);
+    if (index === -1) return;
+    dispatch("playlist", { tracks: loaded, index });
+  }
+
+  async function shuffle() {
+    const loaded = await tracks;
+    dispatch("playlist", { tracks: loaded });
+  }
+
+  async function queueNext() {
+    const loaded = await tracks;
+    dispatch("next", loaded);
+  }
+
+  async function queueLast() {
+    const loaded = await tracks;
+    dispatch("last", loaded);
   }
 
   const itemHeight = 56;
@@ -58,10 +81,10 @@
             on:click={(e) => {
               if (!opened) return;
               e.stopPropagation();
-              dispatch("play", track);
+              play(track);
             }}
           >
-            <Track {track} on:play />
+            <Track {track} on:play={({ detail }) => play(detail)} />
           </div>
         </VirtualList>
         <p>
@@ -73,13 +96,36 @@
       </div>
     {/await}
   </div>
+  <Context>
+    <button
+      class="option edit"
+      class:active={false}
+      aria-label="Edit Playlist"
+    />
+    <button class="option next" aria-label="Queue Next" on:click={queueNext} />
+    <button class="option last" aria-label="Queue Last" on:click={queueLast} />
+    <button
+      class="option shuffle"
+      aria-label="Play Shuffled"
+      on:click={shuffle}
+    />
+    <button
+      slot="activator"
+      class="options play"
+      aria-label="Play Options"
+      class:active={false}
+      on:touchstart|stopPropagation
+    />
+  </Context>
 </Card>
 
 <style lang="postcss">
+  @import "../styles/mixins.pcss";
+
   .viewport {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    height: calc(var(--view-height) - 92px);
+    height: calc(var(--view-height) - 50px);
     overflow-y: hidden;
     margin: 0 -16px;
 
@@ -96,8 +142,18 @@
       &:after {
         display: block;
         content: "";
-        height: 48px;
+        height: 90px;
       }
+    }
+
+    & + :global(.context .menu) {
+      display: flex;
+      flex-direction: column;
+      background-color: transparent;
+      backdrop-filter: none;
+      min-width: min-content;
+      transform-origin: calc(100% - 17px) 100% !important;
+      overflow: visible;
     }
   }
   .container {
@@ -110,13 +166,78 @@
       cursor: pointer;
     }
   }
+  .options,
+  .option {
+    box-sizing: content-box;
+    border-radius: 100%;
+    margin-bottom: 8px;
+    width: 24px;
+    height: 24px;
+    padding: 10px;
+    box-shadow: 0px 0px 8px var(--color-shadow);
+  }
+  .options {
+    position: absolute;
+    right: 8px;
+    bottom: 99px;
+
+    background-color: var(--color-accent-0);
+    color: #fff;
+
+    cursor: default;
+    display: none;
+
+    transition: background-color 0.3s ease;
+    &.active {
+      transition-duration: 0.05s;
+      background-color: var(--color-accent-75);
+    }
+  }
+  .option {
+    border: none !important;
+    font-size: var(--font-tiny);
+
+    background-color: var(--color-element);
+    color: var(--color-accent-75);
+
+    &.active {
+      background-color: var(--color-highlight-active) !important;
+    }
+  }
+  button {
+    &.options:after {
+      icon: playlist 24px;
+    }
+    &.shuffle:after {
+      icon: shuffle 24px;
+    }
+    &.next:after {
+      icon: next 24px;
+    }
+    &.last:after {
+      transform: scaleY(-1);
+      icon: next 24px;
+    }
+    &.edit:after {
+      icon: settings 24px;
+    }
+  }
+
   .viewport.opened {
     overflow-y: auto;
     .track {
       cursor: pointer;
     }
+    & + :global(.context .options) {
+      display: block;
+    }
   }
-  :global(.standalone) .viewport > :global(div)::after {
-    height: 116px;
+  :global(.standalone) {
+    .viewport > :global(div)::after {
+      height: 158px;
+    }
+    .options {
+      bottom: 167px;
+    }
   }
 </style>
