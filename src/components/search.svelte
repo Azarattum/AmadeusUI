@@ -48,10 +48,11 @@
     position: absolute;
     display: flex;
     left: 50%;
+    top: 64px;
+    z-index: 2;
     transform: translateX(-50%) scaleY(0);
 
     transition: transform 0.2s ease;
-    margin-top: 8px;
     height: 38px;
     width: 80%;
 
@@ -95,5 +96,9 @@
     &:active:before {
       background-color: var(--color-text-selected);
     }
+  }
+
+  :global(.standalone) div {
+    margin-top: 31px;
   }
 </style>
