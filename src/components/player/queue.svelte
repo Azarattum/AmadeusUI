@@ -3,6 +3,7 @@
   import { Repeatition, Diretion } from "models/tracks";
   import { scroller } from "actions/scroller";
   import draggable from "actions/draggable";
+  import tappable from "actions/tappable";
   import { fly } from "svelte/transition";
 
   import VirtualList from "components/common/virtuallist.svelte";
@@ -120,7 +121,12 @@
           bind:flipping={historyFlipping}
           let:item={track}
         >
-          <div class="track" on:click={() => tracks.play({ ...track })}>
+          <div
+            use:tappable
+            class="track"
+            class:tapped={false}
+            on:click={() => tracks.play({ ...track })}
+          >
             <Track {track} extra="duration" />
           </div>
         </VirtualList>
@@ -142,7 +148,9 @@
           let:index
         >
           <div
+            use:tappable
             class="track"
+            class:tapped={false}
             on:click={() => tracks.play(track)}
             class:dragging={false}
             data-index={index}
@@ -293,12 +301,16 @@
 
       transition: box-shadow 0.3s ease, border-radius 0.3s ease,
         transform 0.3s ease;
+
       &.dragging {
         transition: box-shadow 0.3s ease, border-radius 0.3s ease;
         position: relative;
         box-shadow: 0 0 16px var(--color-shadow);
         border-radius: 8px;
         z-index: 1;
+      }
+      &.tapped {
+        background-color: var(--color-highlight);
       }
 
       :global(*) {

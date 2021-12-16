@@ -3,6 +3,7 @@
   import type Playlist from "models/playlist";
   import { createEventDispatcher } from "svelte";
   import { fade } from "svelte/transition";
+  import tappable from "actions/tappable";
 
   import VirtualList from "components/common/virtuallist.svelte";
   import Context from "./common/context.svelte";
@@ -92,6 +93,8 @@
         >
           <div
             class="track"
+            class:tapped={false}
+            use:tappable
             on:click={(e) => {
               if (!opened) return;
               e.stopPropagation();
@@ -166,13 +169,23 @@
     }
   }
   .container {
+    margin-top: 4px;
     padding: 0 16px;
   }
   .track {
-    margin-top: 8px;
+    padding: 4px;
+    border-radius: 4px;
+    pointer-events: none;
+    transition: background-color 0.4s ease;
+
+    &.tapped {
+      transition-duration: 0s;
+      background-color: var(--color-highlight);
+    }
 
     :global(img) {
       cursor: pointer;
+      pointer-events: all;
     }
   }
   .options,
@@ -236,6 +249,7 @@
     overflow-y: auto;
     .track {
       cursor: pointer;
+      pointer-events: all;
     }
     & + :global(.context .options) {
       display: block;
