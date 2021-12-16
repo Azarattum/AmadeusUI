@@ -6,6 +6,7 @@ export const none: Track = {
   artists: ["No Artist"],
   album: "",
   length: Infinity,
+  sources: [],
 };
 
 export class Tracks implements Readable<Tracks> {
@@ -235,6 +236,7 @@ export interface Track {
   length: number;
   year?: number;
   cover?: string;
+  sources: string[];
 }
 
 export enum Diretion {

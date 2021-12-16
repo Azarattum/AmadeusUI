@@ -12,6 +12,7 @@
   loading="lazy"
   style="
     height: {size};
+    width: {size};
     min-height: {size};
     min-width: {size};
   "
@@ -21,5 +22,6 @@
   img {
     background-color: transparent;
     background-size: cover;
+    object-fit: cover;
   }
 </style>
