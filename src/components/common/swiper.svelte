@@ -25,14 +25,14 @@
   onMount(handleUpdate);
 
   async function handleUpdate() {
-    if (!container) return;
-
     await tick();
+    if (!container) return;
     //This should fix a weird bug, when the
     // loop content is not being updated properly yet
     while (container.children.length > 5) {
       await new Promise(requestAnimationFrame);
     }
+    if (!container) return;
 
     if (view[1] === previous) {
       container.style.transform = transform(offset - 1);
