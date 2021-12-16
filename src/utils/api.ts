@@ -1,6 +1,7 @@
+import type Playlist from "models/playlist";
 import type { Track } from "models/tracks";
-import { samples } from "./samples";
 import { shuffle, sleep } from "./utils";
+import { samples } from "./samples";
 
 export async function fetchLyrics(track: Track): Promise<string> {
   ///MOCKING FOR DEVELOPMENT PURPOSES ONLY!
@@ -9,23 +10,79 @@ export async function fetchLyrics(track: Track): Promise<string> {
   return lyrics;
 }
 
-export function fetchRecent(): RecentTracks {
+export async function fetchRecent(): Promise<PlaylistInfo[]> {
   ///MOCKING FOR DEVELOPMENT PURPOSES ONLY!
-  const played = new Promise<Track[]>((resolve) => {
+  const played = new Promise<Playlist>((resolve) => {
     setTimeout(() => {
-      resolve(shuffle([...samples]));
-    }, 2000 * Math.random());
+      resolve({
+        title: "Played",
+        tracks: shuffle([...samples]),
+        type: -2,
+      });
+    }, 2000 * Math.random() + 300);
   });
-  const added = new Promise<Track[]>((resolve) => {
+  const added = new Promise<Playlist>((resolve) => {
     setTimeout(() => {
-      resolve(shuffle([...samples]));
-    }, 1800 * Math.random());
+      resolve({
+        title: "Added",
+        tracks: shuffle(
+          Array.from({ length: 4 }, () => samples.slice()).flat()
+        ),
+        type: -2,
+      });
+    }, 2000 * Math.random() + 300);
   });
 
-  return { played, added };
+  await sleep(300);
+  return [
+    { title: "Played", data: played },
+    { title: "Added", data: added },
+  ];
 }
 
-interface RecentTracks {
-  played: Promise<Track[]>;
-  added: Promise<Track[]>;
+export async function fetchPlaylists(): Promise<PlaylistInfo[]> {
+  ///MOCKING FOR DEVELOPMENT PURPOSES ONLY!
+  const epic = new Promise<Playlist>((resolve) => {
+    setTimeout(() => {
+      resolve({
+        title: "Epic Music",
+        tracks: shuffle([...samples]),
+        type: -2,
+      });
+    }, 2000 * Math.random());
+  });
+  const calm = new Promise<Playlist>((resolve) => {
+    setTimeout(() => {
+      resolve({
+        title: "Calm Playlist",
+        tracks: shuffle(
+          Array.from({ length: 4 }, () => samples.slice()).flat()
+        ),
+        type: -2,
+      });
+    }, 2000 * Math.random());
+  });
+  const dance = new Promise<Playlist>((resolve) => {
+    setTimeout(() => {
+      resolve({
+        title: "Dancing",
+        tracks: shuffle(
+          Array.from({ length: 2 }, () => samples.slice()).flat()
+        ),
+        type: -2,
+      });
+    }, 2000 * Math.random());
+  });
+
+  await sleep(300);
+  return [
+    { title: "Epic Music", data: epic },
+    { title: "Calm Playlist", data: calm },
+    { title: "Dancing", data: dance },
+  ];
+}
+
+interface PlaylistInfo {
+  title: string;
+  data: Promise<Playlist>;
 }

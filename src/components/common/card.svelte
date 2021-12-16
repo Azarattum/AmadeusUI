@@ -1,9 +1,15 @@
 <script lang="ts">
   import expandable from "actions/expandable";
+  import { fade } from "svelte/transition";
 
   let card: HTMLElement | undefined;
-  export let title: String;
+  export let title: string | Promise<String>;
   export let opened = false;
+
+  const fadeOptions = {
+    delay: typeof title === "string" ? 0 : 300,
+    duration: typeof title === "string" ? 0 : 300,
+  };
 
   $: if (opened) {
     card?.dispatchEvent(new Event("expand"));
@@ -15,7 +21,13 @@
 <article bind:this={card} use:expandable class:opened on:click>
   <div class="container">
     <div class="header">
-      <h2>{title}</h2>
+      <h2>
+        {#await title}
+          <span class="loading" out:fade={{ duration: 300 }}>Loading...</span>
+        {:then loaded}
+          <span in:fade={fadeOptions}> {loaded} </span>
+        {/await}
+      </h2>
       <button
         class:hidden={!opened}
         aria-label="Minimize"
@@ -128,6 +140,23 @@
     }
     .header:before {
       opacity: 1;
+    }
+  }
+  .loading {
+    display: block;
+    animation: loading-text 2s ease-in-out infinite;
+    font-family: "Blokk";
+    font-size: 3rem;
+
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: var(--color-text-caption);
+    background-color: var(--color-text-caption);
+  }
+
+  @keyframes loading-text {
+    50% {
+      background-color: var(--color-text-normal);
+      -webkit-text-fill-color: var(--color-text-normal);
     }
   }
 </style>

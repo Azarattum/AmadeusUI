@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Track as ITrack } from "models/tracks";
+  import type Playlist from "models/playlist";
   import { createEventDispatcher } from "svelte";
   import { fade } from "svelte/transition";
 
@@ -10,13 +11,20 @@
 
   const dispatch = createEventDispatcher();
 
-  export let title: String;
-  export let tracks: Promise<ITrack[]>;
+  export let title: Promise<string> | string | null = null;
+  export let playlist: Promise<Playlist>;
 
   let opened = false;
   let loaded = false;
+  let name =
+    typeof title === "string"
+      ? title
+      : (Promise.race(
+          [title, playlist.then((x) => x.title)].filter(Boolean)
+        ) as Promise<string>);
+
   $: if (!opened && viewport) viewport.scrollTo(0, 0);
-  tracks.then(() => setTimeout(() => (loaded = true), 300));
+  playlist.then(() => setTimeout(() => (loaded = true), 300));
 
   function formatDuration(seconds: number) {
     let h = Math.floor(seconds / 3600);
@@ -29,25 +37,31 @@
     return hDisplay + mDisplay;
   }
 
+  function getSummary(tracks: ITrack[]) {
+    const n = tracks.length;
+    const t = tracks.reduce((a, b) => a + b.length, 0);
+    return `${n} ${n == 1 ? "song" : "songs"}, ${formatDuration(t)}`;
+  }
+
   async function play(track: ITrack) {
-    const loaded = await tracks;
+    const loaded = (await playlist).tracks;
     const index = loaded.indexOf(track);
     if (index === -1) return;
     dispatch("playlist", { tracks: loaded, index });
   }
 
   async function shuffle() {
-    const loaded = await tracks;
+    const loaded = (await playlist).tracks;
     dispatch("playlist", { tracks: loaded });
   }
 
   async function queueNext() {
-    const loaded = await tracks;
+    const loaded = (await playlist).tracks;
     dispatch("next", loaded);
   }
 
   async function queueLast() {
-    const loaded = await tracks;
+    const loaded = (await playlist).tracks;
     dispatch("last", loaded);
   }
 
@@ -57,12 +71,12 @@
 </script>
 
 <Card
-  {title}
+  title={name}
   bind:opened
   on:click={() => opened || !loaded || (opened = !opened)}
 >
   <div class="viewport" bind:this={viewport} class:opened>
-    {#await tracks}
+    {#await playlist}
       <div class="container" out:fade={{ duration: 300 }}>
         <div class="track"><Track /></div>
         <div class="track"><Track /></div>
@@ -70,7 +84,7 @@
     {:then result}
       <div class="container" in:fade={{ delay: 300 }} bind:this={container}>
         <VirtualList
-          items={result}
+          items={result.tracks}
           {container}
           {itemHeight}
           {viewport}
@@ -87,12 +101,7 @@
             <Track {track} on:play={({ detail }) => play(detail)} />
           </div>
         </VirtualList>
-        <p>
-          {result.length}
-          {result.length == 1 ? "song" : "songs"}, {formatDuration(
-            result.reduce((a, b) => a + b.length, 0)
-          )}
-        </p>
+        <p>{getSummary(result.tracks)}</p>
       </div>
     {/await}
   </div>
