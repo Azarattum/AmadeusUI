@@ -1,4 +1,5 @@
 import { select } from "utils/haptics";
+import { toTouch } from "utils/mouse";
 
 export function selector(node: HTMLElement): { destroy: () => void } {
   let target: Element | null = null;
@@ -27,8 +28,6 @@ export function selector(node: HTMLElement): { destroy: () => void } {
     parent?.removeEventListener("touchmove", handleMove);
     parent?.removeEventListener("touchend", handleEnd);
     (target as HTMLElement)?.click?.();
-    target?.classList.remove("active");
-    target = null;
   }
 
   function handleStart(event: TouchEvent) {
@@ -47,10 +46,23 @@ export function selector(node: HTMLElement): { destroy: () => void } {
     parent?.addEventListener("touchend", handleEnd);
   }
 
+  function handleClick() {
+    target?.classList.remove("active");
+    target = null;
+  }
+
+  function handleMouse(event: MouseEvent) {
+    handleMove(toTouch(event));
+  }
+
   node.addEventListener("touchstart", handleStart);
+  node.addEventListener("mousemove", handleMouse);
+  node.addEventListener("click", handleClick);
   return {
     destroy() {
       node.removeEventListener("touchstart", handleMove);
+      node.removeEventListener("mousemove", handleMouse);
+      node.removeEventListener("click", handleClick);
     },
   };
 }

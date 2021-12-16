@@ -28,6 +28,13 @@
     activator?.classList.remove("active");
   }
 
+  function toggle(event: Event) {
+    if (!open) {
+      event.stopPropagation();
+      activate(new Event(""));
+    }
+  }
+
   function updateStyles() {
     if (!activator || !menu) return;
     if (align === "bottom right") {
@@ -44,10 +51,13 @@
   onMount(() => {
     activator = context?.lastElementChild as HTMLElement;
     activator?.addEventListener("touchstart", activate);
+    activator?.addEventListener("mouseover", activate);
+    activator?.addEventListener("click", toggle);
   });
 
   onDestroy(() => {
     activator?.removeEventListener("touchstart", activate);
+    activator?.removeEventListener("mouseover", activate);
   });
 </script>
 
