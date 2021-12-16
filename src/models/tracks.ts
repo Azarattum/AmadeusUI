@@ -1,5 +1,5 @@
 import type { Readable, Subscriber, Unsubscriber } from "svelte/store";
-import { cloneArray, shuffle } from "../utils/utils";
+import { shuffle } from "../utils/utils";
 
 export const none: Track = {
   title: "Not Playing",
@@ -23,7 +23,6 @@ export class Tracks implements Readable<Tracks> {
 
   pushLast(...tracks: Track[]): void {
     if (!tracks.length) return;
-    tracks = cloneArray(tracks);
 
     this.queue.push(...tracks);
     if (this.direction != Diretion.Backwards) {
@@ -37,7 +36,6 @@ export class Tracks implements Readable<Tracks> {
 
   pushNext(...tracks: Track[]): void {
     if (!tracks.length) return;
-    tracks = cloneArray(tracks);
 
     this.queue.unshift(...tracks);
     if (this.direction != Diretion.Backwards) {
@@ -51,7 +49,6 @@ export class Tracks implements Readable<Tracks> {
 
   pushAwaiting(...tracks: Track[]): void {
     if (!tracks.length) return;
-    tracks = cloneArray(tracks);
 
     if (this.direction == Diretion.Backwards) {
       this.forwardQueue.push(...tracks);

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Tracks, Track, Diretion } from "models/tracks";
+  import { cloneArray } from "utils/utils";
 
   import Player from "components/player/player.svelte";
   import Library from "components/library.svelte";
@@ -14,18 +15,18 @@
       detail.index ?? Math.floor(Math.random() * detail.tracks.length);
 
     tracks.clear();
-    tracks.pushPlaylist(detail.tracks, index);
+    tracks.pushPlaylist(cloneArray(detail.tracks), index);
     if (detail.index == null) {
       tracks.direct(Diretion.Shuffled);
     }
   }
 
   function onQueueNext({ detail }: { detail: Track[] }) {
-    tracks.pushNext(...detail);
+    tracks.pushNext(...cloneArray(detail));
   }
 
   function onQueueLast({ detail }: { detail: Track[] }) {
-    tracks.pushLast(...detail);
+    tracks.pushLast(...cloneArray(detail));
   }
 
   interface Playlist {
