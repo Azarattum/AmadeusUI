@@ -49,24 +49,24 @@
   }
 
   async function play(track: ITrack) {
-    const loaded = (await playlist).tracks;
+    const loaded = tracks;
     const index = loaded.indexOf(track);
     if (index === -1) return;
     dispatch("playlist", { tracks: loaded, index });
   }
 
   async function shuffle() {
-    const loaded = (await playlist).tracks;
+    const loaded = tracks;
     dispatch("playlist", { tracks: loaded });
   }
 
   async function queueNext() {
-    const loaded = (await playlist).tracks;
+    const loaded = tracks;
     dispatch("next", loaded);
   }
 
   async function queueLast() {
-    const loaded = (await playlist).tracks;
+    const loaded = tracks;
     dispatch("last", loaded);
   }
 
