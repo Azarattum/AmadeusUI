@@ -62,6 +62,7 @@
     overflow-y: scroll;
     word-break: break-word;
     max-height: calc(100% - 16px);
+    white-space: pre-wrap;
 
     span:not(.loading) {
       user-select: auto;
