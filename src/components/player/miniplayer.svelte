@@ -1,10 +1,12 @@
 <script lang="ts">
-  import type { Tracks } from "models/tracks";
+  import { none, Tracks } from "models/tracks";
 
+  import Loader from "components/common/loader.svelte";
   import Cover from "./cover.svelte";
 
   export let tracks: Tracks;
   export let paused: boolean;
+  export let loading: boolean;
   export let time: number;
 
   export let hidden = false;
@@ -20,12 +22,17 @@
 >
   <div class="cover"><Cover image={$tracks.current.cover} /></div>
   <span class="title">{$tracks.current.title}</span>
-  <button
-    class:paused={!paused}
-    aria-label="Pause/Play"
-    on:touchstart|stopPropagation
-    on:click|stopPropagation={() => (paused = !paused)}
-  />
+  {#if !loading}
+    <button
+      class:paused={!paused}
+      aria-label="Pause/Play"
+      on:touchstart|stopPropagation
+      on:click|stopPropagation={() =>
+        tracks.current != none && (paused = !paused)}
+    />
+  {:else}
+    <Loader size={30} padding={24} color={"var(--color-text-normal)"} />
+  {/if}
   <div
     class="playback"
     style="width:{(time / $tracks.current.length) * 100}%"

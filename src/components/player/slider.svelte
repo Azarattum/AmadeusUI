@@ -7,6 +7,7 @@
 
   export let tracks: Tracks;
   export let paused: boolean;
+  export let loading: boolean;
   export let time: number;
 
   let selected = 0;
@@ -39,7 +40,7 @@
       <Lyrics track={$tracks.current} />
     </div>
     <div style="display: {selected == 1 ? 'block' : 'none'}">
-      <Queue {tracks} bind:time bind:paused />
+      <Queue {tracks} {loading} bind:time bind:paused />
     </div>
   </div>
 </div>

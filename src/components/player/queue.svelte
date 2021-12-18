@@ -13,6 +13,7 @@
 
   export let tracks: Tracks;
   export let paused: boolean;
+  export let loading: boolean;
   export let time: number;
 
   const itemHeight = 57;
@@ -54,7 +55,7 @@
 </script>
 
 <div class="container">
-  <Miniplayer {tracks} bind:paused bind:time />
+  <Miniplayer {tracks} {loading} bind:paused bind:time />
   <div class="toolbar">
     <button
       class="history"

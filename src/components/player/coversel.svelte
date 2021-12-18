@@ -8,6 +8,7 @@
 
   export let tracks: Tracks;
   export let paused: boolean;
+  export let loading: boolean;
 
   let view: Track[] = [];
   $: if ($tracks) {
@@ -33,7 +34,7 @@
   <div class="container" class:active={!position}>
     <Cover image={item.cover} />
     {#if position === 0}
-      <Pause bind:paused />
+      <Pause bind:paused {loading} />
       <Options multiartist={item.artists.length > 1} />
     {/if}
   </div>
