@@ -5,32 +5,38 @@ export const samples: Track[] = [
   {
     title: "Make A Move",
     artists: ["Icon For Hire"],
-    album: "",
-    length: 210,
+    album: "Scripted",
+    length: 183,
     cover:
       "https://fanart.tv/fanart/music/bfce9c6d-eff7-4965-b20e-cb21397470f5/albumcover/scripted-4fb28b7278ec7.jpg",
+    sources: ["0"],
   },
   {
-    title: "Make Me Wanna Die",
+    album: "Going to Hell",
     artists: ["The Pretty Reckless"],
-    album: "",
-    length: 210,
     cover:
-      "https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Ffanart.tv%2Ffanart%2Fmusic%2F54f8c12e-571c-4c5a-9f79-5336b39e84b0%2Falbumcover%2Fmake-me-wanna-die-593c68824c419.jpg&f=1&nofb=1",
+      "https://avatars.yandex.net/get-music-content/114728/45d86e7d.a.3893521-1/800x800",
+    length: 274,
+    sources: ["1"],
+    title: "Absolution",
+    year: 2014,
   },
   {
-    title: "Believer",
-    artists: ["Imagine Dragons", "Dragons That Imagine", "Some Dragons"],
-    album: "",
-    length: 210,
+    album: "Megalovania",
+    artists: ["RichaadEB"],
     cover:
-      "https://www.zastavki.com/pictures/originals/2013/Music_Imagine_Dragons__new_album_cover_045478_.jpg",
+      "https://sun4-11.userapi.com/impf/c855128/v855128077/21eb90/d6WOQGBpaos.jpg?size=1184x1184&quality=96&sign=a45fece66fd11b4dd878718f920a55f3&c_uniq_tag=OzviiAY7iKu1LFMzvjym22l_F0miCY4p8CGhVwq_CgM&type=audio",
+    length: 193,
+    sources: ["2"],
+    title: "Megalovania",
+    year: 2020,
   },
   {
     title: "Roots",
     artists: ["In This Moment"],
     album: "",
-    length: 341,
+    length: 249,
+    sources: ["3"],
     cover:
       "https://carrycoal.files.wordpress.com/2017/05/in_this_moment_ritual_album_cover.jpg?w=1200",
   },
@@ -38,8 +44,19 @@ export const samples: Track[] = [
     title: "Rockstar",
     artists: ["Nickelback"],
     album: "",
-    length: 365,
+    length: 252,
+    sources: ["4"],
     cover:
       "https://i1.wp.com/www.rhino.com/sites/rhino.com/files/styles/square/public/081227935092.sml.jpg?itok=7DQngrVU",
+  },
+  {
+    album: "Silk (Favored Nations Remix)",
+    artists: ["Giselle"],
+    cover:
+      "https://sun4-10.userapi.com/impf/c858032/v858032124/13fab1/DaGhLvWA6H0.jpg?size=1184x1184&quality=96&sign=b8a3ed37f33406a0c923cabdb409289e&c_uniq_tag=wFxkekJhY_k9tmBSBfW7LxAQbRAGG69MRrr_EB_i4WY&type=audio",
+    length: 336,
+    sources: ["5"],
+    title: "Silk (Favored Nations Remix)",
+    year: 2018,
   },
 ];

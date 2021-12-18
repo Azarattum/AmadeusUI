@@ -1,88 +1,63 @@
+///================
+///WORK IN PROGRESS
+///================
+
 import type Playlist from "models/playlist";
 import type { Track } from "models/tracks";
-import { shuffle, sleep } from "./utils";
-import { samples } from "./samples";
+
+const url = "http://192.168.1.181:8003";
+const username = "azarattum";
+const base = url + "/api/v1/" + username;
 
 export async function fetchLyrics(track: Track): Promise<string> {
-  ///MOCKING FOR DEVELOPMENT PURPOSES ONLY!
-  await sleep(4000 * Math.random());
-  const lyrics = shuffle([...(track.title + " \n").repeat(70)]).join("");
-  return lyrics;
+  const query = [track.artists.join(", "), track.title]
+    .filter((x) => x)
+    .join(" - ");
+  return await (await fetch(base + "/lyrics/" + query)).text();
 }
 
 export async function fetchRecent(): Promise<PlaylistInfo[]> {
-  ///MOCKING FOR DEVELOPMENT PURPOSES ONLY!
-  const played = new Promise<Playlist>((resolve) => {
-    setTimeout(() => {
-      resolve({
-        title: "Played",
-        tracks: shuffle([...samples]),
-        type: -2,
-      });
-    }, 2000 * Math.random() + 300);
-  });
-  const added = new Promise<Playlist>((resolve) => {
-    setTimeout(() => {
-      resolve({
-        title: "Added",
-        tracks: shuffle(
-          Array.from({ length: 4 }, () => samples.slice()).flat()
-        ),
-        type: -2,
-      });
-    }, 2000 * Math.random() + 300);
-  });
+  const added = fetch(base + "/added")
+    .then((x) => x.json())
+    .then((tracks) => ({
+      title: "Added",
+      type: -1,
+      tracks: tracks,
+    }));
 
-  await sleep(300);
-  return [
-    { title: "Played", data: played },
-    { title: "Added", data: added },
-  ];
+  return [{ title: "Added", data: added }];
 }
 
 export async function fetchPlaylists(): Promise<PlaylistInfo[]> {
-  ///MOCKING FOR DEVELOPMENT PURPOSES ONLY!
-  const epic = new Promise<Playlist>((resolve) => {
-    setTimeout(() => {
-      resolve({
-        title: "Epic Music",
-        tracks: shuffle([...samples]),
-        type: -2,
-      });
-    }, 2000 * Math.random());
-  });
-  const calm = new Promise<Playlist>((resolve) => {
-    setTimeout(() => {
-      resolve({
-        title: "Calm Playlist",
-        tracks: shuffle(
-          Array.from({ length: 4 }, () => samples.slice()).flat()
-        ),
-        type: -2,
-      });
-    }, 2000 * Math.random());
-  });
-  const dance = new Promise<Playlist>((resolve) => {
-    setTimeout(() => {
-      resolve({
-        title: "Dancing",
-        tracks: shuffle(
-          Array.from({ length: 2 }, () => samples.slice()).flat()
-        ),
-        type: -2,
-      });
-    }, 2000 * Math.random());
-  });
+  const data = await (await fetch(base + "/playlist")).json();
+  if (!Array.isArray(data)) return [];
 
-  await sleep(300);
-  return [
-    { title: "Epic Music", data: epic },
-    { title: "Calm Playlist", data: calm },
-    { title: "Dancing", data: dance },
-  ];
+  const playlists = data.map((x) => ({
+    title: x.title,
+    data: new Promise<Playlist>((resolve) => {
+      if (!x?.id) resolve({ title: "None", type: -9999, tracks: [] });
+      fetch(base + "/playlist/" + x.id)
+        .then((x) => x.json())
+        .then((tracks) => {
+          resolve({
+            title: x.title,
+            type: x.type,
+            telegram: x.telegram,
+            tracks: tracks,
+          });
+        });
+    }),
+  }));
+
+  return playlists;
 }
 
-interface PlaylistInfo {
+export async function fetchTrack(sources: string[]): Promise<string> {
+  const source = sources[0];
+  return await (await fetch(base + "/track/" + source)).text();
+}
+
+export interface PlaylistInfo {
   title: string;
   data: Promise<Playlist>;
 }

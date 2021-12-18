@@ -250,3 +250,20 @@ export enum Repeatition {
   All,
   Single,
 }
+
+export function hash(track: Track): string {
+  return `${stringify(track)} - ${track.album.toLowerCase()}`;
+}
+
+export function stringify(track: Track, reverse = false): string {
+  const title = track.title.toLowerCase().trim();
+  const artists = track.artists.sort().join().toLowerCase().trim();
+
+  if (!artists) return purify(title);
+  if (reverse) return purify(`${title} - ${artists}`);
+  return purify(`${artists} - ${title}`);
+}
+
+export function purify(title: string): string {
+  return title.replace(/[+,&]/g, " ");
+}

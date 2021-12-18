@@ -1,11 +1,11 @@
 <script lang="ts">
-  import type { Track } from "models/tracks";
+  import { none, Track } from "models/tracks";
   import { scroller } from "actions/scroller";
   import { fade } from "svelte/transition";
-  import { fetchLyrics } from "utils/api";
+  import { fetchLyrics } from "utils/mock";
 
   export let track: Track;
-  $: lyrics = fetchLyrics(track);
+  $: lyrics = track !== none ? fetchLyrics(track) : "";
 </script>
 
 <h1>Lyrics</h1>
