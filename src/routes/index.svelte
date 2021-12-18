@@ -10,11 +10,12 @@
   const tabs = [Library];
   let selected = 0;
 
-  function onPlaylist({ detail }: Playlist) {
+  async function onPlaylist({ detail }: Playlist) {
     const index =
       detail.index ?? Math.floor(Math.random() * detail.tracks.length);
 
     tracks.clear();
+    await new Promise(requestAnimationFrame);
     tracks.pushPlaylist(cloneArray(detail.tracks), index);
     if (detail.index == null) {
       tracks.direct(Diretion.Shuffled);

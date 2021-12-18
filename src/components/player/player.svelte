@@ -1,7 +1,8 @@
 <script lang="ts">
   import type { Tracks } from "models/tracks";
   import { pannable } from "actions/pannable";
-  import { onDestroy } from "svelte";
+  import { onDestroy, onMount } from "svelte";
+  import AudioPlayer from "models/audio";
 
   import Miniplayer from "./miniplayer.svelte";
   import Coversel from "./coversel.svelte";
@@ -11,19 +12,48 @@
 
   export let tracks: Tracks;
 
+  let loading = false;
   let paused = true;
   let open = false;
   let time = 0;
 
-  let last = tracks.current;
-  const unsubscribe = tracks.subscribe(() => {
-    if (tracks.current != last) {
-      time = 0;
-      last = tracks.current;
+  let player: AudioPlayer | undefined;
+
+  const unsubscribe = tracks.subscribe(async () => {
+    if (!player) return;
+    try {
+      await player.play(tracks.current);
+      if (tracks.queue[0]) player.cache(tracks.queue[0]);
+    } catch (error) {
+      console.log(error);
     }
   });
 
-  onDestroy(unsubscribe);
+  $: if (paused) player?.pause();
+  else player?.resume();
+
+  function handlePaused() {
+    if (!player) return;
+    if (paused != player.isPaused) paused = player.isPaused;
+    console.log("paused", paused);
+  }
+  function handleLoading() {
+    if (!player) return;
+    if (loading != player.isLoading) loading = player.isLoading;
+    console.log("loading", loading);
+  }
+
+  onMount(() => {
+    player = new AudioPlayer();
+    player.addEventListener("pausedchange", handlePaused);
+    player.addEventListener("loadingchange", handleLoading);
+  });
+  onDestroy(() => {
+    player?.removeEventListener("pausedchange", handlePaused);
+    player?.removeEventListener("loadingchange", handleLoading);
+    player?.destroy();
+    unsubscribe();
+  });
 </script>
 
 <div
@@ -33,15 +63,15 @@
   on:open={() => (open = true)}
   on:close={() => (open = false)}
 >
-  <Miniplayer {tracks} bind:paused bind:time hidden={open} />
+  <Miniplayer {tracks} {loading} bind:paused bind:time hidden={open} />
   <div class="container">
     <div class="player-handle" />
     <div>
       <Info title={$tracks.current.title} artists={$tracks.current.artists} />
-      <Coversel {tracks} bind:paused />
+      <Coversel {tracks} {loading} bind:paused />
     </div>
     <Playback bind:time length={$tracks.current.length} />
-    <Slider {tracks} bind:paused bind:time />
+    <Slider {tracks} {loading} bind:paused bind:time />
   </div>
 </div>
 
