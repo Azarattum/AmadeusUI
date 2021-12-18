@@ -12,14 +12,14 @@ export const samples: Track[] = [
     sources: ["0"],
   },
   {
-    album: "Going to Hell",
-    artists: ["The Pretty Reckless"],
+    album: "Shatter Me",
+    artists: ["Lindsey Stirling", "Lzzy Hale"],
     cover:
-      "https://avatars.yandex.net/get-music-content/114728/45d86e7d.a.3893521-1/800x800",
-    length: 274,
+      "https://sun4-17.userapi.com/impf/c857732/v857732187/1e96d6/GRcoa2wBZMQ.jpg?size=1184x1184&quality=96&sign=db45a1c4ef8bfe322a1653ea2989b535&c_uniq_tag=q2U120s-JGLUyyK7EFwm2web_TOHkOIqCxumTfFY55w&type=audio",
+    length: 280,
     sources: ["1"],
-    title: "Absolution",
-    year: 2014,
+    title: "Shatter Me",
+    year: 2020,
   },
   {
     album: "Megalovania",
@@ -41,13 +41,14 @@ export const samples: Track[] = [
       "https://carrycoal.files.wordpress.com/2017/05/in_this_moment_ritual_album_cover.jpg?w=1200",
   },
   {
-    title: "Rockstar",
-    artists: ["Nickelback"],
-    album: "",
-    length: 252,
-    sources: ["4"],
+    album: "Scars & Souvenirs",
+    artists: ["Theory Of A Deadman"],
     cover:
-      "https://i1.wp.com/www.rhino.com/sites/rhino.com/files/styles/square/public/081227935092.sml.jpg?itok=7DQngrVU",
+      "https://sun4-15.userapi.com/impf/c849532/v849532385/194b8d/pesaQCC1dIo.jpg?size=1184x1184&quality=96&sign=5cb2e22e52da2ef650c92c4db16e2179&c_uniq_tag=I7ybApV_McdRDGDeQgJZVKDlYdtH35Tzvj3DcwVFr0A&type=audio",
+    length: 205,
+    sources: ["4"],
+    title: "Bad Girlfriend",
+    year: 2016,
   },
   {
     album: "Silk (Favored Nations Remix)",

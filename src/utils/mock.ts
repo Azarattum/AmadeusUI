@@ -84,10 +84,10 @@ export async function fetchTrack(sources: string[]): Promise<string> {
   const source = parseInt(sources[0]);
   const urls = [
     "https://cs4-7v4.vkuseraudio.net/s/v1/acmp/HIIIwYw2lR3uJct2fPdyzycr_gvQ4zyibfLNigd_S8OcJ3h4eh5QdkgOWZfGx0ZkA3L3NvsKwtFbQWTcQVHpuZk2x1p6kevR-pLUNnlCRDMRbgn5jvFmbQ8jummcIDsrnkupR5LxGvIwAxAlHPhUPQx8oH-zIkVY2-STee8EU_-5iSFZ5Q.mp3",
-    "https://s247vla.storage.yandex.net/get-mp3/e8304cc10650d57daf872feb79b8ede2/0005d36e130ce33a/rmusic/U2FsdGVkX18pfWYV6CjUQkWe6geMDf0QIWgCL5YlIPYYYYmLQLsOYmO3phvqYaJ-_fLN18m7y_dfSyQNs5gOMAUeytmjYM1toed8t0zU614/94b3c8cd10cb62205126c6298ef13d3571c689a90d9d489619a9fab15322c353",
+    "https://cs4-2v4.vkuseraudio.net/s/v1/acmp/xFBN-OyxULYh63okSteHzc7Aat25_BUwmRjzkBugVqy38KRwuGCrtllsduRjxabpVULd1yv-3kX6w_XiDvsNw97-_cKEUHOxUgam8ooU7yEG4dTB3bos63-oqwcK8pqlhOHz4HtNZ68k9_1ziOA4LkJNVbpXk5MwoI5SVBoh6g2oF-VAIA.mp3",
     "https://cs4-2v4.vkuseraudio.net/s/v1/acmp/TrHNmV1LHxsHJMWEMxL_IPvjj6lS-_uLGETeRSp7wQSU5toR2wf2uAKl1lyiyDwk_fpKFlUreKdQ2lSJxHUp1qNAp8Xle4REUviIJIwjEA2qvqy7m0oyw9_otzbTt8YuIzfXCLMCJeldU8dgadlE5ynx4Crk-7BtX5uNPnfu2yvamv_fUw.mp3",
     "https://cs4-7v4.vkuseraudio.net/s/v1/acmp/RGCUlfUzyvhG9dgV5QMxG-w_O4r7Y5y1oW822DUsXG0Powu-1Y35lQ678AFn-H60C7IKjS4T-NRzdCP15tbTgOyBYpTdMMxwpmfIJ8bQAd54iK9hEnInNl_OSkcqt0tD-u1lNG7G0JXRL6n0xfM3zGiQiB_QhyUQP9SZTKt2JCXsbm6jKA.mp3",
-    "https://s128iva.storage.yandex.net/get-mp3/ef5b403f6e91bc9ab002f164376342b0/0005d36e1690c2ab/rmusic/U2FsdGVkX18SNB7gb1fV9GSyo5j_BL-MY_ZeB9_IOUXwaIMTu9x28r-zLfmAvrOWpML5si-3_OK7CGuLQjldk1mKvXwg7B7vhkRZyqmFQpg/eee2cd22d0c7f4fd6e98d0b1561f01907e408d03767831ef6312ee261ec78252/39367",
+    "https://cs4-1v4.vkuseraudio.net/s/v1/acmp/nbHB0OXEW_rq7JSyWb0JTRKmhVm1DqawP5u6wGi9kvAn3GBqAKBYTSLGSGL1a1IMG3BdAf7XencpOFIS6VrNjui5L_glo7bFudwvJieOmlPzqkd3W5BrW0mfbJbBWV9PJfd0B5Hj5MFZySY2lwvjE9ENz0Lhs4gI1dHMgG8zvsBEAKqfBg.mp3",
     "https://psv4.vkuseraudio.net/s/v1/amp2/7oN-WKrwF69du3DoPeZISt-QRaHd5QnDd4x2BkGMSmEIBDu243aW-awN6T7e8tKSq5ZyPwboXgbv8oQWOosOBlRw_EjEGOcfSOQcNiTqqeVeC0jodWQ0iehrgBr9VKSHawvSDMrhRL1yeE724mrimHh4U-Dizcpl0q_X.mp3",
   ];
 

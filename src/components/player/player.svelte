@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Tracks } from "models/tracks";
+  import { Repeatition, Tracks } from "models/tracks";
   import { pannable } from "actions/pannable";
   import { onDestroy, onMount } from "svelte";
   import AudioPlayer from "models/audio";
@@ -24,6 +24,9 @@
     try {
       await player.play(tracks.current);
       if (tracks.queue[0]) player.cache(tracks.queue[0]);
+      else if (tracks.repeatition === Repeatition.All && tracks.history[0]) {
+        player.cache(tracks.history[0]);
+      }
     } catch (error) {
       console.log(error);
     }

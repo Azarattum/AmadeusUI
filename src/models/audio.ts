@@ -1,12 +1,13 @@
+import unlock, { isiOS } from "utils/unlocker";
 import { fetchTrack } from "utils/mock";
 import type { Track } from "./tracks";
+import { hash, none } from "./tracks";
 import EventEmmiter from "./emmiter";
-import { hash } from "./tracks";
-import { none } from "./tracks";
 
-// if ("window" in globalThis) {
-//   if (window.UINative) window.UINative.nativeAudio();
-// }
+if ("window" in globalThis) {
+  if (window.UINative) window.UINative.nativeAudio();
+  else if (isiOS()) unlock();
+}
 
 export default class AudioPlayer extends EventEmmiter {
   private pausedCallback = this.onPause.bind(this);
@@ -14,7 +15,7 @@ export default class AudioPlayer extends EventEmmiter {
 
   private cacheLimit = 2;
   private cached: Cache[] = [];
-  private audio = this.createAudio();
+  private audio: Audio | null = null;
   private now = "";
 
   private loading = false;
@@ -50,8 +51,8 @@ export default class AudioPlayer extends EventEmmiter {
     console.log(track);
 
     //Cache the current track if it is loaded
-    const cacheable = !this.isLoading && previous && this.audio.src;
-    if (cacheable) {
+    const cacheable = !this.isLoading && previous && this.audio?.src;
+    if (cacheable && this.audio) {
       this.cached.push({
         hash: previous,
         loaded: true,
@@ -66,7 +67,7 @@ export default class AudioPlayer extends EventEmmiter {
       const temp = this.audio;
       this.audio = audio;
       this.updateMetadata(track);
-      if (cacheable) {
+      if (cacheable && temp) {
         temp.pause();
         temp.currentTime = 0;
       } else this.destroyAudio(temp);
@@ -87,7 +88,7 @@ export default class AudioPlayer extends EventEmmiter {
       update(this.createAudio());
       const url = await fetchTrack(track.sources);
       if (!this.isPlaying(track)) throw error;
-      if (url) this.audio.src = url;
+      if (url && this.audio) this.audio.src = url;
       console.log("src", url);
     } else {
       update(cache.data);
@@ -97,6 +98,7 @@ export default class AudioPlayer extends EventEmmiter {
     //Sync playback state of the new audio
     const resume = () => {
       if (!this.isPlaying(track)) throw error;
+      if (!this.audio) throw error;
       this.isLoading = false;
       if (this.isPaused && !this.audio.paused) this.audio.pause();
       else if (!this.isPaused && this.audio.paused) this.audio.play();
@@ -106,9 +108,10 @@ export default class AudioPlayer extends EventEmmiter {
     //Properly manage loading state
     if (!cache?.loaded) {
       this.isLoading = true;
-      this.audio.addEventListener("canplay", resume, { once: true });
+      const event = isiOS() && !window.UINative ? "canplaythrough" : "canplay";
+      this.audio?.addEventListener(event, resume, { once: true });
       await new Promise((resolve) => {
-        this.audio.addEventListener("canplaythrough", resolve, { once: true });
+        this.audio?.addEventListener("canplaythrough", resolve, { once: true });
       });
     } else resume();
     if (!this.isPlaying(track)) throw error;
@@ -127,7 +130,9 @@ export default class AudioPlayer extends EventEmmiter {
     this.cached.push(cached);
     if (this.cached.length > this.cacheLimit) {
       const item = this.cached.shift();
-      if (item && item.data !== this.audio) this.destroyAudio(item.data);
+      if (item && item.data?.valueOf() !== this.audio?.valueOf()) {
+        this.destroyAudio(item.data);
+      }
     }
 
     const isValid = () => this.fromCache(track) || this.isPlaying(track);
@@ -139,8 +144,9 @@ export default class AudioPlayer extends EventEmmiter {
       return;
     }
     if (!isValid()) return console.log("gave up on", track.title);
+    const event = isiOS() && !window.UINative ? "canplaythrough" : "canplay";
     cached.data.addEventListener(
-      "canplay",
+      event,
       () => {
         if (!isValid()) return console.log("gave up on", track.title);
         cached.loaded = true;
@@ -153,13 +159,13 @@ export default class AudioPlayer extends EventEmmiter {
 
   resume(): void {
     if (!this.isPaused) return;
-    if (!this.audio.src) return;
+    if (!this.audio?.src) return;
     this.audio.play();
   }
 
   pause(): void {
     if (this.isPaused) return;
-    if (!this.audio.src) return;
+    if (!this.audio?.src) return;
     this.audio.pause();
   }
 
@@ -194,15 +200,18 @@ export default class AudioPlayer extends EventEmmiter {
     return audio;
   }
 
-  private destroyAudio(audio: Audio) {
+  private destroyAudio(audio: Audio | null) {
+    if (!audio) return;
     audio.removeEventListener("pause", this.pausedCallback);
     audio.removeEventListener("play", this.playCallback);
     console.log("!src", audio.src);
     audio.src = "";
     audio.destroyed = true;
+    if (audio?.valueOf() === this.audio?.valueOf()) this.audio = null;
   }
 
   private updateMetadata(track: Track) {
+    if (!this.audio) return;
     this.audio.metadata = {
       title: track.title,
       artist: track.artists.join(", "),
@@ -229,13 +238,13 @@ export default class AudioPlayer extends EventEmmiter {
   }
 
   private onPause({ target }: { target: EventTarget | null }): void {
-    if (target != this.audio) return;
+    if (target != this.audio?.valueOf()) return;
     if (this.isPaused) return;
     this.isPaused = true;
   }
 
   private onPlay({ target }: { target: EventTarget | null }): void {
-    if (target != this.audio) return;
+    if (target != this.audio?.valueOf()) return;
     if (!this.isPaused) return;
     this.isPaused = false;
   }
