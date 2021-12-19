@@ -20,7 +20,7 @@ export default class AudioPlayer extends EventEmmiter {
   private audio: Audio | null = null;
   private now = "";
 
-  private negative = false;
+  private negative: boolean | NodeJS.Timer = false;
   private loading = false;
   private paused = true;
 
@@ -185,15 +185,30 @@ export default class AudioPlayer extends EventEmmiter {
     if (!this.audio) return;
     if (factor && factor !== 1 && this.paused) return;
     if (this.audio.playbackRate !== factor) {
-      this.audio.playbackRate = factor;
-      if (factor < 0) this.negative = true;
-      else this.negative = false;
+      if (factor < 0) {
+        if (!this.negative) this.negative = true;
+      } else {
+        clearInterval(this.negative as NodeJS.Timer);
+        this.negative = false;
+      }
+      try {
+        this.audio.playbackRate = factor;
+      } catch {
+        if (!this.negative) return;
+        this.audio.playbackRate = 0;
+        this.negative = setInterval(() => {
+          if (!this.audio) return;
+          this.seek(this.audio.currentTime - 1);
+        }, 200);
+      }
     }
   }
 
   seek(time: number): void {
     if (!this.audio) return;
-    if (Math.abs(this.audio.currentTime - time) <= 1) return;
+    if (Math.abs(this.audio.currentTime - time) < 1) return;
+    if (time < 0) time = 0;
+    if (time > this.audio.duration) time = this.audio.duration;
     console.log("seeked to", time);
     this.audio.currentTime = time;
   }
