@@ -11,6 +11,7 @@ if ("window" in globalThis) {
 
 export default class AudioPlayer extends EventEmmiter {
   private pausedCallback = this.onPause.bind(this);
+  private endedCallback = this.onEnd.bind(this);
   private playCallback = this.onPlay.bind(this);
   private timeCallback = this.onTime.bind(this);
 
@@ -213,6 +214,7 @@ export default class AudioPlayer extends EventEmmiter {
     const audio = new Audio() as Audio;
     audio.addEventListener("timeupdate", this.timeCallback);
     audio.addEventListener("pause", this.pausedCallback);
+    audio.addEventListener("ended", this.endedCallback);
     audio.addEventListener("play", this.playCallback);
     audio.preload = "auto";
     return audio;
@@ -222,6 +224,7 @@ export default class AudioPlayer extends EventEmmiter {
     if (!audio) return;
     audio.removeEventListener("timeupdate", this.timeCallback);
     audio.removeEventListener("pause", this.pausedCallback);
+    audio.removeEventListener("ended", this.endedCallback);
     audio.removeEventListener("play", this.playCallback);
     console.log("!src", audio.src);
     audio.src = "";
@@ -274,6 +277,11 @@ export default class AudioPlayer extends EventEmmiter {
     if (target != this.audio?.valueOf()) return;
     if (!this.isPaused) return;
     this.isPaused = false;
+  }
+
+  private onEnd({ target }: { target: EventTarget | null }): void {
+    if (target != this.audio?.valueOf()) return;
+    this.dispatchEvent(new Event("ended"));
   }
 }
 

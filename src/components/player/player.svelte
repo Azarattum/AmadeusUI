@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Repeatition, Tracks } from "models/tracks";
+  import type { Tracks } from "models/tracks";
   import { pannable } from "actions/pannable";
   import { onDestroy, onMount } from "svelte";
   import AudioPlayer from "models/audio";
@@ -19,15 +19,17 @@
 
   let player: AudioPlayer | undefined;
 
+  let ended = false;
   const unsubscribe = tracks.subscribe(async () => {
     if (!player) return;
     try {
-      if (!tracks.history.length) player.isPaused = false;
-      await player.play(tracks.current);
-      if (tracks.queue[0]) player.cache(tracks.queue[0]);
-      else if (tracks.repeatition === Repeatition.All && tracks.history[0]) {
-        player.cache(tracks.history[0]);
+      //Autoplay options
+      if (!tracks.history.length || ended) {
+        player.isPaused = false;
+        ended = false;
       }
+      await player.play(tracks.current);
+      if (tracks.upcoming) player.cache(tracks.upcoming);
     } catch (error) {
       console.log(error);
     }
@@ -39,6 +41,7 @@
 
   function handlePaused() {
     if (!player) return;
+    if (player.isPaused && !paused && ended) return;
     if (paused != player.isPaused) paused = player.isPaused;
     console.log("paused", paused);
   }
@@ -46,6 +49,13 @@
     if (!player) return;
     if (loading != player.isLoading) loading = player.isLoading;
     console.log("loading", loading);
+  }
+  function handleEnd() {
+    console.log("ended");
+    if (player && tracks.upcoming) {
+      ended = true;
+      tracks.next();
+    }
   }
   function handleTime({ detail }: { detail: number }) {
     time = detail;
@@ -56,11 +66,13 @@
     player.addEventListener("pausedchange", handlePaused);
     player.addEventListener("loadingchange", handleLoading);
     player.addEventListener("timeupdate", handleTime as any);
+    player.addEventListener("ended", handleEnd);
   });
   onDestroy(() => {
     player?.removeEventListener("pausedchange", handlePaused);
     player?.removeEventListener("loadingchange", handleLoading);
     player?.removeEventListener("timeupdate", handleTime as any);
+    player?.removeEventListener("ended", handleEnd);
     player?.destroy();
     unsubscribe();
   });
