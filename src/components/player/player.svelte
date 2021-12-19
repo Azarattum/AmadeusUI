@@ -34,6 +34,7 @@
 
   $: if (paused) player?.pause();
   else player?.resume();
+  $: player?.seek(time);
 
   function handlePaused() {
     if (!player) return;
@@ -45,15 +46,20 @@
     if (loading != player.isLoading) loading = player.isLoading;
     console.log("loading", loading);
   }
+  function handleTime({ detail }: { detail: number }) {
+    time = detail;
+  }
 
   onMount(() => {
     player = new AudioPlayer();
     player.addEventListener("pausedchange", handlePaused);
     player.addEventListener("loadingchange", handleLoading);
+    player.addEventListener("timeupdate", handleTime as any);
   });
   onDestroy(() => {
     player?.removeEventListener("pausedchange", handlePaused);
     player?.removeEventListener("loadingchange", handleLoading);
+    player?.removeEventListener("timeupdate", handleTime as any);
     player?.destroy();
     unsubscribe();
   });

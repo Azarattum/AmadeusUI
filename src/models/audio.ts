@@ -12,6 +12,7 @@ if ("window" in globalThis) {
 export default class AudioPlayer extends EventEmmiter {
   private pausedCallback = this.onPause.bind(this);
   private playCallback = this.onPlay.bind(this);
+  private timeCallback = this.onTime.bind(this);
 
   private cacheLimit = 2;
   private cached: Cache[] = [];
@@ -48,8 +49,6 @@ export default class AudioPlayer extends EventEmmiter {
     this.now = track == none ? "" : hash(track);
     if (!this.now) return;
 
-    console.log(track);
-
     //Cache the current track if it is loaded
     const cacheable = !this.isLoading && previous && this.audio?.src;
     if (cacheable && this.audio) {
@@ -66,11 +65,12 @@ export default class AudioPlayer extends EventEmmiter {
     const update = (audio: Audio) => {
       const temp = this.audio;
       this.audio = audio;
-      this.updateMetadata(track);
       if (cacheable && temp) {
         temp.pause();
         temp.currentTime = 0;
       } else this.destroyAudio(temp);
+      //Reset time
+      this.dispatchEvent(new CustomEvent("timeupdate", { detail: 0 }));
     };
 
     //Load audio from cache or create a new one
@@ -92,13 +92,14 @@ export default class AudioPlayer extends EventEmmiter {
       console.log("src", url);
     } else {
       update(cache.data);
-      console.log("from cache", track.title, cache.loaded);
+      console.log("from cache", track.title, cache);
     }
 
     //Sync playback state of the new audio
     const resume = () => {
       if (!this.isPlaying(track)) throw error;
       if (!this.audio) throw error;
+      this.updateMetadata(track);
       this.isLoading = false;
       if (this.isPaused && !this.audio.paused) this.audio.pause();
       else if (!this.isPaused && this.audio.paused) this.audio.play();
@@ -169,6 +170,13 @@ export default class AudioPlayer extends EventEmmiter {
     this.audio.pause();
   }
 
+  seek(time: number): void {
+    if (!this.audio) return;
+    if (Math.abs(this.audio.currentTime - time) <= 1) return;
+    console.log("seeked to", time);
+    this.audio.currentTime = time;
+  }
+
   destroy(): void {
     this.destroyAudio(this.audio);
     this.now = "";
@@ -194,6 +202,7 @@ export default class AudioPlayer extends EventEmmiter {
 
   private createAudio(): Audio {
     const audio = new Audio() as Audio;
+    audio.addEventListener("timeupdate", this.timeCallback);
     audio.addEventListener("pause", this.pausedCallback);
     audio.addEventListener("play", this.playCallback);
     audio.preload = "auto";
@@ -202,6 +211,7 @@ export default class AudioPlayer extends EventEmmiter {
 
   private destroyAudio(audio: Audio | null) {
     if (!audio) return;
+    audio.removeEventListener("timeupdate", this.timeCallback);
     audio.removeEventListener("pause", this.pausedCallback);
     audio.removeEventListener("play", this.playCallback);
     console.log("!src", audio.src);
@@ -235,6 +245,14 @@ export default class AudioPlayer extends EventEmmiter {
           ]
         : [],
     });
+  }
+
+  private onTime({ target }: { target: EventTarget | null }): void {
+    if (target != this.audio?.valueOf()) return;
+    if (!this.audio) return;
+    this.dispatchEvent(
+      new CustomEvent("timeupdate", { detail: this.audio.currentTime })
+    );
   }
 
   private onPause({ target }: { target: EventTarget | null }): void {

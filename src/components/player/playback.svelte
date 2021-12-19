@@ -1,8 +1,34 @@
 <script lang="ts">
   import { formatTime } from "utils/time";
+  import { onDestroy, onMount } from "svelte";
 
   export let time: number;
   export let length: number;
+
+  let input: HTMLInputElement;
+  let progress: number = 0;
+  let locked = false;
+
+  $: handleUpdate(time);
+  function handleChange() {
+    time = progress;
+    locked = false;
+  }
+  function handleUpdate(value: number) {
+    if (!locked && progress !== time) progress = time;
+  }
+  function handleStart() {
+    if (!locked) locked = true;
+  }
+
+  onMount(() => {
+    input.addEventListener("change", handleChange);
+    input.addEventListener("input", handleStart);
+  });
+  onDestroy(() => {
+    input?.removeEventListener("change", handleChange);
+    input?.removeEventListener("input", handleStart);
+  });
 </script>
 
 <div class="playback">
@@ -12,8 +38,9 @@
     type="range"
     min="0"
     max={Number.isFinite(length) ? length : 0}
-    style="--progress:{(time / length) * 100}%"
-    bind:value={time}
+    style="--progress:{(progress / length) * 100}%"
+    bind:value={progress}
+    bind:this={input}
     on:touchstart|stopPropagation
   />
   {#key length}
@@ -22,13 +49,13 @@
         class="elapsed"
         aria-label="Seek Backwards"
         on:touchstart|stopPropagation|preventDefault
-        oncontextmenu={() => false}>{formatTime(time)}</button
+        oncontextmenu={() => false}>{formatTime(progress)}</button
       >
       <button
         class="left"
         aria-label="Seek Forward"
         on:touchstart|stopPropagation|preventDefault
-        on:contextmenu={() => false}>{formatTime(length - time)}</button
+        on:contextmenu={() => false}>{formatTime(length - progress)}</button
       >
     </div>
   {/key}
