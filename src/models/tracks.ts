@@ -22,6 +22,14 @@ export class Tracks implements Readable<Tracks> {
   direction = Diretion.Normal;
   infinite = false;
 
+  get upcoming(): Track | null {
+    if (this.queue[0]) return this.queue[0];
+    if (this.repeatition === Repeatition.All && this.history[0]) {
+      return this.history[0];
+    }
+    return null;
+  }
+
   pushLast(...tracks: Track[]): void {
     if (!tracks.length) return;
 

@@ -49,7 +49,8 @@
         class="elapsed"
         aria-label="Seek Backwards"
         on:touchstart|stopPropagation|preventDefault
-        oncontextmenu={() => false}>{formatTime(progress)}</button
+        oncontextmenu={() => false}
+        >{formatTime(Math.min(progress, length))}</button
       >
       <button
         class="left"
