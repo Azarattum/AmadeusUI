@@ -13,6 +13,7 @@
   export let tracks: Tracks;
 
   let loading = false;
+  let speedup = NaN;
   let paused = true;
   let open = false;
   let time = 0;
@@ -35,6 +36,7 @@
     }
   });
 
+  $: player?.speedup(Number.isNaN(speedup) ? (paused ? 0 : 1) : speedup);
   $: if (paused) player?.pause();
   else player?.resume();
   $: player?.seek(time);
@@ -92,7 +94,7 @@
       <Info title={$tracks.current.title} artists={$tracks.current.artists} />
       <Coversel {tracks} {loading} bind:paused />
     </div>
-    <Playback bind:time length={$tracks.current.length} />
+    <Playback bind:speedup bind:time length={$tracks.current.length} />
     <Slider {tracks} {loading} bind:paused bind:time />
   </div>
 </div>

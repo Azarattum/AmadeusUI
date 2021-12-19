@@ -4,7 +4,9 @@
 
   export let time: number;
   export let length: number;
+  export let speedup: number;
 
+  const speed = 5;
   let input: HTMLInputElement;
   let progress: number = 0;
   let locked = false;
@@ -19,6 +21,23 @@
   }
   function handleStart() {
     if (!locked) locked = true;
+  }
+
+  function startSeeking(target: EventTarget | null, speed: number) {
+    speedup = speed;
+
+    const once = { once: true };
+    target?.addEventListener("mouseup", stopSeeking, once);
+    target?.addEventListener("mouseleave", stopSeeking, once);
+    target?.addEventListener("touchend", stopSeeking, once);
+    target?.addEventListener("touchcancel", stopSeeking, once);
+  }
+  function stopSeeking({ target }: { target: EventTarget | null }) {
+    speedup = NaN;
+    target?.removeEventListener("mouseup", stopSeeking);
+    target?.removeEventListener("mouseleave", stopSeeking);
+    target?.removeEventListener("touchend", stopSeeking);
+    target?.removeEventListener("touchcancel", stopSeeking);
   }
 
   onMount(() => {
@@ -48,14 +67,20 @@
       <button
         class="elapsed"
         aria-label="Seek Backwards"
-        on:touchstart|stopPropagation|preventDefault
+        on:mousedown|stopPropagation|preventDefault={({ target }) =>
+          startSeeking(target, -speed)}
+        on:touchstart|stopPropagation|preventDefault={({ target }) =>
+          startSeeking(target, -speed)}
         oncontextmenu={() => false}
         >{formatTime(Math.min(progress, length))}</button
       >
       <button
         class="left"
         aria-label="Seek Forward"
-        on:touchstart|stopPropagation|preventDefault
+        on:mousedown|stopPropagation|preventDefault={({ target }) =>
+          startSeeking(target, speed)}
+        on:touchstart|stopPropagation|preventDefault={({ target }) =>
+          startSeeking(target, speed)}
         on:contextmenu={() => false}>{formatTime(length - progress)}</button
       >
     </div>
@@ -176,6 +201,23 @@
       bottom: 8px;
       right: 16px;
       transform: rotateZ(-45deg);
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .time *:hover {
+      transition-duration: 0.05s;
+      background-color: var(--color-highlight);
+
+      &:before,
+      &:after {
+        transition-duration: 0.05s;
+        opacity: 1;
+      }
+    }
+
+    .playback .progress:hover::-webkit-slider-thumb {
+      background-size: 500%;
     }
   }
 </style>

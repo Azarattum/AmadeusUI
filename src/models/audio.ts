@@ -20,6 +20,7 @@ export default class AudioPlayer extends EventEmmiter {
   private audio: Audio | null = null;
   private now = "";
 
+  private negative = false;
   private loading = false;
   private paused = true;
 
@@ -180,6 +181,16 @@ export default class AudioPlayer extends EventEmmiter {
     this.audio.pause();
   }
 
+  speedup(factor: number): void {
+    if (!this.audio) return;
+    if (factor && factor !== 1 && this.paused) return;
+    if (this.audio.playbackRate !== factor) {
+      this.audio.playbackRate = factor;
+      if (factor < 0) this.negative = true;
+      else this.negative = false;
+    }
+  }
+
   seek(time: number): void {
     if (!this.audio) return;
     if (Math.abs(this.audio.currentTime - time) <= 1) return;
@@ -281,6 +292,12 @@ export default class AudioPlayer extends EventEmmiter {
 
   private onEnd({ target }: { target: EventTarget | null }): void {
     if (target != this.audio?.valueOf()) return;
+    if (!this.audio) return;
+    if (this.negative || !this.audio.currentTime) {
+      this.seek(0);
+      return;
+    }
+
     this.dispatchEvent(new Event("ended"));
   }
 }
