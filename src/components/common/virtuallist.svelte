@@ -55,8 +55,9 @@
     }
   }
 
-  let frame: number;
-  function poll() {
+  let frame: number = 0;
+  let timestamp: DOMHighResTimeStamp = 0;
+  function poll(time: DOMHighResTimeStamp) {
     if (viewport && viewport.scrollTop !== scroll) {
       const maxScroll = items.length * itemHeight - containerHeight;
       let newScroll = viewport.scrollTop;
@@ -65,13 +66,22 @@
       else if (newScroll > maxScroll) newScroll = maxScroll;
       scroll = newScroll;
     }
-    frame = requestAnimationFrame(poll);
+    if (!time) return (frame = 0);
+    if (!timestamp) timestamp = time;
+    if (time - timestamp > 100) {
+      timestamp = 0;
+      frame = 0;
+    } else frame = requestAnimationFrame(poll);
+  }
+
+  function startPolling() {
+    if (!frame) frame = requestAnimationFrame(poll);
   }
 
   function activate() {
     if (containerHeight || !viewport) return;
     containerHeight = viewport.offsetHeight;
-    frame = requestAnimationFrame(poll);
+    poll(0);
     flipping = 0;
   }
 
@@ -87,9 +97,11 @@
       { root: viewport?.parentElement }
     );
     observer.observe(viewport);
+    viewport.addEventListener("scroll", startPolling);
   }
 
   onDestroy(() => {
+    viewport?.removeEventListener("scroll", startPolling);
     globalThis.cancelAnimationFrame?.(frame);
     observer?.disconnect();
   });
