@@ -22,6 +22,7 @@
   const unsubscribe = tracks.subscribe(async () => {
     if (!player) return;
     try {
+      if (!tracks.history.length) player.isPaused = false;
       await player.play(tracks.current);
       if (tracks.queue[0]) player.cache(tracks.queue[0]);
       else if (tracks.repeatition === Repeatition.All && tracks.history[0]) {

@@ -15,7 +15,6 @@
       detail.index ?? Math.floor(Math.random() * detail.tracks.length);
 
     tracks.clear();
-    await new Promise(requestAnimationFrame);
     tracks.pushPlaylist(cloneArray(detail.tracks), index);
     if (detail.index == null) {
       tracks.direct(Diretion.Shuffled);

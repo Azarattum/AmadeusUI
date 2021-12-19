@@ -109,7 +109,6 @@ export default class AudioPlayer extends EventEmmiter {
           if (!this.audio) throw error;
           if (this.isPaused && !this.audio.paused) this.audio.pause();
           else if (!this.isPaused && this.audio.paused) this.audio.play();
-          else if (!previous && this.audio.paused) this.audio.play();
         },
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (isIdle ? { timeout: 300 } : 300) as any
