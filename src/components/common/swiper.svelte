@@ -83,7 +83,7 @@
     current.style.setProperty("opacity", `${1 - 0.2 * Math.abs(offset)}`);
     current.style.setProperty(
       "transform",
-      `scale(${1 - (1 - scale) * Math.abs(offset)})`
+      `scale(${1 - (1 - scale) * Math.abs(offset)}) translateZ(1px)`
     );
 
     if (!offset) return;
@@ -94,7 +94,7 @@
     target?.style.setProperty("opacity", `${0.8 + 0.2 * Math.abs(offset)}`);
     target?.style.setProperty(
       "transform",
-      `scale(${scale + (1 - scale) * Math.abs(offset)})`
+      `scale(${scale + (1 - scale) * Math.abs(offset)}) translateZ(1px)`
     );
   }
 
@@ -149,11 +149,11 @@
     runningAnimations = [];
 
     const active = {
-      transform: "scale(1)",
+      transform: "scale(1) translateZ(1px)",
       opacity: "1",
     };
     const passive = {
-      transform: `scale(${scale})`,
+      transform: `scale(${scale}) translateZ(1px)`,
       opacity: "0.8",
     };
 
@@ -210,12 +210,14 @@
   .swiper {
     display: flex;
     overflow: visible;
+    transform: translateZ(1px);
 
     * {
       width: calc(100% - 64px);
       flex-shrink: 0;
       padding: 24px;
       margin: -24px;
+      transform: translateZ(1px);
 
       cursor: pointer;
     }
