@@ -82,13 +82,13 @@ export default function unlock(): void {
     }
   };
 
-  document.addEventListener("touchend", allocate, { once: true });
+  document.addEventListener("pointerup", allocate, { once: true });
 
   const stop = Event.prototype.stopPropagation;
   Event.prototype.stopPropagation = function () {
-    if (this instanceof TouchEvent && this.type === "touchend") {
+    if (this instanceof TouchEvent && this.type === "pointerup") {
       allocate();
-      document.removeEventListener("touchend", allocate);
+      document.removeEventListener("pointerup", allocate);
       Event.prototype.stopPropagation = stop;
     }
     return stop.bind(this)();
