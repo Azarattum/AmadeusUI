@@ -36,10 +36,10 @@
     }
   });
 
-  $: player?.speedup(Number.isNaN(speedup) ? (paused ? 0 : 1) : speedup);
   $: if (paused) player?.pause();
   else player?.resume();
   $: player?.seek(time);
+  $: handleSeek(speedup);
 
   function handlePaused() {
     if (!player) return;
@@ -62,19 +62,33 @@
   function handleTime({ detail }: { detail: number }) {
     time = detail;
   }
+  function handleNext() {
+    if (player && tracks.upcoming) tracks.next();
+  }
+  function handlePrevious() {
+    if (player && tracks.history.length) tracks.previous();
+  }
+  function handleSeek(speed: number) {
+    if (paused) return;
+    player?.speedup(Number.isNaN(speed) ? 1 : speed);
+  }
 
   onMount(() => {
     player = new AudioPlayer();
+    player.addEventListener("ended", handleEnd);
+    player.addEventListener("next", handleNext);
+    player.addEventListener("previous", handlePrevious);
     player.addEventListener("pausedchange", handlePaused);
     player.addEventListener("loadingchange", handleLoading);
     player.addEventListener("timeupdate", handleTime as any);
-    player.addEventListener("ended", handleEnd);
   });
   onDestroy(() => {
+    player?.removeEventListener("ended", handleEnd);
+    player?.removeEventListener("next", handleNext);
+    player?.removeEventListener("previous", handlePrevious);
     player?.removeEventListener("pausedchange", handlePaused);
     player?.removeEventListener("loadingchange", handleLoading);
     player?.removeEventListener("timeupdate", handleTime as any);
-    player?.removeEventListener("ended", handleEnd);
     player?.destroy();
     unsubscribe();
   });

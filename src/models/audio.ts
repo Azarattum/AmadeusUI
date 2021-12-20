@@ -10,7 +10,9 @@ if ("window" in globalThis) {
 }
 
 export default class AudioPlayer extends EventEmmiter {
+  private previousCallback = this.onPrev.bind(this);
   private pausedCallback = this.onPause.bind(this);
+  private nextCallback = this.onNext.bind(this);
   private endedCallback = this.onEnd.bind(this);
   private playCallback = this.onPlay.bind(this);
   private timeCallback = this.onTime.bind(this);
@@ -223,6 +225,27 @@ export default class AudioPlayer extends EventEmmiter {
     this.cached = [];
   }
 
+  setupControls(): void {
+    if (!("mediaSession" in navigator)) return;
+    navigator.mediaSession.setActionHandler("seekbackward", () => {
+      if (!this.audio) return;
+      this.seek(this.audio.currentTime - 5);
+    });
+    navigator.mediaSession.setActionHandler("seekforward", () => {
+      if (!this.audio) return;
+      this.seek(this.audio.currentTime + 5);
+    });
+    navigator.mediaSession.setActionHandler("seekto", ({ seekTime }) => {
+      if (seekTime != null) this.seek(seekTime);
+    });
+    navigator.mediaSession.setActionHandler("previoustrack", () => {
+      this.dispatchEvent(new Event("previous"));
+    });
+    navigator.mediaSession.setActionHandler("nexttrack", () => {
+      this.dispatchEvent(new Event("next"));
+    });
+  }
+
   private isPlaying(track: Track): boolean {
     return hash(track) === this.now;
   }
@@ -242,6 +265,8 @@ export default class AudioPlayer extends EventEmmiter {
     audio.addEventListener("pause", this.pausedCallback);
     audio.addEventListener("ended", this.endedCallback);
     audio.addEventListener("play", this.playCallback);
+    audio.addEventListener("next", this.nextCallback);
+    audio.addEventListener("previous", this.previousCallback);
     audio.preload = "auto";
     return audio;
   }
@@ -252,6 +277,8 @@ export default class AudioPlayer extends EventEmmiter {
     audio.removeEventListener("pause", this.pausedCallback);
     audio.removeEventListener("ended", this.endedCallback);
     audio.removeEventListener("play", this.playCallback);
+    audio.removeEventListener("next", this.nextCallback);
+    audio.removeEventListener("previous", this.previousCallback);
     console.log("!src", audio.src);
     audio.src = "";
     audio.destroyed = true;
@@ -283,6 +310,7 @@ export default class AudioPlayer extends EventEmmiter {
           ]
         : [],
     });
+    this.setupControls();
   }
 
   private onTime({ target }: { target: EventTarget | null }): void {
@@ -291,18 +319,35 @@ export default class AudioPlayer extends EventEmmiter {
     this.dispatchEvent(
       new CustomEvent("timeupdate", { detail: this.audio.currentTime })
     );
+
+    if (
+      !("mediaSession" in navigator) ||
+      this.audio.playbackRate <= 0 ||
+      !Number.isFinite(this.audio.duration)
+    ) {
+      return;
+    }
+    navigator.mediaSession.setPositionState({
+      position: this.audio.currentTime,
+      duration: this.audio.duration,
+      playbackRate: this.audio.playbackRate,
+    });
   }
 
   private onPause({ target }: { target: EventTarget | null }): void {
     if (target != this.audio?.valueOf()) return;
     if (this.isPaused) return;
     this.isPaused = true;
+    if (!("mediaSession" in navigator)) return;
+    navigator.mediaSession.playbackState = "paused";
   }
 
   private onPlay({ target }: { target: EventTarget | null }): void {
     if (target != this.audio?.valueOf()) return;
     if (!this.isPaused) return;
     this.isPaused = false;
+    if (!("mediaSession" in navigator)) return;
+    navigator.mediaSession.playbackState = "playing";
   }
 
   private onEnd({ target }: { target: EventTarget | null }): void {
@@ -314,6 +359,19 @@ export default class AudioPlayer extends EventEmmiter {
     }
 
     this.dispatchEvent(new Event("ended"));
+  }
+
+  private onNext({ target }: { target: EventTarget | null }): void {
+    console.log("test", target);
+    if (target != this.audio?.valueOf()) return;
+    if (!this.audio) return;
+    this.dispatchEvent(new Event("next"));
+  }
+
+  private onPrev({ target }: { target: EventTarget | null }): void {
+    if (target != this.audio?.valueOf()) return;
+    if (!this.audio) return;
+    this.dispatchEvent(new Event("previous"));
   }
 }
 
