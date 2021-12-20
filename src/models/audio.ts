@@ -26,6 +26,8 @@ export default class AudioPlayer extends EventEmmiter {
   private loading = false;
   private paused = true;
 
+  forcePlay = false;
+
   get isLoading(): boolean {
     return this.loading;
   }
@@ -95,7 +97,6 @@ export default class AudioPlayer extends EventEmmiter {
       const url = await fetchTrack(track.sources);
       if (!this.isPlaying(track)) throw error;
       if (url && this.audio) this.audio.src = url;
-      console.log("src", url);
     } else {
       update(cache.data);
       console.log("from cache", track.title, cache);
@@ -114,7 +115,10 @@ export default class AudioPlayer extends EventEmmiter {
           if (!this.isPlaying(track)) throw error;
           if (!this.audio) throw error;
           if (this.isPaused && !this.audio.paused) this.audio.pause();
-          else if (!this.isPaused && this.audio.paused) this.audio.play();
+          else if (!this.isPaused || this.forcePlay) {
+            this.audio.play();
+            this.forcePlay = false;
+          }
         },
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (isIdle ? { timeout: 300 } : 300) as any
@@ -170,7 +174,6 @@ export default class AudioPlayer extends EventEmmiter {
       { once: true }
     );
     cached.data.src = url;
-    console.log("src", url);
   }
 
   resume(): void {
@@ -281,7 +284,6 @@ export default class AudioPlayer extends EventEmmiter {
     audio.removeEventListener("play", this.playCallback);
     audio.removeEventListener("next", this.nextCallback);
     audio.removeEventListener("previous", this.previousCallback);
-    console.log("!src", audio.src);
     audio.src = "";
     audio.destroyed = true;
     if (audio?.valueOf() === this.audio?.valueOf()) this.audio = null;

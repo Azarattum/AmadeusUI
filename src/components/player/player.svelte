@@ -25,8 +25,9 @@
     if (!player) return;
     try {
       //Autoplay options
-      if (!tracks.history.length || ended) {
+      if (!tracks.history.length || ended || !paused) {
         player.isPaused = false;
+        player.forcePlay = true;
         ended = false;
       }
       hadnleTitle(paused);
@@ -54,12 +55,10 @@
     if (!player) return;
     if (player.isPaused && !paused && ended) return;
     if (paused != player.isPaused) paused = player.isPaused;
-    console.log("paused", paused);
   }
   function handleLoading() {
     if (!player) return;
     if (loading != player.isLoading) loading = player.isLoading;
-    console.log("loading", loading);
   }
   function handleEnd() {
     console.log("ended");

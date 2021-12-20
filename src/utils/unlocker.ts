@@ -51,7 +51,7 @@ export default function unlock(): void {
       "canplay",
       () => {
         available.data.autoplay = false;
-        if (!available.data.paused) available.data.pause();
+        available.data.pause();
       },
       { once: true }
     );
