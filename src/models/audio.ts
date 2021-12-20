@@ -67,6 +67,8 @@ export default class AudioPlayer extends EventEmmiter {
 
     //Update state params and current audio
     const update = (audio: Audio) => {
+      //Instantly update metadata
+      if (cacheable && this.audio) this.updateMetadata(track);
       const temp = this.audio;
       this.audio = audio;
       if (cacheable && temp) {
@@ -362,7 +364,6 @@ export default class AudioPlayer extends EventEmmiter {
   }
 
   private onNext({ target }: { target: EventTarget | null }): void {
-    console.log("test", target);
     if (target != this.audio?.valueOf()) return;
     if (!this.audio) return;
     this.dispatchEvent(new Event("next"));

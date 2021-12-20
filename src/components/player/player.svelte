@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Tracks } from "models/tracks";
+  import { Tracks, Track, none } from "models/tracks";
   import { pannable } from "actions/pannable";
   import { onDestroy, onMount } from "svelte";
   import AudioPlayer from "models/audio";
@@ -29,6 +29,7 @@
         player.isPaused = false;
         ended = false;
       }
+      hadnleTitle(paused);
       await player.play(tracks.current);
       if (tracks.upcoming) player.cache(tracks.upcoming);
     } catch (error) {
@@ -40,7 +41,15 @@
   else player?.resume();
   $: player?.seek(time);
   $: handleSeek(speedup);
+  $: hadnleTitle(paused);
 
+  let title: string;
+  function hadnleTitle(paused: boolean) {
+    if (!("document" in globalThis)) return;
+    const track = tracks.current;
+    if (paused || track === none) document.title = title;
+    else document.title = `${track.artists.join()} - ${track.title}`;
+  }
   function handlePaused() {
     if (!player) return;
     if (player.isPaused && !paused && ended) return;
@@ -74,6 +83,7 @@
   }
 
   onMount(() => {
+    title = document.title;
     player = new AudioPlayer();
     player.addEventListener("ended", handleEnd);
     player.addEventListener("next", handleNext);
