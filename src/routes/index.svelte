@@ -35,14 +35,14 @@
 </script>
 
 {#each tabs as tab, i}
-  {#if selected == i}
+  <section style="display:{selected == i ? 'block' : 'none'}">
     <svelte:component
       this={tab}
       on:playlist={onPlaylist}
       on:next={onQueueNext}
       on:last={onQueueLast}
     />
-  {/if}
+  </section>
 {/each}
 <Player {tracks} />
 <Navbar bind:selected />
