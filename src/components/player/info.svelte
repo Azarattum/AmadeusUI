@@ -21,7 +21,7 @@
             class="artists"
             class:active={false}
             aria-label="Show Artists"
-            on:touchstart|stopPropagation
+            on:touchstart|stopPropagation|passive
           >
             {artists.join(", ")}
           </button>
@@ -30,7 +30,7 @@
         <button
           class="artists"
           aria-label="Show Artists"
-          on:touchstart|stopPropagation
+          on:touchstart|stopPropagation|passive
         >
           {artists.join(", ")}
         </button>

@@ -26,7 +26,7 @@
     <button
       class:paused={!paused}
       aria-label="Pause/Play"
-      on:touchstart|stopPropagation
+      on:touchstart|stopPropagation|passive
       on:click|stopPropagation={() =>
         tracks.current != none && (paused = !paused)}
     />

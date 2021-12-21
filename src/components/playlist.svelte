@@ -163,7 +163,6 @@
       class="options play"
       aria-label="Play Options"
       class:active={false}
-      on:touchstart|stopPropagation
     />
   </Context>
 </Card>
@@ -228,39 +227,56 @@
   }
   .options,
   .option {
+    position: relative;
     box-sizing: content-box;
-    border-radius: 100%;
-    margin-bottom: 8px;
     width: 24px;
     height: 24px;
     padding: 10px;
-    box-shadow: 0px 0px 8px var(--color-shadow);
+    padding-bottom: 18px;
+
+    &:before {
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: block;
+      content: "";
+      width: 44px;
+      height: 44px;
+      box-shadow: 0px 0px 8px var(--color-shadow);
+      border-radius: 100%;
+      transition: background-color 0.3s ease;
+    }
   }
   .options {
     position: absolute;
     right: 8px;
     bottom: 99px;
 
-    background-color: var(--color-accent-0);
     color: #fff;
 
     cursor: default;
     display: none;
 
-    transition: background-color 0.3s ease;
-    &.active {
+    &:before {
+      background-color: var(--color-accent-0);
+    }
+    &.active:before {
       transition-duration: 0.05s;
       background-color: var(--color-accent-75);
     }
   }
   .option {
     border: none !important;
+    background-color: transparent !important;
     font-size: var(--font-tiny);
 
-    background-color: var(--color-element);
     color: var(--color-accent-75);
 
-    &.active {
+    &:before {
+      background-color: var(--color-element);
+    }
+    &.active:before {
+      transition-duration: 0.05s;
       background-color: var(--color-highlight-active) !important;
     }
   }

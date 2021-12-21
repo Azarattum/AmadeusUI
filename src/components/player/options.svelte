@@ -23,7 +23,7 @@
       class="options"
       aria-label="Show Options"
       class:active={false}
-      on:touchstart|stopPropagation
+      on:touchstart|stopPropagation|passive
     />
   </Context>
 </div>

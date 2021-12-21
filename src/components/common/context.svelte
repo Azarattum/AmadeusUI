@@ -50,9 +50,9 @@
 
   onMount(() => {
     activator = context?.lastElementChild as HTMLElement;
-    activator?.addEventListener("touchstart", activate);
-    activator?.addEventListener("mouseover", activate);
-    activator?.addEventListener("click", toggle);
+    activator?.addEventListener("touchstart", activate, { passive: false });
+    activator?.addEventListener("mouseover", activate, { passive: false });
+    activator?.addEventListener("click", toggle, { passive: true });
   });
 
   onDestroy(() => {
@@ -96,7 +96,9 @@
 
     transition: 0.3s ease;
     transition-property: transform, opacity;
+    pointer-events: none;
     :global(*) {
+      pointer-events: all;
       padding: 10px;
 
       &:not(:nth-child(1)) {

@@ -56,7 +56,9 @@
     speed = 1;
 
     animate(true);
-    event.target?.addEventListener("touchmove", handleMove as EventListener);
+    event.target?.addEventListener("touchmove", handleMove as EventListener, {
+      passive: true,
+    });
     event.target?.addEventListener("touchend", handleEnd as any);
   }
 
@@ -190,7 +192,7 @@
   }
 </script>
 
-<div class="swiper" bind:this={container} on:touchstart={handleStart}>
+<div class="swiper" bind:this={container} on:touchstart|passive={handleStart}>
   {#each view as item, i (item)}
     <div
       on:click={() => {

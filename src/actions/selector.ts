@@ -41,8 +41,8 @@ export function selector(node: HTMLElement): { destroy: () => void } {
     event.stopPropagation();
 
     const parent = node.parentElement;
-    parent?.addEventListener("touchcancel", handleEnd);
-    parent?.addEventListener("touchmove", handleMove);
+    parent?.addEventListener("touchcancel", handleEnd, { passive: false });
+    parent?.addEventListener("touchmove", handleMove, { passive: false });
     parent?.addEventListener("touchend", handleEnd);
   }
 
@@ -55,8 +55,8 @@ export function selector(node: HTMLElement): { destroy: () => void } {
     handleMove(toTouch(event));
   }
 
-  node.addEventListener("touchstart", handleStart);
-  node.addEventListener("mousemove", handleMouse);
+  node.addEventListener("touchstart", handleStart, { passive: false });
+  node.addEventListener("mousemove", handleMouse, { passive: false });
   node.addEventListener("click", handleClick);
   return {
     destroy() {

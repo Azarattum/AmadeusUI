@@ -60,16 +60,16 @@
     style="--progress:{(progress / length) * 100}%"
     bind:value={progress}
     bind:this={input}
-    on:touchstart|stopPropagation
+    on:touchstart|stopPropagation|passive
   />
   {#key length}
     <div class="time">
       <button
         class="elapsed"
         aria-label="Seek Backwards"
-        on:mousedown|stopPropagation|preventDefault={({ target }) =>
+        on:mousedown|nonpassive|stopPropagation|preventDefault={({ target }) =>
           startSeeking(target, -speed)}
-        on:touchstart|stopPropagation|preventDefault={({ target }) =>
+        on:touchstart|nonpassive|stopPropagation|preventDefault={({ target }) =>
           startSeeking(target, -speed)}
         oncontextmenu={() => false}
         >{formatTime(Math.min(progress, length))}</button
@@ -77,9 +77,9 @@
       <button
         class="left"
         aria-label="Seek Forward"
-        on:mousedown|stopPropagation|preventDefault={({ target }) =>
+        on:mousedown|nonpassive|stopPropagation|preventDefault={({ target }) =>
           startSeeking(target, speed)}
-        on:touchstart|stopPropagation|preventDefault={({ target }) =>
+        on:touchstart|nonpassive|stopPropagation|preventDefault={({ target }) =>
           startSeeking(target, speed)}
         on:contextmenu={() => false}>{formatTime(length - progress)}</button
       >

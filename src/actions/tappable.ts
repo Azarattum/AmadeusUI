@@ -32,7 +32,7 @@ export default function tappable(node: HTMLElement): { destroy: () => void } {
     node.classList.remove("tapped");
   }
 
-  node.addEventListener("touchstart", handleStart);
+  node.addEventListener("touchstart", handleStart, { passive: true });
   if (matchMedia("(pointer:fine)").matches) {
     node.addEventListener("mouseover", handleMouseOver);
     node.addEventListener("mouseleave", handleMouseLeave);
