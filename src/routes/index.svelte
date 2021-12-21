@@ -4,10 +4,12 @@
 
   import Player from "components/player/player.svelte";
   import Library from "components/library.svelte";
+  import Explore from "components/explore.svelte";
+  import Listen from "components/listen.svelte";
   import Navbar from "components/navbar.svelte";
 
   const tracks = new Tracks();
-  const tabs = [Library];
+  const tabs = [Library, Listen, Explore];
   let selected = 0;
 
   async function onPlaylist({ detail }: Playlist) {

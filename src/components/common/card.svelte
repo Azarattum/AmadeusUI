@@ -1,10 +1,11 @@
 <script lang="ts">
   import expandable from "actions/expandable";
+  import { onDestroy, onMount } from "svelte";
   import { fade } from "svelte/transition";
 
   let card: HTMLElement | undefined;
   export let title: string | Promise<String>;
-  export let opened = false;
+  export let opened: boolean | null = null;
   export let height: number;
 
   const fadeOptions = {
@@ -17,6 +18,19 @@
   } else {
     card?.dispatchEvent(new Event("retract"));
   }
+
+  function handleOpen() {
+    opened = !opened;
+  }
+
+  onMount(() => {
+    if (card && opened === null) {
+      card.addEventListener("click", handleOpen);
+    }
+  });
+  onDestroy(() => {
+    card?.removeEventListener("click", handleOpen);
+  });
 </script>
 
 <article
