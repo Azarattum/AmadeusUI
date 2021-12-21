@@ -49,7 +49,7 @@
     if (!("document" in globalThis)) return;
     const track = tracks.current;
     if (paused || track === none) document.title = title;
-    else document.title = `${track.artists.join()} - ${track.title}`;
+    else document.title = `${track.artists.join(", ")} - ${track.title}`;
   }
   function handlePaused() {
     if (!player) return;

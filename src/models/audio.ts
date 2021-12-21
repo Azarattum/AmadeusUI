@@ -272,6 +272,7 @@ export default class AudioPlayer extends EventEmmiter {
     audio.addEventListener("play", this.playCallback);
     audio.addEventListener("next", this.nextCallback);
     audio.addEventListener("previous", this.previousCallback);
+    audio.crossOrigin = "anonymous";
     audio.preload = "auto";
     return audio;
   }
