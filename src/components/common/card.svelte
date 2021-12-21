@@ -5,6 +5,7 @@
   let card: HTMLElement | undefined;
   export let title: string | Promise<String>;
   export let opened = false;
+  export let height: number;
 
   const fadeOptions = {
     delay: typeof title === "string" ? 0 : 300,
@@ -18,7 +19,13 @@
   }
 </script>
 
-<article bind:this={card} use:expandable class:opened on:click>
+<article
+  bind:this={card}
+  use:expandable
+  class:opened
+  on:click
+  style="--height:{height}px"
+>
   <div class="container">
     <div class="header">
       <h2>
@@ -53,7 +60,7 @@
     transition: var(--transition);
     transition-property: border-radius, background-color, transform;
 
-    height: 164px;
+    height: calc(var(--height) + 48px);
     overflow: hidden;
   }
   .container {

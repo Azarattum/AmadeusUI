@@ -91,6 +91,7 @@
 
 <Card
   title={name}
+  height={115}
   bind:opened
   on:click={() => opened || !loaded || (opened = !opened)}
 >
