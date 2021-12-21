@@ -101,7 +101,6 @@ export default function draggable(
       }
 
       target.style.opacity = "0";
-      await new Promise((x) => requestAnimationFrame(x));
       const box = target.getBoundingClientRect();
       const position = {
         transform: `translate3d(${
