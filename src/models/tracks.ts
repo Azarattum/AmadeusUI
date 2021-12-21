@@ -17,6 +17,7 @@ export class Tracks implements Readable<Tracks> {
   current = none;
   history: Track[] = [];
   queue: Track[] = [];
+  firstToPlay = false;
 
   repeatition = Repeatition.None;
   direction = Diretion.Normal;
@@ -227,11 +228,13 @@ export class Tracks implements Readable<Tracks> {
     if (this.current === none && this.forwardQueue.length) {
       this.direction = Diretion.Normal;
       this.next();
+      this.firstToPlay = true;
     }
 
     clearTimeout(this.debounce as number);
     this.debounce = setTimeout(() => {
       this.subscribers.forEach((x) => x(this));
+      this.firstToPlay = false;
     });
   }
 }

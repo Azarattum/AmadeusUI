@@ -156,7 +156,9 @@ export default function draggable(
       addEventListener("touchend", handleEnd);
       event.target?.addEventListener("touchend", handleEnd);
       event.target?.addEventListener("touchcancel", handleEnd);
-      event.target?.addEventListener("touchmove", handleMove as EventListener);
+      event.target?.addEventListener("touchmove", handleMove as EventListener, {
+        passive: true,
+      });
       rigid();
     };
 
@@ -220,8 +222,6 @@ export default function draggable(
   }
 
   async function handleEnd(event: Event) {
-    event.stopPropagation();
-    event.preventDefault();
     event.target?.removeEventListener("touchmove", handleMove as EventListener);
     event.target?.removeEventListener("touchend", handleEnd);
     event.target?.removeEventListener("touchcancel", handleEnd);

@@ -25,7 +25,7 @@
     if (!player) return;
     try {
       //Autoplay options
-      if (!tracks.history.length || ended || !paused) {
+      if (tracks.firstToPlay || ended || !paused) {
         player.isPaused = false;
         player.forcePlay = true;
         ended = false;
@@ -44,7 +44,7 @@
   $: handleSeek(speedup);
   $: hadnleTitle(paused);
 
-  let title: string;
+  let title = "Amadeus";
   function hadnleTitle(paused: boolean) {
     if (!("document" in globalThis)) return;
     const track = tracks.current;
