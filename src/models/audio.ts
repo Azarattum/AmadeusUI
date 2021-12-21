@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-empty-function */
 import unlock, { isiOS } from "utils/unlocker";
 import { fetchTrack } from "utils/mock";
 import type { Track } from "./tracks";
@@ -27,6 +28,17 @@ export default class AudioPlayer extends EventEmmiter {
   private paused = true;
 
   forcePlay = false;
+
+  debug = false;
+  private log: (...params: any[]) => void = () => {};
+  constructor({ debug }: PlayerOptions = { debug: false }) {
+    super();
+    if ((this.debug = debug)) {
+      this.log = (...params: any[]) => {
+        console.log(`[${this.constructor.name}/DEBUG]:`, ...params);
+      };
+    }
+  }
 
   get isLoading(): boolean {
     return this.loading;
@@ -64,7 +76,7 @@ export default class AudioPlayer extends EventEmmiter {
         data: this.audio,
       });
       this.audio.preload = "none";
-      console.log("cached", previous);
+      this.log("Track cached:", previous);
     }
 
     //Update state params and current audio
@@ -88,7 +100,7 @@ export default class AudioPlayer extends EventEmmiter {
       const item = this.cached.shift();
       if (item && item !== cache) {
         this.destroyAudio(item.data);
-        console.log("uncached", item?.hash);
+        this.log("Track removed from cache:", item.hash);
       }
     }
     if (!cache) {
@@ -99,7 +111,7 @@ export default class AudioPlayer extends EventEmmiter {
       if (url && this.audio) this.audio.src = url;
     } else {
       update(cache.data);
-      console.log("from cache", track.title, cache);
+      this.log("Track retrieved from cache:", cache.hash);
     }
 
     //Sync playback state of the new audio
@@ -108,6 +120,7 @@ export default class AudioPlayer extends EventEmmiter {
       if (!this.audio) throw error;
       this.updateMetadata(track);
       this.isLoading = false;
+      this.log("Track loaded:", track);
       //Resume audio when possible
       const isIdle = "requestIdleCallback" in globalThis;
       (isIdle ? requestIdleCallback : setTimeout)(
@@ -116,6 +129,10 @@ export default class AudioPlayer extends EventEmmiter {
           if (!this.audio) throw error;
           if (this.isPaused && !this.audio.paused) this.audio.pause();
           else if (!this.isPaused || this.forcePlay) {
+            this.log("Track autoplayed", {
+              paused: this.isPaused,
+              force: this.forcePlay,
+            });
             this.audio.play();
             this.forcePlay = false;
           }
@@ -148,10 +165,12 @@ export default class AudioPlayer extends EventEmmiter {
       data: this.createAudio(),
     };
     this.cached.push(cached);
+    this.log("Track cached:", hash(track));
     if (this.cached.length > this.cacheLimit) {
       const item = this.cached.shift();
       if (item && item.data?.valueOf() !== this.audio?.valueOf()) {
         this.destroyAudio(item.data);
+        this.log("Track removed from cache:", item.hash);
       }
     }
 
@@ -163,13 +182,14 @@ export default class AudioPlayer extends EventEmmiter {
       this.fromCache(track, true);
       return;
     }
-    if (!isValid()) return console.log("gave up on", track.title);
+    if (!isValid()) return this.log("Gave up on loading:", hash(track));
     const event = isiOS() && !window.UINative ? "canplaythrough" : "canplay";
     cached.data.addEventListener(
       event,
       () => {
-        if (!isValid()) return console.log("gave up on", track.title);
+        if (!isValid()) return this.log("Gave up on loading:", hash(track));
         cached.loaded = true;
+        this.log("Cache loaded:", cached);
       },
       { once: true }
     );
@@ -202,6 +222,8 @@ export default class AudioPlayer extends EventEmmiter {
         this.audio.playbackRate = factor;
       } catch {
         if (!this.negative) return;
+        this.log("Using rewind fallback implementation");
+
         this.audio.playbackRate = 0;
         this.negative = setInterval(() => {
           if (!this.audio) return;
@@ -216,7 +238,7 @@ export default class AudioPlayer extends EventEmmiter {
     if (Math.abs(this.audio.currentTime - time) < 1) return;
     if (time < 0) time = 0;
     if (time > this.audio.duration) time = this.audio.duration;
-    console.log("seeked to", time);
+    this.log("Seeked to", time);
     this.audio.currentTime = time;
   }
 
@@ -274,6 +296,8 @@ export default class AudioPlayer extends EventEmmiter {
     audio.addEventListener("previous", this.previousCallback);
     audio.crossOrigin = "anonymous";
     audio.preload = "auto";
+
+    this.log("Audio created", audio);
     return audio;
   }
 
@@ -288,6 +312,7 @@ export default class AudioPlayer extends EventEmmiter {
     audio.src = "";
     audio.destroyed = true;
     if (audio?.valueOf() === this.audio?.valueOf()) this.audio = null;
+    this.log("Audio destroyed", audio);
   }
 
   private updateMetadata(track: Track) {
@@ -343,6 +368,7 @@ export default class AudioPlayer extends EventEmmiter {
     if (target != this.audio?.valueOf()) return;
     if (this.isPaused) return;
     this.isPaused = true;
+    this.log("Paused", { audio: this.audio?.paused, player: this.isPaused });
     if (!("mediaSession" in navigator)) return;
     navigator.mediaSession.playbackState = "paused";
   }
@@ -351,6 +377,7 @@ export default class AudioPlayer extends EventEmmiter {
     if (target != this.audio?.valueOf()) return;
     if (!this.isPaused) return;
     this.isPaused = false;
+    this.log("Played", { audio: !this.audio?.paused, player: !this.isPaused });
     if (!("mediaSession" in navigator)) return;
     navigator.mediaSession.playbackState = "playing";
   }
@@ -363,6 +390,7 @@ export default class AudioPlayer extends EventEmmiter {
       return;
     }
 
+    this.log("Audio ended");
     this.dispatchEvent(new Event("ended"));
   }
 
@@ -383,6 +411,10 @@ interface Cache {
   hash: string;
   loaded: boolean;
   data: Audio;
+}
+
+export interface PlayerOptions {
+  debug: boolean;
 }
 
 export type Audio = HTMLMediaElement & {

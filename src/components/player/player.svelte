@@ -34,7 +34,7 @@
       await player.play(tracks.current);
       if (tracks.upcoming) player.cache(tracks.upcoming);
     } catch (error) {
-      console.log(error);
+      if (player.debug) console.log(error);
     }
   });
 
@@ -61,7 +61,6 @@
     if (loading != player.isLoading) loading = player.isLoading;
   }
   function handleEnd() {
-    console.log("ended");
     if (player && tracks.upcoming) {
       ended = true;
       tracks.next();
