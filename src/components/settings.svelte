@@ -1,8 +1,9 @@
 <script lang="ts">
   import { QuickAction, settings } from "models/settings";
   import { pannable } from "actions/pannable";
-  import { verifyLogin } from "utils/mock";
   import { slide } from "svelte/transition";
+  import { verifyLogin } from "utils/api";
+  import jsSHA from "jsSHA";
 
   import Loader from "./common/loader.svelte";
 
@@ -17,11 +18,14 @@
 
   async function login() {
     if (!password || !$settings.login || !$settings.hostname) return;
+    const hasher = new jsSHA("SHA-1", "TEXT");
+    hasher.update(password);
+    const hash = hasher.getHash("B64");
     loading = true;
-    if (!(await verifyLogin(password))) {
+    if (!(await verifyLogin(hash))) {
       logout();
     }
-    $settings.password = password;
+    $settings.password = hash;
     loading = false;
   }
 

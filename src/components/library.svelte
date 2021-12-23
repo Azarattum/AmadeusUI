@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { fetchPlaylists, fetchRecent, PlaylistInfo } from "utils/mock";
+  import { fetchPlaylists, fetchRecent, PlaylistInfo } from "utils/api";
   import { onMount } from "svelte";
 
   import Loader from "./common/loader.svelte";

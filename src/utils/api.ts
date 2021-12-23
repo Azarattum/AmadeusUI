@@ -1,49 +1,63 @@
-///================
-///WORK IN PROGRESS
-///================
-
+import type { GretchInstance, GretchOptions } from "gretchen";
 import type Playlist from "models/playlist";
 import type { Track } from "models/tracks";
+import { settings } from "models/settings";
+import { get } from "svelte/store";
+import { gretch } from "gretchen";
 
-const url = "http://192.168.1.181:8003";
-const username = "azarattum";
-const base = url + "/api/v1/" + username;
+function request<T, U = unknown>(
+  method: string,
+  opts?: GretchOptions
+): GretchInstance<T, U> {
+  const { hostname, login, password } = get(settings);
+  const base = `${hostname}/api/v1/${login}/`;
+  const params: RequestInit = {
+    headers: { Authorization: password },
+    mode: "cors",
+    ...opts,
+  };
+
+  return gretch(base + method, params);
+}
 
 export async function fetchLyrics(track: Track): Promise<string> {
   const query = [track.artists.join(", "), track.title]
     .filter((x) => x)
     .join(" - ");
-  return await (await fetch(base + "/lyrics/" + query)).text();
+
+  const { data } = await request<string>("lyrics/" + query).text();
+  return data || "";
 }
 
 export async function fetchRecent(): Promise<PlaylistInfo[]> {
-  const added = fetch(base + "/added")
-    .then((x) => x.json())
-    .then((tracks) => ({
+  const added = request("added")
+    .json()
+    .then(({ data }) => ({
       title: "Added",
       type: -1,
-      tracks: tracks,
+      tracks: data as Track[],
     }));
 
   return [{ title: "Added", data: added }];
 }
 
 export async function fetchPlaylists(): Promise<PlaylistInfo[]> {
-  const data = await (await fetch(base + "/playlist")).json();
+  const { data } = await request("playlist").json();
   if (!Array.isArray(data)) return [];
 
   const playlists = data.map((x) => ({
     title: x.title,
-    data: new Promise<Playlist>((resolve) => {
+    data: new Promise<Playlist>((resolve, reject) => {
       if (!x?.id) resolve({ title: "None", type: -9999, tracks: [] });
-      fetch(base + "/playlist/" + x.id)
-        .then((x) => x.json())
-        .then((tracks) => {
+      request("playlist/" + x.id)
+        .json()
+        .then(({ data, error }) => {
+          if (error) return reject(error);
           resolve({
             title: x.title,
             type: x.type,
             telegram: x.telegram,
-            tracks: tracks,
+            tracks: data as Track[],
           });
         });
     }),
@@ -54,7 +68,15 @@ export async function fetchPlaylists(): Promise<PlaylistInfo[]> {
 
 export async function fetchTrack(sources: string[]): Promise<string> {
   const source = sources[0];
-  return await (await fetch(base + "/track/" + source)).text();
+  const { data } = await request<string>("track/" + source).text();
+  return data || "";
+}
+
+export async function verifyLogin(password: string): Promise<boolean> {
+  const { status } = await request("verify", {
+    headers: { Authorization: password },
+  }).flush();
+  return status === 200;
 }
 
 export interface PlaylistInfo {

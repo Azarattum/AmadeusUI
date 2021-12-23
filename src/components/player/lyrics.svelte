@@ -2,7 +2,7 @@
   import { none, Track } from "models/tracks";
   import { scroller } from "actions/scroller";
   import { fade } from "svelte/transition";
-  import { fetchLyrics } from "utils/mock";
+  import { fetchLyrics } from "utils/api";
 
   export let track: Track;
   $: lyrics = track !== none ? fetchLyrics(track) : "";

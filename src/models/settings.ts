@@ -23,7 +23,7 @@ try {
 export const settings = writable(defaults);
 
 settings.subscribe((x) => {
-  localStorage.setItem("settings", JSON.stringify(x));
+  globalThis.localStorage?.setItem("settings", JSON.stringify(x));
 });
 
 interface Settings {

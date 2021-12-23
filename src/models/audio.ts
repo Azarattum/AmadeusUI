@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-empty-function */
 import unlock, { isiOS } from "utils/unlocker";
-import { fetchTrack } from "utils/mock";
+import { fetchTrack } from "utils/api";
 import type { Track } from "./tracks";
 import { hash, none } from "./tracks";
 import EventEmmiter from "./emmiter";
