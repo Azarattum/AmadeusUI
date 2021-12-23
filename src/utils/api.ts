@@ -10,7 +10,8 @@ function request<T, U = unknown>(
   opts?: GretchOptions
 ): GretchInstance<T, U> {
   const { hostname, login, token } = get(settings);
-  const base = `${hostname}/api/v1/${login}/`;
+  let base = `${hostname}/api/v1/${login}/`;
+  if (!base.startsWith("http")) base = "http://" + base;
   const params: RequestInit = {
     headers: { Authorization: token },
     mode: "cors",
