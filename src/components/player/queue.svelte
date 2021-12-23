@@ -65,13 +65,13 @@
     />
     <div>
       {#if showHistory}
-        <h1 in:fly={{ x: -32, delay: 300 }} out:fly={{ x: -32, duration: 300 }}>
+        <h2 in:fly={{ x: -32, delay: 300 }} out:fly={{ x: -32, duration: 300 }}>
           History
-        </h1>
+        </h2>
       {:else}
-        <h1 in:fly={{ x: -32, delay: 300 }} out:fly={{ x: -32, duration: 300 }}>
+        <h2 in:fly={{ x: -32, delay: 300 }} out:fly={{ x: -32, duration: 300 }}>
           Queue
-        </h1>
+        </h2>
       {/if}
     </div>
 
@@ -171,6 +171,11 @@
 
 <style lang="postcss">
   @import "../../styles/mixins.pcss";
+  h2 {
+    font-size: var(--font-large);
+    margin-block-start: 0.67em;
+    margin-block-end: 0.67em;
+  }
   .container {
     display: flex;
     flex-direction: column;

@@ -8,9 +8,9 @@
   $: lyrics = track !== none ? fetchLyrics(track) : "";
 </script>
 
-<h1>Lyrics</h1>
+<h2>Lyrics</h2>
 <div
-  use:scroller={{ header: "h1", hider: ".slider-handle", dynamicHider: true }}
+  use:scroller={{ header: "h2", hider: ".slider-handle", dynamicHider: true }}
   class="text"
 >
   {#await lyrics}
@@ -35,12 +35,15 @@
 <style lang="postcss">
   @import "../../styles/mixins.pcss";
 
-  h1 {
+  h2 {
     position: fixed;
     width: calc(100% - 16px);
     top: 16px;
     margin-left: 16px;
     padding-bottom: 8px;
+    font-size: var(--font-large);
+    margin-block-start: 0.67em;
+    margin-block-end: 0.67em;
 
     z-index: 2;
     background: linear-gradient(

@@ -3,6 +3,7 @@
   import { cloneArray } from "utils/utils";
 
   import Player from "components/player/player.svelte";
+  import Settings from "components/settings.svelte";
   import Library from "components/library.svelte";
   import Explore from "components/explore.svelte";
   import Listen from "components/listen.svelte";
@@ -11,6 +12,7 @@
   const tracks = new Tracks();
   const tabs = [Library, Listen, Explore];
   let selected = 0;
+  let setup = false;
 
   async function onPlaylist({ detail }: Playlist) {
     const index =
@@ -43,8 +45,10 @@
       on:playlist={onPlaylist}
       on:next={onQueueNext}
       on:last={onQueueLast}
+      on:settings={() => (setup = true)}
     />
   </section>
 {/each}
 <Player {tracks} />
 <Navbar bind:selected />
+<Settings bind:open={setup} />

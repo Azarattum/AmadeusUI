@@ -1,14 +1,22 @@
 <script lang="ts">
+  import { createEventDispatcher } from "svelte";
   import { fade } from "svelte/transition";
+
   import Card from "./common/card.svelte";
 
   let focused = false;
   let results: any[] = [];
+
+  const dispatch = createEventDispatcher();
 </script>
 
 <header>
   <h1>Explore</h1>
-  <button aria-label="Settins" class="settings" />
+  <button
+    aria-label="Settings"
+    class="settings"
+    on:click={() => dispatch("settings")}
+  />
 </header>
 
 {#each results as result, i}
@@ -40,13 +48,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-  }
-  h1 {
-    font-family: SF Pro Display, SF Pro Icons, Helvetica Neue, Helvetica, Arial,
-      sans-serif;
-    font-size: var(--font-large);
-    margin: 0;
-    padding: 16px 8px 16px 16px;
   }
   .settings {
     box-sizing: content-box;
