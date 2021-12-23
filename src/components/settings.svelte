@@ -171,6 +171,7 @@
       background-color: transparent;
       width: 100%;
       height: 100%;
+      font-size: var(--font-little);
     }
 
     button {
@@ -181,6 +182,7 @@
       color: white;
 
       transition: background-color 0.3s ease;
+      font-size: var(--font-little);
       &:active {
         transition-duration: 0.05s;
         background-color: var(--color-accent-75);
