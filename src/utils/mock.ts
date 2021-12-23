@@ -95,6 +95,11 @@ export async function fetchTrack(sources: string[]): Promise<string> {
   return urls[source];
 }
 
+export async function verifyLogin(password: string): Promise<boolean> {
+  await sleep(3000 * Math.random());
+  return true;
+}
+
 export interface PlaylistInfo {
   title: string;
   data: Promise<Playlist>;
