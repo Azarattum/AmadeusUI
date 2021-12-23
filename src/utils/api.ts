@@ -9,10 +9,10 @@ function request<T, U = unknown>(
   method: string,
   opts?: GretchOptions
 ): GretchInstance<T, U> {
-  const { hostname, login, password } = get(settings);
+  const { hostname, login, token } = get(settings);
   const base = `${hostname}/api/v1/${login}/`;
   const params: RequestInit = {
-    headers: { Authorization: password },
+    headers: { Authorization: token },
     mode: "cors",
     ...opts,
   };

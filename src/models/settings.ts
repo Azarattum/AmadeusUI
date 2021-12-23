@@ -8,14 +8,15 @@ export enum QuickAction {
 let defaults: Settings = {
   hostname: "",
   login: "",
-  password: "",
+  token: "",
 
   defaultPlaylist: null,
   quickAction: QuickAction.QueueNext,
 };
 try {
   if ("localStorage" in globalThis) {
-    defaults = JSON.parse(localStorage.getItem("settings") as string);
+    defaults =
+      JSON.parse(localStorage.getItem("settings") as string) || defaults;
   }
   // eslint-disable-next-line no-empty
 } catch {}
@@ -29,7 +30,7 @@ settings.subscribe((x) => {
 interface Settings {
   hostname: string;
   login: string;
-  password: string;
+  token: string;
   defaultPlaylist: string | null;
   quickAction: QuickAction;
 }

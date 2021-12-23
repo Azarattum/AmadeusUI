@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fetchPlaylists, fetchRecent, PlaylistInfo } from "utils/api";
-  import { onMount } from "svelte";
+  import { settings } from "models/settings";
 
   import Loader from "./common/loader.svelte";
   import Playlist from "./playlist.svelte";
@@ -16,10 +16,9 @@
 
   let recent = new Promise<PlaylistInfo[]>(() => {});
   let playlists = new Promise<PlaylistInfo[]>(() => {});
-  onMount(() => {
-    recent = fetchRecent();
-    playlists = fetchPlaylists();
-  });
+
+  $: if ($settings.token) recent = fetchRecent();
+  $: if ($settings.token) playlists = fetchPlaylists();
 </script>
 
 <Tabs {sections}>

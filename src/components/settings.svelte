@@ -21,17 +21,16 @@
     const hasher = new jsSHA("SHA-1", "TEXT");
     hasher.update(password);
     const hash = hasher.getHash("B64");
+
     loading = true;
-    if (!(await verifyLogin(hash))) {
-      logout();
-    }
-    $settings.password = hash;
+    if (await verifyLogin(hash)) $settings.token = hash;
+    else logout();
     loading = false;
   }
 
   function logout() {
     password = "";
-    $settings.password = "";
+    $settings.token = "";
   }
 </script>
 
@@ -44,7 +43,7 @@
 >
   <div class="settings-handle" bind:this={handle} on:click|stopPropagation />
   <h1>Settings</h1>
-  {#if !($settings.hostname && $settings.login && $settings.password)}
+  {#if !($settings.hostname && $settings.login && $settings.token)}
     <ul transition:slide>
       <li>
         <input

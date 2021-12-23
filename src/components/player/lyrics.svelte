@@ -1,11 +1,13 @@
 <script lang="ts">
   import { none, Track } from "models/tracks";
   import { scroller } from "actions/scroller";
+  import { settings } from "models/settings";
   import { fade } from "svelte/transition";
   import { fetchLyrics } from "utils/api";
 
   export let track: Track;
-  $: lyrics = track !== none ? fetchLyrics(track) : "";
+  let lyrics: Promise<string> | string = "";
+  $: if ($settings.token) lyrics = track !== none ? fetchLyrics(track) : "";
 </script>
 
 <h2>Lyrics</h2>
