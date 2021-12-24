@@ -1,9 +1,11 @@
+import type Hls from "hls.js";
 import unlock, { isiOS } from "utils/unlocker";
 import { fetchTrack } from "utils/api";
 import type { Track } from "./tracks";
 import { hash, none } from "./tracks";
 import EventEmmiter from "./emmiter";
 
+let HLS: typeof Hls | undefined;
 if ("window" in globalThis) {
   if (window.UINative) window.UINative.nativeAudio();
   else if (isiOS()) unlock();
@@ -19,7 +21,7 @@ export default class AudioPlayer extends EventEmmiter {
 
   private cacheLimit = 2;
   private cached: Cache[] = [];
-  private audio: Audio | null = null;
+  private audio: (Audio & { hls?: Hls }) | null = null;
   private now = "";
 
   private negative: boolean | NodeJS.Timer = false;
@@ -107,7 +109,19 @@ export default class AudioPlayer extends EventEmmiter {
       update(this.createAudio());
       const url = await fetchTrack(track.sources);
       if (!this.isPlaying(track)) throw error;
-      if (url && this.audio) this.audio.src = url;
+      if (url && this.audio) {
+        if (
+          url.endsWith("m3u8") &&
+          !this.audio.canPlayType("application/vnd.apple.mpegurl") &&
+          (HLS = HLS || (await import("hls.js")).default).isSupported()
+        ) {
+          this.audio.hls = new HLS({});
+          this.audio.hls.loadSource(url);
+          this.audio.hls.attachMedia(this.audio);
+        } else {
+          this.audio.src = url;
+        }
+      }
     } else {
       update(cache.data);
       this.log("Track retrieved from cache:", cache.hash);
@@ -154,7 +168,7 @@ export default class AudioPlayer extends EventEmmiter {
     if (track.sources.length <= 0) return;
     if (this.fromCache(track)) return;
 
-    const cached = {
+    const cached: Cache = {
       hash: hash(track),
       loaded: false,
       data: this.createAudio(),
@@ -188,7 +202,17 @@ export default class AudioPlayer extends EventEmmiter {
       },
       { once: true }
     );
-    cached.data.src = url;
+    if (
+      url.endsWith("m3u8") &&
+      !cached.data.canPlayType("application/vnd.apple.mpegurl") &&
+      (HLS = HLS || (await import("hls.js")).default).isSupported()
+    ) {
+      cached.data.hls = new HLS({});
+      cached.data.hls.loadSource(url);
+      cached.data.hls.attachMedia(cached.data);
+    } else {
+      cached.data.src = url;
+    }
   }
 
   resume(): void {
@@ -295,8 +319,11 @@ export default class AudioPlayer extends EventEmmiter {
     return audio;
   }
 
-  private destroyAudio(audio: Audio | null) {
+  private destroyAudio(audio: (Audio & { hls?: Hls }) | null) {
     if (!audio) return;
+    audio.hls?.detachMedia();
+    audio.hls?.destroy();
+    audio.hls = undefined;
     audio.removeEventListener("timeupdate", this.timeCallback);
     audio.removeEventListener("pause", this.pausedCallback);
     audio.removeEventListener("ended", this.endedCallback);
@@ -404,7 +431,7 @@ export default class AudioPlayer extends EventEmmiter {
 interface Cache {
   hash: string;
   loaded: boolean;
-  data: Audio;
+  data: Audio & { hls?: Hls };
 }
 
 export interface PlayerOptions {
