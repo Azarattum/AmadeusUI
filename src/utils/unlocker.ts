@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Audio } from "models/audio";
 
 const BUFFER_COUNT = 4;

@@ -1,6 +1,5 @@
 export default function expandable(node: HTMLElement): { destroy: () => void } {
   async function expand() {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const offset = (navigator as any).standalone ? 31 : 0;
     const rect = node.getBoundingClientRect();
     const x = innerWidth / 2 - rect.width / 2 - rect.x;
@@ -34,7 +33,6 @@ export default function expandable(node: HTMLElement): { destroy: () => void } {
     //Wait for the animation and restore zIndex
     const duration = parseFloat(getComputedStyle(node).transitionDuration);
     setTimeout(() => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (node.style as any).zIndex = null;
     }, duration * 1000);
 

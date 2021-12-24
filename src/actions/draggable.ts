@@ -68,7 +68,6 @@ export default function draggable(
   function createPuppet(from: HTMLElement) {
     from.style.padding = "0";
     const box = from.getBoundingClientRect();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (from.style as any).padding = null;
 
     puppet = from.cloneNode(true) as HTMLElement;

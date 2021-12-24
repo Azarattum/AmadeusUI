@@ -23,7 +23,6 @@ export function scroller(
     node.addEventListener("touchend", handleEnd);
 
     // A weird hack to fix iOS scroll blocking from body in PWA mode
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if ((navigator as any).standalone && !node.scrollTop) node.scrollTo(0, 1);
   }
 

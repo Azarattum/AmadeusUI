@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Tracks, Track, none } from "models/tracks";
+  import { Tracks, none } from "models/tracks";
   import { pannable } from "actions/pannable";
   import { onDestroy, onMount } from "svelte";
   import AudioPlayer from "models/audio";

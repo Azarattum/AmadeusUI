@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-empty-function */
 import unlock, { isiOS } from "utils/unlocker";
 import { fetchTrack } from "utils/api";
 import type { Track } from "./tracks";
@@ -123,23 +122,19 @@ export default class AudioPlayer extends EventEmmiter {
       this.log("Track loaded:", track);
       //Resume audio when possible
       const isIdle = "requestIdleCallback" in globalThis;
-      (isIdle ? requestIdleCallback : setTimeout)(
-        () => {
-          if (!this.isPlaying(track)) throw error;
-          if (!this.audio) throw error;
-          if (this.isPaused && !this.audio.paused) this.audio.pause();
-          else if (!this.isPaused || this.forcePlay) {
-            this.log("Track autoplayed", {
-              paused: this.isPaused,
-              force: this.forcePlay,
-            });
-            this.audio.play();
-            this.forcePlay = false;
-          }
-        },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (isIdle ? { timeout: 300 } : 300) as any
-      );
+      (isIdle ? requestIdleCallback : setTimeout)(() => {
+        if (!this.isPlaying(track)) throw error;
+        if (!this.audio) throw error;
+        if (this.isPaused && !this.audio.paused) this.audio.pause();
+        else if (!this.isPaused || this.forcePlay) {
+          this.log("Track autoplayed", {
+            paused: this.isPaused,
+            force: this.forcePlay,
+          });
+          this.audio.play();
+          this.forcePlay = false;
+        }
+      }, (isIdle ? { timeout: 300 } : 300) as any);
     };
 
     //Properly manage loading state

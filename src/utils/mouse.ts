@@ -1,6 +1,5 @@
 export function toTouch(event: MouseEvent): TouchEvent {
   const newEvent = event as unknown as TouchEvent;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (newEvent as any).touches = [
     {
       clientX: event.clientX,
