@@ -4,6 +4,7 @@ import type { Track } from "models/tracks";
 import { settings } from "models/settings";
 import { get } from "svelte/store";
 import { gretch } from "gretchen";
+import { mock } from "./mock";
 
 function request<T, U = unknown>(
   method: string,
@@ -18,6 +19,7 @@ function request<T, U = unknown>(
     ...opts,
   };
 
+  if (hostname === "demo") return mock(base + method, params);
   return gretch(base + method, params);
 }
 
@@ -31,15 +33,25 @@ export async function fetchLyrics(track: Track): Promise<string> {
 }
 
 export async function fetchRecent(): Promise<PlaylistInfo[]> {
-  const added = request("added")
+  const added = request("playlist/added")
     .json()
     .then(({ data }) => ({
       title: "Added",
-      type: -1,
+      type: -2,
+      tracks: data as Track[],
+    }));
+  const listened = request("playlist/listened")
+    .json()
+    .then(({ data }) => ({
+      title: "Listened",
+      type: -3,
       tracks: data as Track[],
     }));
 
-  return [{ title: "Added", data: added }];
+  return [
+    { title: "Added", data: added },
+    { title: "Listened", data: listened },
+  ];
 }
 
 export async function fetchPlaylists(): Promise<PlaylistInfo[]> {
@@ -76,7 +88,9 @@ export async function fetchTrack(sources: string[]): Promise<string> {
 export async function verifyLogin(password: string): Promise<boolean> {
   const { status } = await request("verify", {
     headers: { Authorization: password },
-  }).flush();
+  })
+    .flush()
+    .catch(() => ({ status: 500 }));
   return status === 200;
 }
 
