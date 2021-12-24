@@ -43,6 +43,7 @@
   }
 
   function getSummary(tracks: ITrack[]) {
+    if (!tracks.length) return "";
     const n = tracks.length;
     const t = tracks.reduce((a, b) => a + b.length, 0);
     return `${n} ${n == 1 ? "song" : "songs"}, ${formatDuration(t)}`;
