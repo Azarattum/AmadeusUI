@@ -111,6 +111,7 @@
     border-radius: 100%;
 
     cursor: pointer;
+    pointer-events: all;
     transition: 0.2s all ease-in-out;
 
     &:active {

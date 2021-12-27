@@ -11,6 +11,7 @@
   import Info from "./info.svelte";
 
   let loading = false;
+  let locked = true;
   let speedup = NaN;
   let paused = true;
   let open = false;
@@ -20,6 +21,7 @@
 
   let ended = false;
   const unsubscribe = tracks.subscribe(async () => {
+    locked = tracks.current === none;
     if (!player) return;
     try {
       //Autoplay options
@@ -103,6 +105,7 @@
 <div
   class="player"
   class:open
+  class:locked
   use:pannable={{ handle: ".player-handle" }}
   on:open={() => (open = true)}
   on:close={() => (open = false)}
@@ -152,6 +155,10 @@
       .container {
         opacity: 1;
       }
+    }
+
+    &.locked > :global(*) {
+      pointer-events: none;
     }
   }
   .container {
