@@ -12,6 +12,27 @@
 
   let selected = 0;
   let open = false;
+
+  //The code below insures that "click" event will fire,
+  //  it does not always fire in safari for some reason...
+  let cancel: (() => void) | null = null;
+  $: if (open) cancel?.();
+  function select(index: number, target: EventTarget | null = null) {
+    selected = index;
+    if (!target) return;
+    cancel = () => {
+      target.removeEventListener("touchend", end);
+      target.removeEventListener("touchcancel", end);
+      cancel = null;
+    };
+    const end = () => {
+      if (!cancel) return;
+      cancel();
+      target.dispatchEvent(new Event("click", { bubbles: true }));
+    };
+    target.addEventListener("touchend", end, { once: true });
+    target.addEventListener("touchcancel", end, { once: true });
+  }
 </script>
 
 <div
@@ -25,14 +46,14 @@
     <button
       class="lyrics"
       aria-label="Show Lyrics"
-      on:touchstart={() => (selected = 0)}
-      on:mousedown={() => (selected = 0)}
+      on:touchstart={({ target }) => select(0, target)}
+      on:mousedown={() => select(0)}
     />
     <button
       class="queue"
       aria-label="Open Queue"
-      on:touchstart={() => (selected = 1)}
-      on:mousedown={() => (selected = 1)}
+      on:touchstart={({ target }) => select(1, target)}
+      on:mousedown={() => select(1)}
     />
   </div>
   <div class="content" class:open>

@@ -33,7 +33,7 @@
   {:else}
     <Loader size={30} padding={24} color={"var(--color-text-normal)"} />
   {/if}
-  <div class="playback" style="--time:{time / $tracks.current.length}" />
+  <div class="playback" style="--time: {time / $tracks.current.length};" />
 </div>
 
 <style lang="postcss">
@@ -138,9 +138,10 @@
     pointer-events: none;
     background-color: var(--color-text-caption);
 
-    transform: scale3d(var(--time), 1, 1);
+    opacity: 0.8;
     will-change: transform;
     transform-origin: left;
+    transform: scaleX(var(--time));
   }
   .hidden {
     border-radius: 16px;
