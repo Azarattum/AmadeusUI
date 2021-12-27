@@ -116,7 +116,12 @@
       <Info title={$tracks.current.title} artists={$tracks.current.artists} />
       <Coversel {tracks} {loading} bind:paused />
     </div>
-    <Playback bind:speedup bind:time length={$tracks.current.length} />
+    <Playback
+      bind:speedup
+      bind:time
+      length={$tracks.current.length}
+      visible={open}
+    />
     <Slider {tracks} {loading} bind:paused bind:time />
   </div>
 </div>

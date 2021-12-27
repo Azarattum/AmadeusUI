@@ -5,13 +5,14 @@
   export let time: number;
   export let length: number;
   export let speedup: number;
+  export let visible = true;
 
   const speed = 5;
   let input: HTMLInputElement;
   let progress: number = 0;
   let locked = false;
 
-  $: handleUpdate(time);
+  $: if (visible) handleUpdate(time);
   function handleChange() {
     time = progress;
     locked = false;
