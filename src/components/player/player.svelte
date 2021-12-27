@@ -30,7 +30,7 @@
         player.forcePlay = true;
         ended = false;
       }
-      hadnleTitle(paused);
+      handleTitle(paused);
       await player.play(tracks.current);
       if (tracks.upcoming) player.cache(tracks.upcoming);
     } catch (error) {
@@ -42,10 +42,10 @@
   else player?.resume();
   $: player?.seek(time);
   $: handleSeek(speedup);
-  $: hadnleTitle(paused);
+  $: handleTitle(paused);
 
   let title = "Amadeus";
-  function hadnleTitle(paused: boolean) {
+  function handleTitle(paused: boolean) {
     if (!("document" in globalThis)) return;
     const track = tracks.current;
     if (paused || track === none) document.title = title;
