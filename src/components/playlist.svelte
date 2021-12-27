@@ -1,7 +1,6 @@
 <script lang="ts">
-  import type { Track as ITrack } from "models/tracks";
-  import type Playlist from "models/playlist";
-  import { createEventDispatcher } from "svelte";
+  import type { Playlist } from "models/playlist";
+  import { Diretion, Track as TrackData } from "models/tracks";
   import { scroller } from "actions/scroller";
   import draggable from "actions/draggable";
   import { fade } from "svelte/transition";
@@ -11,25 +10,14 @@
   import Context from "./common/context.svelte";
   import Card from "./common/card.svelte";
   import Track from "./track.svelte";
+  import tracks from "models/tracks";
+  import { cloneArray } from "utils/utils";
 
-  const dispatch = createEventDispatcher();
-
-  export let title: Promise<string> | string | null = null;
-  export let playlist: Promise<Playlist>;
+  export let playlist: Playlist;
 
   let opened = false;
-  let loaded = false;
-  let name =
-    typeof title === "string"
-      ? title
-      : (Promise.race(
-          [title, playlist.then((x) => x.title)].filter(Boolean)
-        ) as Promise<string>);
-  let tracks: ITrack[] = [];
-  playlist.then((x) => (tracks = x.tracks));
-
+  $: items = playlist.tracks;
   $: if (!opened && viewport) viewport.scrollTo(0, 0);
-  playlist.then(() => setTimeout(() => (loaded = true), 300));
 
   function formatDuration(seconds: number) {
     let h = Math.floor(seconds / 3600);
@@ -42,46 +30,50 @@
     return hDisplay + mDisplay;
   }
 
-  function getSummary(tracks: ITrack[]) {
-    if (!tracks.length) return "";
+  function getSummary(tracks?: TrackData[]) {
+    if (!tracks || !tracks.length) return "";
     const n = tracks.length;
     const t = tracks.reduce((a, b) => a + b.length, 0);
     return `${n} ${n == 1 ? "song" : "songs"}, ${formatDuration(t)}`;
   }
 
-  async function play(track: ITrack) {
-    const loaded = tracks;
-    const index = loaded.indexOf(track);
-    if (index === -1) return;
-    dispatch("playlist", { tracks: loaded, index });
+  async function play(track: TrackData) {
+    if (!$items) return;
+    const index = $items.indexOf(track);
+    if (!~index) return;
+
+    tracks.clear();
+    tracks.pushPlaylist(cloneArray($items), index);
   }
 
   async function shuffle() {
-    const loaded = tracks;
-    dispatch("playlist", { tracks: loaded });
+    if (!$items) return;
+    tracks.clear();
+    tracks.pushPlaylist(cloneArray($items));
+    tracks.direct(Diretion.Shuffled);
   }
 
   async function queueNext() {
-    const loaded = tracks;
-    dispatch("next", loaded);
+    if (!$items) return;
+    tracks.pushNext(...cloneArray($items));
   }
 
   async function queueLast() {
-    const loaded = tracks;
-    dispatch("last", loaded);
+    if (!$items) return;
+    tracks.pushLast(...cloneArray($items));
   }
 
   function swap({ detail }: SwapEvent) {
+    if (!$items) return;
     const { from, to } = detail;
-    if (from < 0 || from >= tracks.length) return;
-    if (to < 0 || to >= tracks.length) return;
+    if (from < 0 || from >= $items.length) return;
+    if (to < 0 || to >= $items.length) return;
     if (from === to) return;
 
-    const item = tracks.splice(from, 1)[0];
+    const item = $items.splice(from, 1)[0];
     if (!item) return;
-    tracks.splice(to, 0, item);
-    tracks = tracks;
-    /// FIRE EVENT TO SYNC PLAYLIST
+    $items.splice(to, 0, item);
+    $items = $items;
   }
 
   const standalone = !!(navigator as any).standalone;
@@ -91,10 +83,10 @@
 </script>
 
 <Card
-  title={name}
+  title={playlist.title}
   height={115}
   bind:opened
-  on:click={() => opened || !loaded || (opened = !opened)}
+  on:click={() => opened || !$items || (opened = !opened)}
 >
   <div
     class="viewport"
@@ -102,12 +94,7 @@
     class:opened
     use:scroller={{ header: "h2" }}
   >
-    {#await playlist}
-      <div class="container" out:fade={{ duration: 300 }}>
-        <div class="track"><Track /></div>
-        <div class="track"><Track /></div>
-      </div>
-    {:then}
+    {#if $items}
       <div
         on:swap={swap}
         class="container"
@@ -121,7 +108,7 @@
         }}
       >
         <VirtualList
-          items={tracks}
+          items={$items}
           {container}
           {itemHeight}
           {viewport}
@@ -143,9 +130,14 @@
             <Track {track} on:play={({ detail }) => play(detail)} />
           </div>
         </VirtualList>
-        <p>{getSummary(tracks)}</p>
+        <p>{getSummary($items)}</p>
       </div>
-    {/await}
+    {:else}
+      <div class="container" out:fade={{ duration: 300 }}>
+        <div class="track"><Track /></div>
+        <div class="track"><Track /></div>
+      </div>
+    {/if}
   </div>
   <Context>
     <button

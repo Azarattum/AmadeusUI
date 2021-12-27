@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { Tracks, Track, Diretion } from "models/tracks";
-  import { cloneArray } from "utils/utils";
+  import { settings } from "models/settings";
+  import playlists from "models/playlist";
+  import { onMount } from "svelte";
 
   import Player from "components/player/player.svelte";
   import Settings from "components/settings.svelte";
@@ -9,46 +10,17 @@
   import Listen from "components/listen.svelte";
   import Navbar from "components/navbar.svelte";
 
-  const tracks = new Tracks();
   const tabs = [Library, Listen, Explore];
   let selected = 0;
-  let setup = false;
-
-  async function onPlaylist({ detail }: Playlist) {
-    const index =
-      detail.index ?? Math.floor(Math.random() * detail.tracks.length);
-
-    tracks.clear();
-    tracks.pushPlaylist(cloneArray(detail.tracks), index);
-    if (detail.index == null) {
-      tracks.direct(Diretion.Shuffled);
-    }
-  }
-
-  function onQueueNext({ detail }: { detail: Track[] }) {
-    tracks.pushNext(...cloneArray(detail));
-  }
-
-  function onQueueLast({ detail }: { detail: Track[] }) {
-    tracks.pushLast(...cloneArray(detail));
-  }
-
-  interface Playlist {
-    detail: { tracks: Track[]; index?: number };
-  }
+  let setup = !$settings.token;
+  $: if ($settings.token) playlists.load();
 </script>
 
 {#each tabs as tab, i}
   <section style="display:{selected == i ? 'block' : 'none'}">
-    <svelte:component
-      this={tab}
-      on:playlist={onPlaylist}
-      on:next={onQueueNext}
-      on:last={onQueueLast}
-      on:settings={() => (setup = true)}
-    />
+    <svelte:component this={tab} on:settings={() => (setup = true)} />
   </section>
 {/each}
-<Player {tracks} />
+<Player />
 <Navbar bind:selected />
 <Settings bind:open={setup} />

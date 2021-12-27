@@ -1,8 +1,9 @@
 import type { GretchInstance, GretchOptions } from "gretchen";
-import type Playlist from "models/playlist";
+import type { Playlist } from "models/playlist";
 import type { Track } from "models/tracks";
+import { get, writable } from "svelte/store";
 import { settings } from "models/settings";
-import { get } from "svelte/store";
+import { stringify } from "models/tracks";
 import { gretch } from "gretchen";
 import { mock } from "./mock";
 
@@ -24,57 +25,44 @@ function request<T, U = unknown>(
 }
 
 export async function fetchLyrics(track: Track): Promise<string> {
-  const query = [track.artists.join(", "), track.title]
-    .filter((x) => x)
-    .join(" - ");
-
+  const query = stringify(track);
   const { data } = await request<string>("lyrics/" + query).text();
   return data || "";
 }
 
-export async function fetchRecent(): Promise<PlaylistInfo[]> {
-  const added = request("playlist/added")
+export async function fetchRecent(): Promise<Playlist[]> {
+  const added = writable<Track[] | undefined>(undefined);
+  const listened = writable<Track[] | undefined>(undefined);
+
+  request("playlist/added")
     .json()
-    .then(({ data }) => ({
-      title: "Added",
-      type: -2,
-      tracks: data as Track[],
-    }));
-  const listened = request("playlist/listened")
+    .then(({ data }) => added.set(data as Track[]));
+  request("playlist/listened")
     .json()
-    .then(({ data }) => ({
-      title: "Listened",
-      type: -3,
-      tracks: data as Track[],
-    }));
+    .then(({ data }) => listened.set(data as Track[]));
 
   return [
-    { title: "Added", data: added },
-    { title: "Listened", data: listened },
+    { id: 0, order: 0, type: 3, title: "Added", tracks: added },
+    { id: 0, order: 1, type: 3, title: "Listened", tracks: listened },
   ];
 }
 
-export async function fetchPlaylists(): Promise<PlaylistInfo[]> {
+export async function fetchPlaylists(): Promise<Playlist[]> {
   const { data } = await request("playlist").json();
   if (!Array.isArray(data)) return [];
 
-  const playlists = data.map((x) => ({
-    title: x.title,
-    data: new Promise<Playlist>((resolve, reject) => {
-      if (!x?.id) resolve({ title: "None", type: -9999, tracks: [] });
-      request("playlist/" + x.id)
-        .json()
-        .then(({ data, error }) => {
-          if (error) return reject(error);
-          resolve({
-            title: x.title,
-            type: x.type,
-            telegram: x.telegram,
-            tracks: data as Track[],
-          });
-        });
-    }),
-  }));
+  const playlists = data.map((x) => {
+    const tracks = writable<Track[] | undefined>(undefined);
+
+    request(`playlist/${x.id}`)
+      .json()
+      .then(({ data }) => tracks.set(data as Track[]));
+    return {
+      ...x,
+      order: x.id,
+      tracks,
+    };
+  });
 
   return playlists;
 }

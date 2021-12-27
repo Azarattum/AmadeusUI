@@ -1,10 +1,13 @@
 <script lang="ts">
-  import { none, Tracks } from "models/tracks";
+  import tracks, { none } from "models/tracks";
+  import { settings } from "models/settings";
+  import { cloneArray } from "utils/utils";
+  import playlists from "models/playlist";
+  import { get } from "svelte/store";
 
   import Loader from "components/common/loader.svelte";
   import Cover from "./cover.svelte";
 
-  export let tracks: Tracks;
   export let paused: boolean;
   export let loading: boolean;
   export let time: number;
@@ -27,8 +30,17 @@
       class:paused={!paused}
       aria-label="Pause/Play"
       on:touchstart|stopPropagation|passive
-      on:click|stopPropagation={() =>
-        tracks.current != none && (paused = !paused)}
+      on:click|stopPropagation={() => {
+        if (tracks.current === none) {
+          const playlist = $settings.defaultPlaylist;
+          if (!playlist) return;
+          const list = playlists.get(playlist);
+          if (!list) return;
+          const items = get(list.tracks);
+          if (!items) return;
+          tracks.pushPlaylist(cloneArray(items));
+        } else paused = !paused;
+      }}
     />
   {:else}
     <Loader size={30} padding={24} color={"var(--color-text-normal)"} />

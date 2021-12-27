@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { Tracks, Track as ITrack } from "models/tracks";
-  import { Repeatition, Diretion } from "models/tracks";
+  import type { Track as TrackData } from "models/tracks";
+  import tracks, { Repeatition, Diretion } from "models/tracks";
   import { scroller } from "actions/scroller";
   import draggable from "actions/draggable";
   import tappable from "actions/tappable";
@@ -11,7 +11,6 @@
   import Track from "components/track.svelte";
   import { onDestroy, tick } from "svelte";
 
-  export let tracks: Tracks;
   export let paused: boolean;
   export let loading: boolean;
   export let time: number;
@@ -26,8 +25,8 @@
   let historyContainer: HTMLElement;
 
   let infinity = false;
-  let history: ITrack[] = [];
-  let queue: ITrack[] = [];
+  let history: TrackData[] = [];
+  let queue: TrackData[] = [];
 
   const unsubscribe = tracks.subscribe(async () => {
     if (!swapping) {
@@ -55,7 +54,7 @@
 </script>
 
 <div class="container">
-  <Miniplayer {tracks} {loading} bind:paused bind:time />
+  <Miniplayer {loading} bind:paused bind:time />
   <div class="toolbar">
     <button
       class="history"

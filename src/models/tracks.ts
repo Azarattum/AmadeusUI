@@ -1,6 +1,17 @@
 import type { Readable, Subscriber, Unsubscriber } from "svelte/store";
 import { shuffle } from "../utils/utils";
 
+export interface Track {
+  title: string;
+  artists: string[];
+  album: string;
+
+  length: number;
+  year?: number;
+  cover?: string;
+  sources: string[];
+}
+
 export const none: Track = {
   title: "Not Playing",
   artists: ["No Artist"],
@@ -239,17 +250,6 @@ export class Tracks implements Readable<Tracks> {
   }
 }
 
-export interface Track {
-  title: string;
-  artists: string[];
-  album: string;
-
-  length: number;
-  year?: number;
-  cover?: string;
-  sources: string[];
-}
-
 export enum Diretion {
   Normal,
   Backwards,
@@ -266,9 +266,14 @@ export function hash(track: Track): string {
   return `${stringify(track)} - ${track.album.toLowerCase()}`;
 }
 
-export function stringify(track: Track, reverse = false): string {
-  const title = track.title.toLowerCase().trim();
-  const artists = track.artists.sort().join().toLowerCase().trim();
+export function stringify(
+  { title, artists }: { title: string; artists: string[] | string },
+  reverse = false
+): string {
+  title = title.toLowerCase().trim();
+  artists = Array.isArray(artists)
+    ? artists.sort().join(", ").toLowerCase().trim()
+    : artists.toLowerCase().trim();
 
   if (!artists) return purify(title);
   if (reverse) return purify(`${title} - ${artists}`);
@@ -278,3 +283,6 @@ export function stringify(track: Track, reverse = false): string {
 export function purify(title: string): string {
   return title.replace(/[+,&]/g, " ");
 }
+
+const tracks = new Tracks();
+export default tracks;

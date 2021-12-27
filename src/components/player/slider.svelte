@@ -1,11 +1,10 @@
 <script lang="ts">
-  import type { Tracks } from "models/tracks";
   import { pannable } from "actions/pannable";
+  import tracks from "models/tracks";
 
   import Lyrics from "./lyrics.svelte";
   import Queue from "./queue.svelte";
 
-  export let tracks: Tracks;
   export let paused: boolean;
   export let loading: boolean;
   export let time: number;
@@ -61,7 +60,7 @@
       <Lyrics track={$tracks.current} />
     </div>
     <div style="display: {selected == 1 ? 'block' : 'none'}">
-      <Queue {tracks} {loading} bind:time bind:paused />
+      <Queue {loading} bind:time bind:paused />
     </div>
   </div>
 </div>

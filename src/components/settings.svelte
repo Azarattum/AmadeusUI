@@ -3,6 +3,7 @@
   import { pannable } from "actions/pannable";
   import { slide } from "svelte/transition";
   import { verifyLogin } from "utils/api";
+  import playlists from "models/playlist";
   import jsSHA from "jsSHA";
 
   import Loader from "./common/loader.svelte";
@@ -15,6 +16,12 @@
   let handle: HTMLElement | undefined;
   let password: string | undefined;
   let loading = false;
+
+  let list = playlists.list();
+  let loaded = playlists.loaded;
+  $: if ($settings.token && !$settings.defaultPlaylist && $loaded) {
+    $settings.defaultPlaylist = $list[0];
+  }
 
   async function login() {
     if (!password || !$settings.login || !$settings.hostname) return;
@@ -44,38 +51,42 @@
   <div class="settings-handle" bind:this={handle} on:click|stopPropagation />
   <h1>Settings</h1>
   {#if !($settings.hostname && $settings.login && $settings.token)}
-    <ul transition:slide>
-      <li>
-        <input
-          type="text"
-          name="hostname"
-          placeholder="Hostname"
-          bind:value={$settings.hostname}
-        />
-      </li>
-      <li>
-        <input
-          type="text"
-          name="login"
-          placeholder="Login"
-          bind:value={$settings.login}
-        />
-      </li>
-      <li>
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          bind:value={password}
-        />
-      </li>
-      <li>
-        <button on:click={login}>{loading ? "" : "Connect"}</button>
-        {#if loading}
-          <div class="loader"><Loader size={40} /></div>
-        {/if}
-      </li>
-    </ul>
+    <form on:submit|preventDefault novalidate>
+      <ul transition:slide on:touchstart|stopPropagation>
+        <li>
+          <input
+            type="url"
+            name="hostname"
+            placeholder="Hostname"
+            bind:value={$settings.hostname}
+          />
+        </li>
+        <li>
+          <input
+            type="text"
+            name="login"
+            placeholder="Login"
+            bind:value={$settings.login}
+          />
+        </li>
+        <li>
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            bind:value={password}
+          />
+        </li>
+        <li>
+          <button type="submit" on:click={login}
+            >{loading ? "" : "Connect"}</button
+          >
+          {#if loading}
+            <div class="loader"><Loader size={40} /></div>
+          {/if}
+        </li>
+      </ul>
+    </form>
   {:else}
     <ul transition:slide>
       <li on:click={logout}>
@@ -88,14 +99,18 @@
   {/if}
   <ul>
     <li>
-      <label for="select-quick-action">Default Playlist</label>
-      <select id="select-quick-action" />
+      <label for="select-playlist">Default Playlist</label>
+      <select id="select-playlist" bind:value={$settings.defaultPlaylist}>
+        {#each $list as key}
+          <option value={key}>{key}</option>
+        {/each}
+      </select>
     </li>
     <li>
       <label for="select-quick-action">Quick Action</label>
       <select id="select-quick-action">
         {#each Object.values(QuickAction) as key}
-          <option value="key">{key}</option>
+          <option value={key}>{key}</option>
         {/each}
       </select>
     </li>

@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { fetchPlaylists, fetchRecent, PlaylistInfo } from "utils/api";
-  import { settings } from "models/settings";
+  import playlists from "models/playlist";
 
   import Loader from "./common/loader.svelte";
   import Playlist from "./playlist.svelte";
@@ -14,48 +13,35 @@
     drag = (target as HTMLElement).scrollTop;
   }
 
-  let recent = new Promise<PlaylistInfo[]>(() => {});
-  let playlists = new Promise<PlaylistInfo[]>(() => {});
-
-  $: if ($settings.token) recent = fetchRecent();
-  $: if ($settings.token) playlists = fetchPlaylists();
+  const { recent, library, dynamic } = playlists;
 </script>
 
 <Tabs {sections}>
   <Search slot="search" bind:drag />
   <section on:scroll={onScroll}>
-    {#await recent}
+    {#if $recent}
+      {#each $recent as playlist}
+        <Playlist {playlist} />
+      {/each}
+    {:else}
       <div class="loader">
         <Loader size={64} color="var(--color-text-caption)" />
       </div>
-    {:then loaded}
-      {#each loaded as info}
-        <Playlist
-          title={info.title}
-          playlist={info.data}
-          on:playlist
-          on:next
-          on:last
-        />
-      {/each}
-    {/await}
+    {/if}
   </section>
   <section on:scroll={onScroll}>
-    {#await playlists}
+    {#if $library && $dynamic}
+      {#each $library as playlist}
+        <Playlist {playlist} />
+      {/each}
+      {#each $dynamic as playlist}
+        <Playlist {playlist} />
+      {/each}
+    {:else}
       <div class="loader">
         <Loader size={64} color="var(--color-text-caption)" />
       </div>
-    {:then loaded}
-      {#each loaded as info}
-        <Playlist
-          title={info.title}
-          playlist={info.data}
-          on:playlist
-          on:next
-          on:last
-        />
-      {/each}
-    {/await}
+    {/if}
   </section>
   <section on:scroll={onScroll} />
   <section on:scroll={onScroll} />

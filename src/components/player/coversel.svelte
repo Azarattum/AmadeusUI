@@ -1,12 +1,11 @@
 <script lang="ts">
-  import { Repeatition, Tracks, Track } from "models/tracks";
+  import tracks, { Repeatition, Track } from "models/tracks";
 
   import Swiper from "components/common/swiper.svelte";
   import Cover from "components/player/cover.svelte";
   import Options from "./options.svelte";
   import Pause from "./pause.svelte";
 
-  export let tracks: Tracks;
   export let paused: boolean;
   export let loading: boolean;
 

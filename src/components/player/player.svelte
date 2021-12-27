@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Tracks, none } from "models/tracks";
+  import tracks, { none } from "models/tracks";
   import { pannable } from "actions/pannable";
   import { onDestroy, onMount } from "svelte";
   import AudioPlayer from "models/audio";
@@ -9,8 +9,6 @@
   import Playback from "./playback.svelte";
   import Slider from "./slider.svelte";
   import Info from "./info.svelte";
-
-  export let tracks: Tracks;
 
   let loading = false;
   let speedup = NaN;
@@ -109,12 +107,12 @@
   on:open={() => (open = true)}
   on:close={() => (open = false)}
 >
-  <Miniplayer {tracks} {loading} bind:paused bind:time hidden={open} />
+  <Miniplayer {loading} bind:paused bind:time hidden={open} />
   <div class="container">
     <div class="player-handle" />
     <div>
       <Info title={$tracks.current.title} artists={$tracks.current.artists} />
-      <Coversel {tracks} {loading} bind:paused />
+      <Coversel {loading} bind:paused />
     </div>
     <Playback
       bind:speedup
@@ -122,7 +120,7 @@
       length={$tracks.current.length}
       visible={open}
     />
-    <Slider {tracks} {loading} bind:paused bind:time />
+    <Slider {loading} bind:paused bind:time />
   </div>
 </div>
 

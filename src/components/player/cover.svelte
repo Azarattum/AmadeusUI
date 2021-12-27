@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { empty } from "utils/cover";
+  import { image as empty } from "utils/empty";
 
   export let image: string | undefined | null;
   export let size = "100%";
