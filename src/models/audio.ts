@@ -1,9 +1,9 @@
+import type { Track } from "./tracks";
 import type Hls from "hls.js";
 import unlock, { isiOS } from "utils/unlocker";
+import EventEmmiter from "utils/emmiter";
 import { fetchTrack } from "utils/api";
-import type { Track } from "./tracks";
 import { hash, none } from "./tracks";
-import EventEmmiter from "./emmiter";
 
 let HLS: typeof Hls | undefined;
 if ("window" in globalThis) {
