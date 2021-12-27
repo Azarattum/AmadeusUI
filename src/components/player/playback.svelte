@@ -90,10 +90,14 @@
 <style lang="postcss">
   .playback {
     margin: 8px 24px;
+    position: relative;
+    padding-top: 19px;
 
     .progress {
+      position: absolute;
+      top: 12px;
+
       -webkit-appearance: none;
-      position: relative;
       pointer-events: none;
       z-index: 1;
       width: 100%;
@@ -131,6 +135,7 @@
         transform: translateX(calc(var(--progress) - 50%));
         background-size: 100%;
         transition: background-size 0.3s ease;
+        box-shadow: none;
       }
 
       &:active::-webkit-slider-thumb {
@@ -139,12 +144,12 @@
     }
   }
   .time {
+    position: relative;
     width: 100%;
-    display: flex;
-    justify-content: space-between;
+    height: 37px;
 
     * {
-      position: relative;
+      position: absolute;
       padding: 4px 16px 10px 16px;
       margin: 0px -16px 0px -16px;
 
@@ -162,6 +167,12 @@
           opacity: 1;
         }
       }
+    }
+    .left {
+      right: 0;
+    }
+    .elapsed {
+      left: 0;
     }
 
     *:before,
