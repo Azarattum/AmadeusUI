@@ -2,7 +2,7 @@
   "name": "amadeus-ui",
   "scripts": {
     "dev": "npx svelte-kit dev --host",
-    "build": "svelte-kit build",
+    "build": "svelte-kit build && node postbuild.js",
     "preview": "svelte-kit preview",
     "test": "jest",
     "check": "svelte-check --tsconfig ./tsconfig.json",

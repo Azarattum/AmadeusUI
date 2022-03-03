@@ -13,6 +13,7 @@ import nested from "postcss-nested";
 import nano from "cssnano";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const __base = process.env.AMADEUS_BASE || "";
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -43,7 +44,7 @@ const config = {
       },
     }),
     paths: {
-      base: process.env.AMADEUS_BASE || "",
+      base: __base,
     },
   },
 };
