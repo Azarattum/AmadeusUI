@@ -1,0 +1,32 @@
+name: CI
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    name: Build, Test, Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "16.x"
+
+      - name: Prepare
+        run: npm install
+
+      - name: Build
+        run: npm run-script build
+
+      - name: Test
+        run: npm run-script test
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
