@@ -1,7 +1,6 @@
 <script lang="ts">
   import { settings } from "models/settings";
   import playlists from "models/playlist";
-  import { onMount } from "svelte";
 
   import Player from "components/player/player.svelte";
   import Settings from "components/settings.svelte";

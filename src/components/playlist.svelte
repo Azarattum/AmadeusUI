@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Playlist } from "models/playlist";
-  import { Diretion, Track as TrackData } from "models/tracks";
+  import { Diretion, type Track as TrackData } from "models/tracks";
   import { scroller } from "actions/scroller";
   import draggable from "actions/draggable";
   import { fade } from "svelte/transition";

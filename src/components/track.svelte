@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import { none, Track } from "models/tracks";
+  import { none, type Track } from "models/tracks";
   import { formatTime } from "utils/time";
 
   import Cover from "./player/cover.svelte";

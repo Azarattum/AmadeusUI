@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { none, Track } from "models/tracks";
+  import { none, type Track } from "models/tracks";
   import { scroller } from "actions/scroller";
   import { settings } from "models/settings";
   import { fade } from "svelte/transition";

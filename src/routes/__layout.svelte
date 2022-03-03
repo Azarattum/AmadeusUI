@@ -45,4 +45,6 @@
 
 <slot />
 
-<style global src="__layout.pcss"></style>
+<style global lang="postcss">
+  @import "__layout.pcss";
+</style>

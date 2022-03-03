@@ -1,5 +1,5 @@
 import { sleep } from "../utils/utils";
-import { Tracks, Track, Diretion, Repeatition, none } from "./tracks";
+import { Tracks, type Track, Diretion, Repeatition, none } from "./tracks";
 
 const t0 = { title: "0" } as Track;
 const t1 = { title: "1" } as Track;

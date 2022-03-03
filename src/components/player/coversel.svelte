@@ -1,5 +1,5 @@
 <script lang="ts">
-  import tracks, { Repeatition, Track } from "models/tracks";
+  import tracks, { Repeatition, type Track } from "models/tracks";
 
   import Swiper from "components/common/swiper.svelte";
   import Cover from "components/player/cover.svelte";

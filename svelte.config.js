@@ -31,7 +31,6 @@ const config = {
   }),
 
   kit: {
-    target: "body",
     adapter: ctr(),
     vite: () => ({
       resolve: {
