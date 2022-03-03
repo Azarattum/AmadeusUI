@@ -23,6 +23,6 @@
     }
   ],
   "display": "standalone",
-  "scope": "/",
+  "scope": "/AmadeusUI/",
   "description": "Listen to your music with Amadeus"
 }
