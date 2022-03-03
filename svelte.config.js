@@ -42,6 +42,9 @@ const config = {
         },
       },
     }),
+    paths: {
+      base: process.env.AMADEUS_BASE || "",
+    },
   },
 };
 
