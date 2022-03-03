@@ -1,10 +1,10 @@
-const timestamp = 1646321444722;
+const timestamp = 1646329059151;
 const build = [
-  "/AmadeusUI/_app/start-cc9ca9a9.js",
+  "/AmadeusUI/_app/start-a60fdc72.js",
   "/AmadeusUI/_app/pages/__layout.svelte-bfe8f9c1.js",
   "/AmadeusUI/_app/assets/pages/__layout.svelte-ee4679ba.css",
   "/AmadeusUI/_app/error.svelte-f772cec3.js",
-  "/AmadeusUI/_app/pages/index.svelte-f41538ee.js",
+  "/AmadeusUI/_app/pages/index.svelte-3a0f1cf3.js",
   "/AmadeusUI/_app/assets/pages/index.svelte-5f182718.css",
   "/AmadeusUI/_app/chunks/vendor-dc7df7c6.js",
   "/AmadeusUI/_app/chunks/paths-4b3c6e7e.js",
@@ -26,10 +26,10 @@ const files$1 = [
 const files = files$1.filter((x) => x != "/.DS_Store");
 const worker = self;
 const assets = `cache${timestamp}`;
-const toCache = build.concat(files);
-const staticAssets = new Set(toCache);
+const bundleFiles = build.concat(files);
+const bundleSet = new Set(bundleFiles);
 worker.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(assets).then((cache) => cache.addAll(toCache)).then(() => {
+  event.waitUntil(caches.open(assets).then((cache) => cache.addAll(bundleFiles)).then(() => {
     worker.skipWaiting();
   }));
 });
@@ -42,31 +42,40 @@ worker.addEventListener("activate", (event) => {
     worker.clients.claim();
   }));
 });
+function isCacheable(request) {
+  const url = new URL(request.url);
+  if (bundleSet.has(url.pathname))
+    return true;
+  if (request.destination === "image")
+    return true;
+  return false;
+}
 async function fetchAndCache(request) {
   const cache = await caches.open(`offline${timestamp}`);
   try {
     const response = await fetch(request);
-    cache.put(request, response.clone());
+    if (isCacheable(request))
+      cache.put(request, response.clone());
     return response;
-  } catch (err) {
+  } catch (error) {
     const response = await cache.match(request);
     if (response)
       return response;
-    throw err;
+    throw error;
   }
 }
-worker.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET" || event.request.headers.has("range"))
+worker.addEventListener("fetch", async (event) => {
+  const request = event.request;
+  const url = new URL(request.url);
+  if (!url.protocol.startsWith("http"))
     return;
-  const url = new URL(event.request.url);
-  const isHttp = url.protocol.startsWith("http");
-  const isDevServerRequest = url.hostname === self.location.hostname && url.port !== self.location.port;
-  const isStaticAsset = url.host === self.location.host && staticAssets.has(url.pathname);
-  const skipBecauseUncached = event.request.cache === "only-if-cached" && !isStaticAsset;
-  if (isHttp && !isDevServerRequest && !skipBecauseUncached) {
-    event.respondWith((async () => {
-      const cachedAsset = isStaticAsset && await caches.match(event.request);
-      return cachedAsset || fetchAndCache(event.request);
-    })());
-  }
+  if (request.headers.has("range"))
+    return;
+  if (request.method !== "GET")
+    return;
+  const response = async () => {
+    const cached2 = isCacheable(request) && await caches.match(event.request);
+    return cached2 || fetchAndCache(event.request);
+  };
+  event.respondWith(response());
 });
