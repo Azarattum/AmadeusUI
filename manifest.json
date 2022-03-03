@@ -1,7 +1,7 @@
 {
   "short_name": "Amadeus",
   "name": "Amadeus",
-  "start_url": "/",
+  "start_url": "/AmadeusUI",
   "icons": [
     {
       "src": "images/icon.jpg",
