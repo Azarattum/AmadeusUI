@@ -1,27 +1,27 @@
-const timestamp = 1646314074310;
+const timestamp = 1646314232113;
 const build = [
-  "/_app/start-2fd940c9.js",
-  "/_app/pages/__layout.svelte-bfe8f9c1.js",
-  "/_app/assets/pages/__layout.svelte-ee4679ba.css",
-  "/_app/error.svelte-f772cec3.js",
-  "/_app/pages/index.svelte-20bab31c.js",
-  "/_app/assets/pages/index.svelte-5f182718.css",
-  "/_app/chunks/vendor-dc7df7c6.js",
-  "/_app/chunks/paths-4b3c6e7e.js",
-  "/_app/chunks/preload-helper-e4860ae8.js",
-  "/_app/chunks/hls-ab311cfe.js"
+  "/AmadeusUI/_app/start-b4644228.js",
+  "/AmadeusUI/_app/pages/__layout.svelte-bfe8f9c1.js",
+  "/AmadeusUI/_app/assets/pages/__layout.svelte-ee4679ba.css",
+  "/AmadeusUI/_app/error.svelte-f772cec3.js",
+  "/AmadeusUI/_app/pages/index.svelte-f41538ee.js",
+  "/AmadeusUI/_app/assets/pages/index.svelte-5f182718.css",
+  "/AmadeusUI/_app/chunks/vendor-dc7df7c6.js",
+  "/AmadeusUI/_app/chunks/paths-4b3c6e7e.js",
+  "/AmadeusUI/_app/chunks/preload-helper-1ae1ff14.js",
+  "/AmadeusUI/_app/chunks/hls-ab311cfe.js"
 ];
 const files$1 = [
-  "/fonts/blokk.woff2",
-  "/images/favicon.png",
-  "/images/icon.jpg",
-  "/images/logo.jpg",
-  "/images/logo.svg",
-  "/images/splash-5.jpg",
-  "/images/splash-8.jpg",
-  "/images/splash-X.jpg",
-  "/images/splash-plus.jpg",
-  "/manifest.json"
+  "/AmadeusUI/fonts/blokk.woff2",
+  "/AmadeusUI/images/favicon.png",
+  "/AmadeusUI/images/icon.jpg",
+  "/AmadeusUI/images/logo.jpg",
+  "/AmadeusUI/images/logo.svg",
+  "/AmadeusUI/images/splash-5.jpg",
+  "/AmadeusUI/images/splash-8.jpg",
+  "/AmadeusUI/images/splash-X.jpg",
+  "/AmadeusUI/images/splash-plus.jpg",
+  "/AmadeusUI/manifest.json"
 ];
 const files = files$1.filter((x) => x != "/.DS_Store");
 const worker = self;
