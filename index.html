@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <style>
+      @font-face {
+        font-family: "Blokk";
+        src: url("/fonts/blokk.woff2") format("woff2");
+        font-style: normal;
+        font-weight: normal;
+      }
+    </style>
+    <meta http-equiv="content-security-policy" content=""><title>Amadeus</title><meta name="description" content="Listen to your music with Amadeus!" data-svelte="svelte-1szo23n"><link rel="icon" type="image/png" href="/images/favicon.png" data-svelte="svelte-1szo23n"><link rel="apple-touch-icon" href="/images/icon.jpg" data-svelte="svelte-1szo23n"><link rel="manifest" href="/manifest.json" data-svelte="svelte-1szo23n"><meta charset="utf-8" data-svelte="svelte-1szo23n"><meta name="apple-mobile-web-app-capable" content="yes" data-svelte="svelte-1szo23n"><meta name="apple-mobile-web-app-status-bar-style" content="default" data-svelte="svelte-1szo23n"><meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,user-scalable=no" data-svelte="svelte-1szo23n"><meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" data-svelte="svelte-1szo23n"><meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" data-svelte="svelte-1szo23n"><link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="/images/splash-5.jpg" data-svelte="svelte-1szo23n"><link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" href="/images/splash-8.jpg" data-svelte="svelte-1szo23n"><link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" href="/images/splash-X.jpg" data-svelte="svelte-1szo23n"><link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)" href="/images/splash-plus.jpg" data-svelte="svelte-1szo23n">
+	<link rel="stylesheet" href="/_app/assets/pages/__layout.svelte-ee4679ba.css">
+	<link rel="stylesheet" href="/_app/assets/pages/index.svelte-5f182718.css">
+	<link rel="modulepreload" href="/_app/start-e1614d90.js">
+	<link rel="modulepreload" href="/_app/chunks/vendor-dc7df7c6.js">
+	<link rel="modulepreload" href="/_app/chunks/preload-helper-e4860ae8.js">
+	<link rel="modulepreload" href="/_app/pages/__layout.svelte-0ddd1179.js">
+	<link rel="modulepreload" href="/_app/pages/index.svelte-20bab31c.js">
+				<script>
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('/service-worker.js');
+		}
+	</script>
+  </head>
+  <body>
+    
+
+
+
+
+<section style="display:block"><header class="svelte-1y3pjko"><button tabindex="0" aria-label="Recent" alt="Recent" class="svelte-1y3pjko active">Recent
+    </button><button tabindex="0" aria-label="Playlists" alt="Playlists" class="svelte-1y3pjko">Playlists
+    </button><button tabindex="0" aria-label="Artists" alt="Artists" class="svelte-1y3pjko">Artists
+    </button><button tabindex="0" aria-label="Albums" alt="Albums" class="svelte-1y3pjko">Albums
+    </button></header>
+
+
+
+<div class="svelte-pjweam"><input type="text" placeholder="Search" tabindex="-1" class="svelte-pjweam" value="">
+  <i class="search svelte-pjweam"></i>
+  
+</div>
+
+<nav class="svelte-1y3pjko"><section class="svelte-pyvlpb"><div class="loader svelte-pyvlpb"><div class="spinner svelte-663nu6" style="--size:64px; --padding:0px; color:var(--color-text-caption);"></div></div></section>
+  <section class="svelte-pyvlpb"><div class="loader svelte-pyvlpb"><div class="spinner svelte-663nu6" style="--size:64px; --padding:0px; color:var(--color-text-caption);"></div></div></section>
+  <section class="svelte-pyvlpb"></section>
+  <section class="svelte-pyvlpb"></section>
+</nav>
+  </section><section style="display:none"><header><h1>Listen</h1></header>
+  </section><section style="display:none"><header class="svelte-7b5cz"><h1>Explore</h1>
+  <button aria-label="Settings" class="settings svelte-7b5cz"></button></header>
+
+
+
+<aside class="svelte-7b5cz"><input type="text" placeholder="Search" tabindex="0" class="svelte-7b5cz">
+  <i class="search svelte-7b5cz"></i>
+  
+</aside>
+  </section>
+<div class="player svelte-19h74ga  locked"><div class="miniplayer svelte-121kq6h"><div class="cover svelte-121kq6h"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="" loading="lazy" style="height: 100%; width: 100%; min-height: 100%; min-width: 100%;" class="svelte-1ozd1mv"></div>
+  <span class="title svelte-121kq6h">Not Playing</span>
+  <button aria-label="Pause/Play" class="svelte-121kq6h"></button>
+  <div class="playback svelte-121kq6h" style="--time: 0;"></div>
+</div>
+  <div class="container svelte-19h74ga"><div class="player-handle svelte-19h74ga"></div>
+    <div><div class="info svelte-1b6fv9a"><div class="svelte-1b6fv9a"><div class="title svelte-1b6fv9a">Not Playing</div>
+      <button class="artists svelte-1b6fv9a" aria-label="Show Artists">No Artist</button></div>
+</div>
+      <div class="swiper svelte-d4tfnf"><div class="svelte-d4tfnf"><div class="container svelte-14bp2zz"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="" loading="lazy" style="height: 100%; width: 100%; min-height: 100%; min-width: 100%;" class="svelte-1ozd1mv">
+    </div>
+    </div><div class="svelte-d4tfnf"><div class="container svelte-14bp2zz"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="" loading="lazy" style="height: 100%; width: 100%; min-height: 100%; min-width: 100%;" class="svelte-1ozd1mv">
+    </div>
+    </div><div class="svelte-d4tfnf"><div class="container svelte-14bp2zz active"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="" loading="lazy" style="height: 100%; width: 100%; min-height: 100%; min-width: 100%;" class="svelte-1ozd1mv">
+    <div class="container svelte-1o1ddn6"><button class="pause svelte-1o1ddn6" aria-label="Pause/Play"></button>
+</div>
+      <div><div class="context"><div class="menu svelte-gfah56" style="transform-origin: bottom right; transform: scale(0.1); opacity: 0;"><button class="info svelte-bnvum9" aria-label="Show Info">Info</button>
+    <button class="artist svelte-bnvum9" aria-label="Show Artist">Artist</button>
+    <button class="album svelte-bnvum9" aria-label="Show Album">Album</button>
+    <button class="similar svelte-bnvum9" aria-label="Find Similar">Similar</button>
+    <button class="share svelte-bnvum9" aria-label="Share Track">Share</button>
+    <button class="save svelte-bnvum9" aria-label="Save Track">Save</button></div>
+  <button slot="activator" class="options svelte-bnvum9" aria-label="Show Options"></button>
+</div>
+</div></div>
+    </div><div class="svelte-d4tfnf"><div class="container svelte-14bp2zz"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="" loading="lazy" style="height: 100%; width: 100%; min-height: 100%; min-width: 100%;" class="svelte-1ozd1mv">
+    </div>
+    </div><div class="svelte-d4tfnf"><div class="container svelte-14bp2zz"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="" loading="lazy" style="height: 100%; width: 100%; min-height: 100%; min-width: 100%;" class="svelte-1ozd1mv">
+    </div>
+    </div>
+</div></div>
+    <div class="playback svelte-2wuvxd"><input aria-label="Playback Progress" class="progress svelte-2wuvxd" type="range" min="0" max="0" style="--progress:0%" value="0">
+  <div class="time svelte-2wuvxd"><button class="elapsed svelte-2wuvxd" aria-label="Seek Backwards" oncontextmenu="() => false">0:00</button>
+      <button class="left svelte-2wuvxd" aria-label="Seek Forward">∞</button></div>
+</div>
+    <div class="more svelte-16fgm4f"><div class="slider-handle svelte-16fgm4f"></div>
+  <div class="mode svelte-16fgm4f"><button class="lyrics svelte-16fgm4f" aria-label="Show Lyrics"></button>
+    <button class="queue svelte-16fgm4f" aria-label="Open Queue"></button></div>
+  <div class="content svelte-16fgm4f"><div style="display: block" class="svelte-16fgm4f"><h2 class="svelte-10c0aqd">Lyrics</h2>
+<div class="text svelte-10c0aqd">
+    <span class="svelte-10c0aqd"></span>
+  
+  <button class="slider-handle svelte-10c0aqd" style="display: none;" aria-label="Hide Lyrics"></button>
+</div></div>
+    <div style="display: none" class="svelte-16fgm4f"><div class="container svelte-1j67v15"><div class="miniplayer svelte-121kq6h"><div class="cover svelte-121kq6h"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="" loading="lazy" style="height: 100%; width: 100%; min-height: 100%; min-width: 100%;" class="svelte-1ozd1mv"></div>
+  <span class="title svelte-121kq6h">Not Playing</span>
+  <button aria-label="Pause/Play" class="svelte-121kq6h"></button>
+  <div class="playback svelte-121kq6h" style="--time: 0;"></div>
+</div>
+  <div class="toolbar svelte-1j67v15"><button class="history svelte-1j67v15" aria-label="Toggle History"></button>
+    <div class="svelte-1j67v15"><h2 class="svelte-1j67v15">Queue
+        </h2></div>
+
+    <button class="infinity svelte-1j67v15" aria-label="Toggle Infinite Play"></button>
+      <button class="direction svelte-1j67v15 normal" aria-label="Switch Playback Direction"></button>
+      <button class="repeat svelte-1j67v15 none" aria-label="Switch Repeat Mode"></button></div>
+  <div class="viewport svelte-1j67v15"><div class="svelte-1j67v15"></div>
+    <div class="slider-handle svelte-1j67v15" style="display: none;" aria-label="Close Queue"></div></div>
+</div></div></div>
+</div></div>
+</div>
+<nav class="svelte-1wetexf"><button tabindex="0" aria-label="Library" class="library svelte-1wetexf active">Library
+    </button><button tabindex="0" aria-label="Listen" class="listen svelte-1wetexf">Listen
+    </button><button tabindex="0" aria-label="Explore" class="explore svelte-1wetexf">Explore
+    </button>
+</nav>
+<section style="opacity: 1" class="svelte-27lmz4"><div class="settings-handle svelte-27lmz4"></div>
+  <h1>Settings</h1>
+  <form novalidate><ul class="svelte-27lmz4"><li class="svelte-27lmz4"><input type="url" name="hostname" placeholder="Hostname" class="svelte-27lmz4" value=""></li>
+        <li class="svelte-27lmz4"><input type="text" name="login" placeholder="Login" class="svelte-27lmz4" value=""></li>
+        <li class="svelte-27lmz4"><input type="password" name="password" placeholder="Password" class="svelte-27lmz4"></li>
+        <li class="svelte-27lmz4"><button type="submit" class="svelte-27lmz4">Connect</button>
+          </li></ul></form>
+  <ul class="svelte-27lmz4"><li class="svelte-27lmz4"><label for="select-playlist" class="svelte-27lmz4">Default Playlist</label>
+      <select id="select-playlist" class="svelte-27lmz4"></select></li>
+    <li class="svelte-27lmz4"><label for="select-quick-action" class="svelte-27lmz4">Quick Action</label>
+      <select id="select-quick-action" class="svelte-27lmz4"><option value="Play Next">Play Next</option><option value="Play Last">Play Last</option></select></li></ul>
+</section>
+
+
+		<script type="module" data-hydrate="o5sfnv">
+		import { start } from "/_app/start-e1614d90.js";
+		start({
+			target: document.querySelector('[data-hydrate="o5sfnv"]').parentNode,
+			paths: {"base":"","assets":""},
+			session: {},
+			route: true,
+			spa: false,
+			trailing_slash: "never",
+			hydrate: {
+				status: 200,
+				error: null,
+				nodes: [
+					import("/_app/pages/__layout.svelte-0ddd1179.js"),
+						import("/_app/pages/index.svelte-20bab31c.js")
+				],
+				params: {}
+			}
+		});
+	</script>
+  </body>
+  <script>
+    document.addEventListener("touchstart", function () {}, false);
+    if (navigator.standalone) document.body.classList.add("standalone");
+    const updateHeight = () => {
+      document.documentElement.style.setProperty(
+        "--view-height",
+        `${innerHeight}px`
+      );
+    };
+    addEventListener("resize", updateHeight);
+    addEventListener(
+      "touchend",
+      () => {
+        scrollTo(0, 0);
+      },
+      { passive: true }
+    );
+    updateHeight();
+  </script>
+</html>
