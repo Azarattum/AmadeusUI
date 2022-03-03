@@ -4,7 +4,7 @@
   import { slide } from "svelte/transition";
   import { verifyLogin } from "utils/api";
   import playlists from "models/playlist";
-  import jsSHA from "jsSHA";
+  import jsSHA from "jssha";
 
   import Loader from "./common/loader.svelte";
 
