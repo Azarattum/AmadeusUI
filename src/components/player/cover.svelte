@@ -15,6 +15,7 @@
     width: {size};
     min-height: {size};
     min-width: {size};
+    background-image: url({image});
   "
 />
 

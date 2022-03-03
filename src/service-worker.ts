@@ -5,20 +5,22 @@ const files = cached.filter((x: string) => x != "/.DS_Store");
 const worker = self as unknown as ServiceWorkerGlobalScope;
 const assets = `cache${timestamp}`;
 
-const toCache = build.concat(files);
-const staticAssets = new Set(toCache);
+const bundleFiles = build.concat(files);
+const bundleSet = new Set(bundleFiles);
 
+// Add all bundle files to the cache upon installation
 worker.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(assets)
-      .then((cache) => cache.addAll(toCache))
+      .then((cache) => cache.addAll(bundleFiles))
       .then(() => {
         worker.skipWaiting();
       })
   );
 });
 
+// Delete old bundle cache files
 worker.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then(async (keys) => {
@@ -30,50 +32,41 @@ worker.addEventListener("activate", (event) => {
   );
 });
 
-/**
- * Fetch the asset from the network and store it in the cache.
- * Fall back to the cache if the user is offline.
- */
+function isCacheable(request: Request) {
+  const url = new URL(request.url);
+
+  if (bundleSet.has(url.pathname)) return true;
+  if (request.destination === "image") return true;
+  return false;
+}
+
 async function fetchAndCache(request: Request) {
   const cache = await caches.open(`offline${timestamp}`);
 
   try {
     const response = await fetch(request);
-    cache.put(request, response.clone());
+    if (isCacheable(request)) cache.put(request, response.clone());
     return response;
-  } catch (err) {
+  } catch (error) {
+    // Fallback to cache when offline
     const response = await cache.match(request);
     if (response) return response;
-
-    throw err;
+    throw error;
   }
 }
 
-worker.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET" || event.request.headers.has("range"))
-    return;
+worker.addEventListener("fetch", async (event) => {
+  const request = event.request;
+  const url = new URL(request.url);
 
-  const url = new URL(event.request.url);
+  if (!url.protocol.startsWith("http")) return;
+  if (request.headers.has("range")) return;
+  if (request.method !== "GET") return;
 
-  const isHttp = url.protocol.startsWith("http");
-  const isDevServerRequest =
-    url.hostname === self.location.hostname && url.port !== self.location.port;
-  const isStaticAsset =
-    url.host === self.location.host && staticAssets.has(url.pathname);
-  const skipBecauseUncached =
-    event.request.cache === "only-if-cached" && !isStaticAsset;
+  const response = async () => {
+    const cached = isCacheable(request) && (await caches.match(event.request));
+    return cached || fetchAndCache(event.request);
+  };
 
-  if (isHttp && !isDevServerRequest && !skipBecauseUncached) {
-    event.respondWith(
-      (async () => {
-        // always serve static files and bundler-generated assets from cache.
-        // if your application has other URLs with data that will never change,
-        // set this variable to true for them and they will only be fetched once.
-        const cachedAsset =
-          isStaticAsset && (await caches.match(event.request));
-
-        return cachedAsset || fetchAndCache(event.request);
-      })()
-    );
-  }
+  event.respondWith(response());
 });
