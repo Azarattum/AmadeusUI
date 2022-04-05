@@ -8,7 +8,7 @@ export const samples: Track[] = [
     album: "Scripted",
     length: 213,
     cover:
-      "https://fanart.tv/fanart/music/bfce9c6d-eff7-4965-b20e-cb21397470f5/albumcover/scripted-4fb28b7278ec7.jpg",
+      "https://images.rapgenius.com/5f7b7d549106ef9a33651c11fa447f0e.1000x1000x1.jpg",
     sources: ["0"],
   },
   {
