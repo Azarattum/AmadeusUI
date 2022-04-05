@@ -18,7 +18,7 @@
 </nav>
 
 <style lang="postcss">
-  @import "../styles/mixins.pcss";
+  @import "mixins.pcss";
 
   :global(.standalone) nav {
     height: 49px;

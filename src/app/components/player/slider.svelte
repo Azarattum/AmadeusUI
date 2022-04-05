@@ -66,7 +66,7 @@
 </div>
 
 <style lang="postcss">
-  @import "../../styles/mixins.pcss";
+  @import "mixins.pcss";
 
   .more {
     z-index: 2;

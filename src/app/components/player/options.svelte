@@ -29,7 +29,7 @@
 </div>
 
 <style lang="postcss">
-  @import "../../styles/mixins.pcss";
+  @import "mixins.pcss";
 
   .options {
     position: absolute;

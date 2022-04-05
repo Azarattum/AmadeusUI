@@ -35,7 +35,7 @@
 </div>
 
 <style lang="postcss">
-  @import "../../styles/mixins.pcss";
+  @import "mixins.pcss";
 
   h2 {
     position: fixed;

@@ -162,7 +162,7 @@
 </Card>
 
 <style lang="postcss">
-  @import "../styles/mixins.pcss";
+  @import "mixins.pcss";
 
   .viewport {
     display: grid;

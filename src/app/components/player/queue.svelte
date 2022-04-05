@@ -169,7 +169,8 @@
 </div>
 
 <style lang="postcss">
-  @import "../../styles/mixins.pcss";
+  @import "mixins.pcss";
+
   h2 {
     font-size: var(--font-large);
     margin-block-start: 0.67em;

@@ -12,7 +12,7 @@
       "$lib": ["src/lib"],
 
       "components/*": ["src/app/components/*"],
-      "actions/*": ["src/app/lib/actions/*"],
+      "actions/*": ["src/app/actions/*"],
       "models/*": ["src/app/models/*"],
       "utils/*": ["src/app/utils/*"]
     }

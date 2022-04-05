@@ -78,7 +78,7 @@
 </div>
 
 <style lang="postcss">
-  @import "../../styles/mixins.pcss";
+  @import "mixins.pcss";
 
   .menu {
     position: absolute;

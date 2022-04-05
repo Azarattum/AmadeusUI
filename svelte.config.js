@@ -17,12 +17,12 @@ const config = {
   preprocess: preprocess({
     postcss: {
       plugins: [
-        importer,
+        importer({ path: "src/styles" }),
         property,
         nested,
         autoprefixer,
         aspect,
-        inline({ extensions: [".svg"], root: "./src/styles" }),
+        inline({ extensions: [".svg"], root: "src/styles" }),
         nano,
       ],
     },

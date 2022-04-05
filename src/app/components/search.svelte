@@ -42,7 +42,7 @@
 </div>
 
 <style lang="postcss">
-  @import "../styles/mixins.pcss";
+  @import "mixins.pcss";
 
   div {
     position: absolute;

@@ -42,7 +42,7 @@
 </aside>
 
 <style lang="postcss">
-  @import "../styles/mixins.pcss";
+  @import "mixins.pcss";
 
   header {
     display: flex;
