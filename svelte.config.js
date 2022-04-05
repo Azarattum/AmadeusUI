@@ -1,19 +1,16 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { resolve, dirname } from "path";
-import { fileURLToPath } from "url";
+import adapter from "@sveltejs/adapter-static";
 import preprocess from "svelte-preprocess";
-import ctr from "@sveltejs/adapter-static";
+import { resolve } from "path";
 
 import aspect from "postcss-aspect-ratio-polyfill";
-import defineprops from "postcss-define-property";
+import property from "postcss-define-property";
 import autoprefixer from "autoprefixer";
 import importer from "postcss-import";
 import inline from "postcss-base64";
 import nested from "postcss-nested";
 import nano from "cssnano";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const __base = process.env.AMADEUS_BASE || "";
+const base = process.env.AMADEUS_BASE || "";
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -21,7 +18,7 @@ const config = {
     postcss: {
       plugins: [
         importer,
-        defineprops,
+        property,
         nested,
         autoprefixer,
         aspect,
@@ -32,20 +29,25 @@ const config = {
   }),
 
   kit: {
-    adapter: ctr(),
+    prerender: { default: true },
+    adapter: adapter(),
+    paths: { base },
     vite: () => ({
       resolve: {
         alias: {
-          utils: resolve(__dirname, "./src/utils"),
-          actions: resolve(__dirname, "./src/actions"),
-          components: resolve(__dirname, "./src/components"),
-          models: resolve(__dirname, "./src/models"),
+          utils: resolve("./src/app/utils"),
+          models: resolve("./src/app/models"),
+          actions: resolve("./src/app/actions"),
+          components: resolve("./src/app/components"),
+
+          $lib: resolve("./src/lib"),
+          $utils: resolve("./src/lib/utils"),
+          $models: resolve("./src/lib/models"),
+          $actions: resolve("./src/lib/actions"),
+          $components: resolve("./src/lib/components"),
         },
       },
     }),
-    paths: {
-      base: __base,
-    },
   },
 };
 

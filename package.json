@@ -12,8 +12,8 @@
     "preinstall": "npx --yes npm-force-resolutions"
   },
   "devDependencies": {
-    "@sveltejs/adapter-static": "^1.0.0-next.28",
-    "@sveltejs/kit": "^1.0.0-next.291",
+    "@sveltejs/adapter-static": "^1.0.0-next.29",
+    "@sveltejs/kit": "^1.0.0-next.306",
     "@types/jest": "^27.4.1",
     "@types/scroll-into-view": "^1.16.0",
     "@typescript-eslint/eslint-plugin": "^5.13.0",

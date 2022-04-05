@@ -4,10 +4,17 @@
     "strict": true,
     "strictNullChecks": true,
     "paths": {
-      "components/*": ["src/components/*"],
-      "actions/*": ["src/actions/*"],
-      "utils/*": ["src/utils/*"],
-      "models/*": ["src/models/*"]
+      "$components/*": ["src/lib/components/*"],
+      "$actions/*": ["src/lib/actions/*"],
+      "$models/*": ["src/lib/models/*"],
+      "$utils/*": ["src/lib/utils/*"],
+      "$lib/*": ["src/lib/*"],
+      "$lib": ["src/lib"],
+
+      "components/*": ["src/app/components/*"],
+      "actions/*": ["src/app/lib/actions/*"],
+      "models/*": ["src/app/models/*"],
+      "utils/*": ["src/app/utils/*"]
     }
   }
 }
