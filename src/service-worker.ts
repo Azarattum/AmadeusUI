@@ -1,9 +1,9 @@
 /// <reference lib="webworker" />
-import { build, files as cached, timestamp } from "$service-worker";
+import { build, files as cached, version } from "$service-worker";
 
 const files = cached.filter((x: string) => x != "/.DS_Store");
 const worker = self as unknown as ServiceWorkerGlobalScope;
-const assets = `cache${timestamp}`;
+const assets = `cache${version}`;
 
 const bundleFiles = build.concat(files);
 const bundleSet = new Set(bundleFiles);
@@ -41,7 +41,7 @@ function isCacheable(request: Request) {
 }
 
 async function fetchAndCache(request: Request) {
-  const cache = await caches.open(`offline${timestamp}`);
+  const cache = await caches.open(`offline${version}`);
 
   try {
     const response = await fetch(request);
