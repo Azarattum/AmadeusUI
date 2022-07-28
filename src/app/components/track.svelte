@@ -2,6 +2,7 @@
   import { createEventDispatcher } from "svelte";
   import { none, type Track } from "models/tracks";
   import { formatTime } from "utils/time";
+  import tappable from "actions/tappable";
 
   import Cover from "./player/cover.svelte";
 
@@ -11,6 +12,7 @@
   const dispatch = createEventDispatcher();
 </script>
 
+<!-- ///use:tappable -->
 <div class="track" class:empty={track === none}>
   <Cover
     image={track.cover}

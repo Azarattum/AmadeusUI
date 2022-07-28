@@ -7,6 +7,7 @@
 
 <img
   on:click
+  draggable="false"
   src={image || empty}
   alt=""
   loading="lazy"

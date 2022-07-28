@@ -1,23 +1,21 @@
 <script lang="ts">
   import type { Playlist } from "models/playlist";
   import { Direction, type Track as TrackData } from "models/tracks";
+  import autoscroll from "$actions/autoscroll";
   import { scroller } from "actions/scroller";
-  import draggable from "actions/draggable";
   import { fade } from "svelte/transition";
-  import tappable from "actions/tappable";
+  import { cloneArray } from "utils/utils";
+  import tracks from "models/tracks";
 
-  import VirtualList from "components/common/virtuallist.svelte";
+  import Sortable from "$components/sortable.svelte";
   import Context from "./common/context.svelte";
   import Card from "./common/card.svelte";
   import Track from "./track.svelte";
-  import tracks from "models/tracks";
-  import { cloneArray } from "utils/utils";
 
   export let playlist: Playlist;
 
   let opened = false;
   $: items = playlist.tracks;
-  $: if (!opened && viewport) viewport.scrollTo(0, 0);
 
   function formatDuration(seconds: number) {
     let h = Math.floor(seconds / 3600);
@@ -63,82 +61,39 @@
     tracks.pushLast(...cloneArray($items));
   }
 
-  function swap({ detail }: SwapEvent) {
-    if (!$items) return;
-    const { from, to } = detail;
-    if (from < 0 || from >= $items.length) return;
-    if (to < 0 || to >= $items.length) return;
-    if (from === to) return;
+  // function swap({ detail }: SwapEvent) {
+  //   if (!$items) return;
+  //   const { from, to } = detail;
+  //   if (from < 0 || from >= $items.length) return;
+  //   if (to < 0 || to >= $items.length) return;
+  //   if (from === to) return;
 
-    const item = $items.splice(from, 1)[0];
-    if (!item) return;
-    $items.splice(to, 0, item);
-    $items = $items;
-  }
+  //   const item = $items.splice(from, 1)[0];
+  //   if (!item) return;
+  //   $items.splice(to, 0, item);
+  //   $items = $items;
+  // }
 
-  const standalone = !!(navigator as any).standalone;
-  const itemHeight = 56;
-  let viewport: HTMLElement;
-  let container: HTMLElement;
+  // const standalone = !!(navigator as any).standalone;
+  // const itemHeight = 56;
+  // let container: HTMLElement;
 </script>
 
-<Card
-  title={playlist.title}
-  height={115}
-  bind:opened
-  on:click={() => opened || !$items || (opened = !opened)}
->
-  <div
-    class="viewport"
-    bind:this={viewport}
-    class:opened
-    use:scroller={{ header: "h2" }}
-  >
-    {#if $items}
-      <div
-        on:swap={swap}
-        class="container"
-        bind:this={container}
-        in:fade={{ delay: 300 }}
-        use:draggable={{
-          offsetTop: standalone ? 46.5 : 0,
-          offsetLeft: 8,
-          offsetBottom: standalone ? 114 : 92,
-          margin: 0,
-        }}
-      >
-        <VirtualList
-          items={$items}
-          {container}
-          {itemHeight}
-          {viewport}
-          let:item={track}
-          let:index
-        >
-          <div
-            use:tappable
-            class="track"
-            data-index={index}
-            class:tapped={false}
-            class:dragging={false}
-            on:click={(e) => {
-              if (!opened) return;
-              e.stopPropagation();
-              play(track);
-            }}
-          >
-            <Track {track} on:play={({ detail }) => play(detail)} />
-          </div>
-        </VirtualList>
-        <p>{getSummary($items)}</p>
-      </div>
-    {:else}
-      <div class="container" out:fade={{ duration: 300 }}>
-        <div class="track"><Track /></div>
-        <div class="track"><Track /></div>
-      </div>
-    {/if}
-  </div>
+<Card title={playlist.title} height={300} width={350}>
+  {#if $items}
+    <!-- /// Should not clone here! -->
+    <Sortable items={cloneArray($items)} let:item animation={300}>
+      <Track track={item} on:play={({ detail }) => play(detail)} />
+    </Sortable>
+    <p>{getSummary($items)}</p>
+  {:else}
+    <!-- /// Transition ? -->
+    <Track />
+    <Track />
+  {/if}
+
+  <!-- /// Extract to Floating Action Button component -->
+  <!-- /// https://www.youtube.com/watch?v=dsMj8_dUJTQ -->
   <Context>
     <button
       class="option edit"
@@ -164,14 +119,22 @@
 <style lang="postcss">
   @import "mixins.pcss";
 
+  .playlist {
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    /* /// BAD!!! */
+    height: calc(var(--view-height) - 46px);
+  }
+
+  /* /// THIS */
   .viewport {
-    display: grid;
+    /* display: grid;
     grid-template-columns: minmax(0, 1fr);
     height: calc(var(--view-height) - 46px);
     overflow-y: hidden;
-    margin: 0 -16px;
+    margin: 0 -16px; */
 
-    & > div {
+    /* & > div {
       grid-row: 1;
       grid-column: 1;
 
@@ -186,7 +149,7 @@
         content: "";
         height: 90px;
       }
-    }
+    } */
 
     & + :global(.context .menu) {
       display: flex;
@@ -198,10 +161,12 @@
       overflow: visible;
     }
   }
+  /* /// THIS */
   .container {
     margin-top: 4px;
     padding: 0 16px;
   }
+  /* /// THIS */
   .track {
     padding: 4px;
     border-radius: 4px;
