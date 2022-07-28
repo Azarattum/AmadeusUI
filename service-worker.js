@@ -1,15 +1,14 @@
-const timestamp = 1646897271360;
 const build = [
-  "/_app/start-4d805eb6.js",
-  "/_app/pages/__layout.svelte-bfe8f9c1.js",
+  "/_app/start-571f03a3.js",
+  "/_app/pages/__layout.svelte-f6a6addb.js",
   "/_app/assets/pages/__layout.svelte-ee4679ba.css",
-  "/_app/error.svelte-f772cec3.js",
-  "/_app/pages/index.svelte-9e88d3b5.js",
-  "/_app/assets/pages/index.svelte-5f182718.css",
-  "/_app/chunks/vendor-dc7df7c6.js",
-  "/_app/chunks/paths-4b3c6e7e.js",
-  "/_app/chunks/preload-helper-e4860ae8.js",
-  "/_app/chunks/hls-ab311cfe.js"
+  "/_app/error.svelte-c6411e1f.js",
+  "/_app/pages/index.svelte-700a5e39.js",
+  "/_app/assets/pages/index.svelte-79fd83c9.css",
+  "/_app/chunks/index-571d3ec7.js",
+  "/_app/chunks/preload-helper-0e672089.js",
+  "/_app/chunks/paths-396f020f.js",
+  "/_app/chunks/hls-86082839.js"
 ];
 const files$1 = [
   "/fonts/blokk.woff2",
@@ -23,9 +22,10 @@ const files$1 = [
   "/images/splash-plus.jpg",
   "/manifest.json"
 ];
+const version = "1659002862614";
 const files = files$1.filter((x) => x != "/.DS_Store");
 const worker = self;
-const assets = `cache${timestamp}`;
+const assets = `cache${version}`;
 const bundleFiles = build.concat(files);
 const bundleSet = new Set(bundleFiles);
 worker.addEventListener("install", (event) => {
@@ -51,7 +51,7 @@ function isCacheable(request) {
   return false;
 }
 async function fetchAndCache(request) {
-  const cache = await caches.open(`offline${timestamp}`);
+  const cache = await caches.open(`offline${version}`);
   try {
     const response = await fetch(request);
     if (isCacheable(request))
