@@ -1,92 +1,149 @@
 <script lang="ts">
-  import expandable from "actions/expandable";
-  import { onDestroy, onMount } from "svelte";
-  import { fade } from "svelte/transition";
+  import { minmax } from "$utils/math";
+
+  import { create_bidirectional_transition, run, tick } from "svelte/internal";
+
+  import { animateTo } from "utils/animation";
+
+  /// FATURES NEEDED
+  ///  - scroll top on close
+  ///  - optional title
+  ///  - dynamic title bar (iOS style)
+  ///    - support scroll to hide
+  ///    - support top title bar to scroll top
+  ///  - consider some kind of height calculation
+  ///  - open on click by default (+blocking functionality)
+  ///  - let:opened to slot
+  ///  - use:autoscroll
+  ///  - hide tabs when open
 
   let card: HTMLElement | undefined;
-  export let title: string | Promise<String>;
-  export let opened: boolean | null = null;
+  let wrapper: HTMLElement | undefined;
+  export let title: string;
+  export let open = false;
   export let height: number;
+  export let width: number;
 
-  const fadeOptions = {
-    delay: typeof title === "string" ? 0 : 300,
-    duration: typeof title === "string" ? 0 : 300,
-  };
+  const duration = 300;
 
-  $: if (opened) {
-    card?.dispatchEvent(new Event("expand"));
-  } else {
-    card?.dispatchEvent(new Event("retract"));
+  // $: toggle(open);
+
+  function ease(factor: number) {
+    const { pow, atan, abs, sin, cos } = Math;
+    // Magic formula https://www.desmos.com/calculator/kk5rybrxbp
+    const angle = atan(factor);
+    const length =
+      pow(0.482 * atan(pow(abs(factor - 1) * 0.073, 0.687)), 0.95) + 0.443;
+
+    const x1 = minmax(length * sin(angle), 0, 1);
+    const y1 = length * cos(angle);
+    const x2 = minmax(1 - y1, 0, 1);
+    const y2 = 1 - x1;
+    return `cubic-bezier(${x1}, ${y1}, ${x2},${y2})`;
   }
 
-  function handleOpen() {
-    opened = !opened;
-  }
+  async function toggle() {
+    if (!card || !wrapper) return;
 
-  onMount(() => {
-    if (card && opened === null) {
-      card.addEventListener("click", handleOpen);
-    }
-  });
-  onDestroy(() => {
-    card?.removeEventListener("click", handleOpen);
-  });
+    open = !open;
+    const before = card.getBoundingClientRect();
+    await tick();
+    const after = card.getBoundingClientRect();
+    const w = before.width / after.width;
+    const h = before.height / after.height;
+    const x = before.width / 2 - after.width / 2 + before.x - after.x;
+    const y = before.height / 2 - after.height / 2 + before.y - after.y;
+
+    console.log(h);
+
+    const transform = `translate3d(${x}px,${y}px,0) scale(${w}, ${h})`;
+    card.animate(
+      { transform, offset: 0 },
+      { duration, easing: "ease", fill: "none" }
+    );
+    wrapper.animate(
+      { transform: `scale(${1 / w}, ${1 / h})`, offset: 0 },
+      {
+        duration,
+        easing: `cubic-bezier(${0.33}, ${0}, ${0.576},${1})`,
+        fill: "none",
+      }
+    );
+  }
 </script>
 
 <article
+  class:open
   bind:this={card}
-  use:expandable
-  class:opened
-  on:click
-  style="--height:{height}px"
+  on:click={() => toggle()}
+  style:--duration="{duration}ms"
+  style:height="{height}px"
+  style:width="{width}px"
 >
-  <div class="container">
-    <div class="header">
-      <h2>
-        {#await title}
-          <span class="loading" out:fade={{ duration: 300 }}>Loading...</span>
-        {:then loaded}
-          <span in:fade={fadeOptions}> {loaded} </span>
-        {/await}
-      </h2>
-      <button
-        class:hidden={!opened}
-        aria-label="Minimize"
-        on:click|stopPropagation={() => (opened = false)}
-      />
-    </div>
+  <div bind:this={wrapper}>
+    <h2>{title}</h2>
     <slot />
   </div>
 </article>
+<!-- ///Properly consider margin and width -->
+<div style:height="{open ? height + 32 : 0}px" />
 
 <style lang="postcss">
   @import "mixins.pcss";
 
   article {
     position: relative;
-    --transition: 0.6s ease;
+    /* transition: 1s linear; */
+    /* transition-property: border-radius, background-color, transform; */
 
-    margin: 16px 8px;
+    overflow: hidden;
+    contain: strict;
+    /* will-change: transform; */
+    /* transition-property: transform, border-radius; */
+    /* transition-duration: 400ms; */
+    /* transition-timing-function: ease; */
+
+    /* /// REMOVE ACTUAL STYLING FROM HERE! */
+    margin: 32px;
     box-shadow: 0px 0px 8px var(--color-shadow);
     border-radius: 8px;
     background-color: var(--color-element);
 
-    transition: var(--transition);
-    transition-property: border-radius, background-color, transform;
+    z-index: 0;
+    transition: z-index calc(2 * var(--duration)) linear;
+    &.open {
+      /* ///NEED TO COMPENSATE FOR position: absolute (to avoid reflow) */
+      position: absolute;
+      height: 100% !important;
+      width: 100% !important;
+      margin: 0 !important;
+      border-radius: 0;
+      left: 0;
+      top: 0;
 
-    height: calc(var(--height) + 48px);
-    overflow: hidden;
+      transition: none;
+      z-index: 1;
+    }
   }
-  .container {
-    transform-origin: center top;
-    transition: var(--transition);
-    transition-property: transform;
-    position: absolute;
-    top: 0;
+  div {
+    /* transition: transform 0.3s linear; */
+    /* overflow: auto; */
+    /* transition: 1s linear; */
+    transform-origin: top left;
+    /* will-change: transform; */
 
-    padding: 0 8px;
-    width: calc(100% - 16px);
+    /* /// REMOVE ACTUAL STYLING FROM HERE! */
+    /* padding: 16px; */
+
+    & > * {
+      transform: translate3d(0, 0, 0);
+    }
   }
+
+  h2 {
+    margin-top: 0;
+  }
+  /*
   .header {
     position: relative;
     z-index: 1;
@@ -173,22 +230,5 @@
         opacity: 1;
       }
     }
-  }
-  .loading {
-    display: block;
-    animation: loading-text 2s ease-in-out infinite;
-    font-family: "Blokk";
-    font-size: 3rem;
-
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: var(--color-text-caption);
-    background-color: var(--color-text-caption);
-  }
-
-  @keyframes loading-text {
-    50% {
-      background-color: var(--color-text-normal);
-      -webkit-text-fill-color: var(--color-text-normal);
-    }
-  }
+  } */
 </style>

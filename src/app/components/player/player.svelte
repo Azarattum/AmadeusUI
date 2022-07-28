@@ -123,7 +123,7 @@
       length={$tracks.current.length}
       visible={open}
     />
-    <Slider {loading} bind:paused bind:time />
+    <!-- <Slider {loading} bind:paused bind:time /> -->
   </div>
 </div>
 
