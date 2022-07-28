@@ -1,5 +1,5 @@
 <script lang="ts">
-  import tracks, { Repeatition, type Track } from "models/tracks";
+  import tracks, { Repetition, type Track } from "models/tracks";
 
   import Swiper from "components/common/swiper.svelte";
   import Cover from "components/player/cover.svelte";
@@ -16,7 +16,7 @@
     view[2] = tracks.current || {};
     view[3] = tracks.queue[0] || {};
     view[4] = tracks.queue[1] || {};
-    if (tracks.repeatition == Repeatition.All) {
+    if (tracks.repetition == Repetition.All) {
       if (!view[3].title) view[3] = { ...tracks.history[0] };
       if (!view[4].title) view[4] = { ...tracks.history[1] };
     }

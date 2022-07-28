@@ -1,5 +1,5 @@
 import { sleep } from "../utils/utils";
-import { Tracks, type Track, Diretion, Repeatition, none } from "./tracks";
+import { Tracks, type Track, Direction, Repetition, none } from "./tracks";
 
 const t0 = { title: "0" } as Track;
 const t1 = { title: "1" } as Track;
@@ -52,15 +52,15 @@ test("tracks updates", async () => {
   await sleep(0);
   expect(sub).toBeCalledTimes(7);
 
-  tracks.direct(Diretion.Normal);
-  tracks.direct(Diretion.Backwards);
-  tracks.direct(Diretion.Shuffled);
+  tracks.direct(Direction.Normal);
+  tracks.direct(Direction.Backwards);
+  tracks.direct(Direction.Shuffled);
   await sleep(0);
   expect(sub).toBeCalledTimes(8);
 
-  tracks.repeat(Repeatition.None);
-  tracks.repeat(Repeatition.Single);
-  tracks.repeat(Repeatition.All);
+  tracks.repeat(Repetition.None);
+  tracks.repeat(Repetition.Single);
+  tracks.repeat(Repetition.All);
   await sleep(0);
   expect(sub).toBeCalledTimes(9);
 
@@ -95,16 +95,16 @@ test("expected length", () => {
   expect(tracks.current).toBe(t0);
   expect(tracks.queue).toHaveLength(1);
 
-  tracks.direct(Diretion.Shuffled);
+  tracks.direct(Direction.Shuffled);
   expect(tracks.queue).toHaveLength(2);
 
-  tracks.repeat(Repeatition.All);
+  tracks.repeat(Repetition.All);
   expect(tracks.queue).toHaveLength(2);
 
-  tracks.direct(Diretion.Normal);
+  tracks.direct(Direction.Normal);
   expect(tracks.queue).toHaveLength(2);
 
-  tracks.repeat(Repeatition.None);
+  tracks.repeat(Repetition.None);
   expect(tracks.queue).toHaveLength(1);
 });
 
@@ -119,13 +119,13 @@ test("direction change", () => {
   expect(tracks.history).toHaveLength(0);
 
   for (let i = 0; i < 10; i++) {
-    tracks.direct(Diretion.Backwards);
+    tracks.direct(Direction.Backwards);
     expect(tracks.current).toBe(t2);
     expect(tracks.queue[0]).toBe(t1);
     expect(tracks.queue[1]).toBe(t0);
     expect(tracks.history).toHaveLength(0);
 
-    tracks.direct(Diretion.Normal);
+    tracks.direct(Direction.Normal);
     expect(tracks.current).toBe(t2);
     expect(tracks.queue[0]).toBe(t3);
     expect(tracks.queue[1]).toBe(t4);
@@ -141,13 +141,13 @@ test("dynamic rearrange", () => {
   tracks.rearrange(3, 1);
   expect(tracks.queue).toEqual([t1, t4, t2, t3]);
 
-  tracks.repeat(Repeatition.All);
+  tracks.repeat(Repetition.All);
   expect(tracks.queue).toEqual([t1, t4, t2, t3, t0]);
 
   tracks.rearrange(4, 0);
   expect(tracks.queue).toEqual([t0, t1, t4, t2, t3]);
 
-  tracks.repeat(Repeatition.None);
+  tracks.repeat(Repetition.None);
   expect(tracks.queue).toEqual([t1, t4, t2, t3]);
 });
 
@@ -159,7 +159,7 @@ test("coherent shuffle", () => {
   tracks.pushPlaylist(playlist);
   expect(tracks.queue).toEqual([t0, t1, t2, t3, t4]);
 
-  tracks.direct(Diretion.Shuffled);
+  tracks.direct(Direction.Shuffled);
   const shuffled = [...tracks.queue];
   const played = shuffled.shift() as Track;
   tracks.next();
@@ -169,7 +169,7 @@ test("coherent shuffle", () => {
   tracks.play(played);
   expect(tracks.queue).toEqual(shuffled);
 
-  tracks.direct(Diretion.Normal);
+  tracks.direct(Direction.Normal);
   expect(tracks.queue).toEqual([t0, t1, t2, t3, t4].filter((x) => x != played));
 });
 
@@ -181,32 +181,32 @@ test("playlist handling", () => {
   expect(tracks.current).toBe(t0);
   expect(tracks.queue).toEqual([t2, t3, t4, t5]);
 
-  tracks.direct(Diretion.Backwards);
+  tracks.direct(Direction.Backwards);
   expect(tracks.queue).toEqual([t1, t0]);
 
-  tracks.direct(Diretion.Shuffled);
+  tracks.direct(Direction.Shuffled);
   expect(tracks.queue).toHaveLength(6);
   [t0, t1, t2, t3, t4, t5].forEach((x) => {
     expect(tracks.queue).toContain(x);
   });
 
-  tracks.direct(Diretion.Normal);
+  tracks.direct(Direction.Normal);
   expect(tracks.queue).toEqual([t2, t3, t4, t5]);
 
-  tracks.repeat(Repeatition.All);
+  tracks.repeat(Repetition.All);
   expect(tracks.queue).toEqual([t2, t3, t4, t5, t0, t1]);
 
-  tracks.direct(Diretion.Backwards);
+  tracks.direct(Direction.Backwards);
   expect(tracks.queue).toEqual([t1, t0, t5, t4, t3, t2]);
 
   tracks.rearrange(2, 0);
   tracks.rearrange(2, 1);
   expect(tracks.queue).toEqual([t5, t0, t1, t4, t3, t2]);
 
-  tracks.repeat(Repeatition.Single);
+  tracks.repeat(Repetition.Single);
   expect(tracks.queue).toEqual([t0, t1]);
 
-  tracks.direct(Diretion.Backwards);
+  tracks.direct(Direction.Backwards);
   expect(tracks.queue).toEqual([t1, t0]);
 });
 
@@ -218,7 +218,7 @@ test("global repeatition", () => {
   expect(tracks.queue).toEqual([t4, t5]);
   expect(tracks.history).toEqual([]);
 
-  tracks.repeat(Repeatition.All);
+  tracks.repeat(Repetition.All);
   expect(tracks.queue).toEqual([t4, t5, t0, t1, t2]);
 
   tracks.next();
@@ -244,12 +244,12 @@ test("global repeatition", () => {
   expect(tracks.current).toBe(t4);
   expect(tracks.queue).toEqual([t5, t0, t1]);
 
-  tracks.repeat(Repeatition.None);
+  tracks.repeat(Repetition.None);
   expect(tracks.queue).toEqual([t5, t0, t1]);
   tracks.next();
   expect(tracks.queue).toEqual([t0, t1]);
 
-  tracks.repeat(Repeatition.All);
+  tracks.repeat(Repetition.All);
   expect(tracks.queue).toEqual([t0, t1]);
 
   tracks.next();
@@ -263,7 +263,7 @@ test("global repeatition", () => {
 test("repeat one", () => {
   const tracks = new Tracks();
   tracks.play(t0);
-  tracks.repeat(Repeatition.All);
+  tracks.repeat(Repetition.All);
 
   tracks.next();
   expect(tracks.current).toBe(t0);
@@ -275,19 +275,19 @@ test("empty redirection", () => {
   tracks.pushPlaylist([t0, t1, t2, t3]);
   expect(tracks.queue).toEqual([t1, t2, t3]);
 
-  tracks.direct(Diretion.Backwards);
+  tracks.direct(Direction.Backwards);
   expect(tracks.queue).toEqual([t3, t2, t1]);
 
-  tracks.direct(Diretion.Normal);
+  tracks.direct(Direction.Normal);
   expect(tracks.queue).toEqual([t1, t2, t3]);
 
   tracks.pushLast(t4);
   expect(tracks.queue).toEqual([t1, t2, t3, t4]);
-  tracks.direct(Diretion.Backwards);
+  tracks.direct(Direction.Backwards);
   expect(tracks.queue).toEqual([t4, t3, t2, t1]);
 
   tracks.pushAwaiting(t5);
   expect(tracks.queue).toEqual([t4, t3, t2, t1]);
-  tracks.direct(Diretion.Normal);
+  tracks.direct(Direction.Normal);
   expect(tracks.queue).toEqual([t5]);
 });

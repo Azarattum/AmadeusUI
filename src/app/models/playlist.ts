@@ -1,7 +1,6 @@
 import type { Readable, Writable } from "svelte/store";
 import { fetchPlaylists, fetchRecent } from "utils/api";
-import { get, derived } from "svelte/store";
-import { writable } from "svelte/store";
+import { get, derived, writable } from "svelte/store";
 import type { Track } from "./tracks";
 
 export interface Playlist {

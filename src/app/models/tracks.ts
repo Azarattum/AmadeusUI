@@ -30,13 +30,13 @@ export class Tracks implements Readable<Tracks> {
   queue: Track[] = [];
   firstToPlay = false;
 
-  repeatition = Repeatition.None;
-  direction = Diretion.Normal;
+  repetition = Repetition.None;
+  direction = Direction.Normal;
   infinite = false;
 
   get upcoming(): Track | null {
     if (this.queue[0]) return this.queue[0];
-    if (this.repeatition === Repeatition.All && this.history[0]) {
+    if (this.repetition === Repetition.All && this.history[0]) {
       return this.history[0];
     }
     return null;
@@ -46,7 +46,7 @@ export class Tracks implements Readable<Tracks> {
     if (!tracks.length) return;
 
     this.queue.push(...tracks);
-    if (this.direction != Diretion.Backwards) {
+    if (this.direction != Direction.Backwards) {
       this.forwardQueue.push(...tracks);
     } else {
       this.backwardQueue.push(...tracks);
@@ -59,7 +59,7 @@ export class Tracks implements Readable<Tracks> {
     if (!tracks.length) return;
 
     this.queue.unshift(...tracks);
-    if (this.direction != Diretion.Backwards) {
+    if (this.direction != Direction.Backwards) {
       this.forwardQueue.unshift(...tracks);
     } else {
       this.backwardQueue.unshift(...tracks);
@@ -71,15 +71,15 @@ export class Tracks implements Readable<Tracks> {
   pushAwaiting(...tracks: Track[]): void {
     if (!tracks.length) return;
 
-    if (this.direction == Diretion.Backwards) {
+    if (this.direction == Direction.Backwards) {
       this.forwardQueue.push(...tracks);
     } else {
       this.backwardQueue.push(...tracks);
     }
 
     if (
-      this.repeatition === Repeatition.All ||
-      this.direction === Diretion.Shuffled
+      this.repetition === Repetition.All ||
+      this.direction === Direction.Shuffled
     ) {
       this.queue.push(...tracks);
       this.update();
@@ -100,7 +100,7 @@ export class Tracks implements Readable<Tracks> {
   next(): void {
     let item = this.queue[0];
     if (!item) {
-      if (this.repeatition != Repeatition.All) return;
+      if (this.repetition != Repetition.All) return;
       this.pushNext(...this.history);
       this.clearHistory();
       item = this.queue[0];
@@ -124,23 +124,23 @@ export class Tracks implements Readable<Tracks> {
     this.update();
   }
 
-  direct(direction: Diretion): void {
-    if (direction == Diretion.Normal) {
+  direct(direction: Direction): void {
+    if (direction == Direction.Normal) {
       if (!this.forwardQueue.length) {
         this.forwardQueue = this.backwardQueue;
         this.backwardQueue = [];
       }
       this.queue = this.forwardQueue.slice();
-      if (this.repeatition == Repeatition.All) {
+      if (this.repetition == Repetition.All) {
         this.queue.push(...this.backwardQueue);
       }
-    } else if (direction == Diretion.Backwards) {
+    } else if (direction == Direction.Backwards) {
       if (!this.backwardQueue.length) {
         this.backwardQueue = this.forwardQueue;
         this.forwardQueue = [];
       }
       this.queue = this.backwardQueue.slice().reverse();
-      if (this.repeatition == Repeatition.All || !this.queue.length) {
+      if (this.repetition == Repetition.All || !this.queue.length) {
         this.queue.push(...this.forwardQueue.slice().reverse());
       }
     } else {
@@ -152,20 +152,20 @@ export class Tracks implements Readable<Tracks> {
     this.update();
   }
 
-  repeat(repeatition: Repeatition): void {
-    if (repeatition == this.repeatition) return;
+  repeat(repetitions: Repetition): void {
+    if (repetitions == this.repetition) return;
 
-    this.repeatition = repeatition;
-    if (repeatition == Repeatition.All) {
-      if (this.direction == Diretion.Normal) {
+    this.repetition = repetitions;
+    if (repetitions == Repetition.All) {
+      if (this.direction == Direction.Normal) {
         this.queue.push(...this.backwardQueue);
-      } else if (this.direction == Diretion.Backwards) {
+      } else if (this.direction == Direction.Backwards) {
         this.queue.push(...this.forwardQueue.slice().reverse());
       }
     } else {
-      if (this.direction == Diretion.Normal) {
+      if (this.direction == Direction.Normal) {
         this.queue = this.queue.filter((x) => this.forwardQueue.includes(x));
-      } else if (this.direction == Diretion.Backwards) {
+      } else if (this.direction == Direction.Backwards) {
         this.queue = this.queue.filter((x) => this.backwardQueue.includes(x));
       }
     }
@@ -196,7 +196,7 @@ export class Tracks implements Readable<Tracks> {
 
   clear(): void {
     const updated = this.current != none;
-    this.direction = Diretion.Normal;
+    this.direction = Direction.Normal;
     this.current = none;
     this.clearQueue();
     this.clearHistory();
@@ -237,7 +237,7 @@ export class Tracks implements Readable<Tracks> {
   private debounce?: unknown;
   private update(): void {
     if (this.current === none && this.forwardQueue.length) {
-      this.direction = Diretion.Normal;
+      this.direction = Direction.Normal;
       this.next();
       this.firstToPlay = true;
     }
@@ -250,13 +250,13 @@ export class Tracks implements Readable<Tracks> {
   }
 }
 
-export enum Diretion {
+export enum Direction {
   Normal,
   Backwards,
   Shuffled,
 }
 
-export enum Repeatition {
+export enum Repetition {
   None,
   All,
   Single,

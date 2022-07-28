@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Track as TrackData } from "models/tracks";
-  import tracks, { Repeatition, Diretion } from "models/tracks";
+  import tracks, { Repetition, Direction } from "models/tracks";
   import { scroller } from "actions/scroller";
   import draggable from "actions/draggable";
   import tappable from "actions/tappable";
@@ -90,19 +90,19 @@
       <button
         class="direction"
         aria-label="Switch Playback Direction"
-        class:normal={$tracks.direction == Diretion.Normal}
-        class:backwards={$tracks.direction == Diretion.Backwards}
-        class:shuffled={$tracks.direction == Diretion.Shuffled}
+        class:normal={$tracks.direction == Direction.Normal}
+        class:backwards={$tracks.direction == Direction.Backwards}
+        class:shuffled={$tracks.direction == Direction.Shuffled}
         on:click={() => tracks.direct((tracks.direction + 1) % 3)}
       />
       <button
         class="repeat"
         aria-label="Switch Repeat Mode"
-        class:none={$tracks.repeatition == Repeatition.None}
-        class:all={$tracks.repeatition == Repeatition.All}
-        class:single={$tracks.repeatition == Repeatition.Single}
-        class:enabled={$tracks.repeatition}
-        on:click={() => tracks.repeat((tracks.repeatition + 1) % 3)}
+        class:none={$tracks.repetition == Repetition.None}
+        class:all={$tracks.repetition == Repetition.All}
+        class:single={$tracks.repetition == Repetition.Single}
+        class:enabled={$tracks.repetition}
+        on:click={() => tracks.repeat((tracks.repetition + 1) % 3)}
       />
     {/if}
   </div>

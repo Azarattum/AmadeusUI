@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Playlist } from "models/playlist";
-  import { Diretion, type Track as TrackData } from "models/tracks";
+  import { Direction, type Track as TrackData } from "models/tracks";
   import { scroller } from "actions/scroller";
   import draggable from "actions/draggable";
   import { fade } from "svelte/transition";
@@ -50,7 +50,7 @@
     if (!$items) return;
     tracks.clear();
     tracks.pushPlaylist(cloneArray($items));
-    tracks.direct(Diretion.Shuffled);
+    tracks.direct(Direction.Shuffled);
   }
 
   async function queueNext() {
